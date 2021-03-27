@@ -21,21 +21,21 @@ You create a button using a `button` codeblock
 Example command button:
 
 ```
-\`\`\`button
+```button
 name My Awesome Button
 type command
 action Toggle Pin
 color blue
-\`\`\`
+```
 ```
 
 Example link button:
 
 ```
-\`\`\`button
+```button
 name My Link Button
 type link
 action https://booked.email
-\`\`\`
+```
 ```
 
