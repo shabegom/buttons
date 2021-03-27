@@ -58,6 +58,8 @@ then in your css tweaks:
 
 ```
 .roundButton {
- border-radius: 100%
+ border-radius: 100% !important;
 }
 ```
+
+use `!important` to override any existing styling from `.default-button`
