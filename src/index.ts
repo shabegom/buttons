@@ -13,9 +13,10 @@ interface Arguments {
   name?: string;
   type?: string;
   action?: string;
+  style?: string;
   color?: string;
-  customClass?: string;
-  customId?: string;
+  class?: string;
+  id?: string;
 }
 
 export default class ReactStarterPlugin extends Plugin {
@@ -48,11 +49,11 @@ export default class ReactStarterPlugin extends Plugin {
       //create the button element
       const button = el.createEl("button", {
         text: args.name,
-        cls: `button-default ${args.color ? args.color : ""} ${
-          args.customClass ? args.customClass : ""
-        }`,
+        cls: args.class
+          ? `${args.class} ${args.color}`
+          : `button-default button-shine ${args.color ? args.color : ""}`,
       });
-      args.customId ? button.setAttribute("id", args.customId) : "";
+      args.id ? button.setAttribute("id", args.id) : "";
       button.on("click", "button", () => {
         clickHandler(args);
       });

@@ -1,15 +1,50 @@
-.default-button {
+.button-default {
   border-radius: 100px;
-  padding: 20px 60px;
+  padding: 10px 30px;
   color: #fff;
   text-decoration: none;
-  font-size: 1.45em;
-  margin: 0 15px;
+  font-size: 1em;
+  margin: 0 5px;
 }
 
-.default-button:hover {
-  -webkit-animation: hover 1200ms linear 2 alternate;
-  animation: hover 1200ms linear 2 alternate;
+.button-shine:before {
+  z-index: -100;
+  content: "";
+  display: block;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.5);
+  width: 110px;
+  height: 50%;
+  top: 0;
+  filter: blur(25px);
+  transform: translateX(-25px) skewX(-15deg);
+  transition: 1s;
+}
+
+.button-shine:after {
+  z-index: -100;
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100px;
+  height: 50%;
+  top: 0;
+  filter: blur(25px);
+  transform: translateX(-25px) skewX(-15deg);
+  transition: 1s;
+}
+
+.button-default:hover {
+  z-index: 100;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+.button-default:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  color: #fff;
 }
 
 .blue {
@@ -31,5 +66,27 @@
 }
 
 .purple {
+  background: #725585;
+}
+
+.blue:hover {
+  background: #76b3fa;
+  color: black;
+}
+
+.red:hover {
+  background: red;
+}
+
+.green:hover {
+  background: green;
+}
+
+.yellow:hover {
+  background: yellow;
+  color: black;
+}
+
+.purple:hover {
   background: #725585;
 }
