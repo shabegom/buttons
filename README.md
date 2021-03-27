@@ -18,24 +18,22 @@ Buttons have 4 arguments: name, type, action, color
 
 You create a button using a `button` codeblock
 
-Example command button:
+## Examples
 
-```
-```button
-name My Awesome Button
-type command
-action Toggle Pin
-color blue
-```
-```
 
-Example link button:
 
-```
-```button
-name My Link Button
-type link
-action https://booked.email
-```
-```
+\`\`\`button 
+name My Awesome Button  
+type command  
+action Toggle Pin  
+color blue  
+\`\`\`
+
+
+
+\`\`\`button  
+name My Link Button  
+type link  
+action https://booked.email  
+\`\`\`
 
