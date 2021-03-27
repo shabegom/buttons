@@ -4,7 +4,7 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ## Manual Install
 
-Grab the latest release and add it to: <vault>/.obsidian/plugins/
+Grab the [laest release](https://github.com/shabegom/buttons/releases) and add it to: <vault>/.obsidian/plugins/
 
 ## Usage
 
