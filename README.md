@@ -16,8 +16,8 @@ Buttons have 4 arguments: name, type, action, color
 | type        | run a command or open a url                                     | command, link                               | command    |
 | action      | the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
 | color       | optional: arg to change color of the button                     | blue, green, red, purple. yellow            | blue       |
-| customClass | optional: add a class to the button for more customized styling | a string representing your custom class     | myClass    |
-| customId    | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
+| class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | myClass    |
+| id    | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
 
 
 You create a button using a `button` codeblock
@@ -53,8 +53,8 @@ You can add an optional `customClass` argument to target the button with any css
 name My Round Link Button  
 type link  
 action https://booked.email  
-customClass roundButton
-customId myId
+class roundButton
+id myId
 \`\`\`
 
 then in your css tweaks:
@@ -69,4 +69,20 @@ then in your css tweaks:
 }
 ```
 
-use `!important` to override any existing styling from `.default-button`
+You can also add the default classes to the class argument. There are two defaults: `button-default` and `button-shine`. So if you don't like the shine hover effect you can remove it, but keep default styling:
+
+\`\`\`button  
+name My Default Button Without Shine
+type link  
+action https://booked.email  
+class button-default
+\`\`\`
+
+You can add multiple classes to the `class` argument including colors:
+
+\`\`\`button  
+name My Multi-Class Button
+type link  
+action https://booked.email  
+class button-default button-shine purple myCustomClass
+\`\`\`
