@@ -1,8 +1,8 @@
 {
-  "name": "obsidian-preact-starter",
-  "version": "0.0.0",
-  "description": "Obsidian + PreactJS",
-  "author": "liamcain",
+  "name": "buttons",
+  "version": "0.0.1",
+  "description": "Buttons for Obsidian",
+  "author": "shabegom",
   "main": "main.js",
   "license": "MIT",
   "scripts": {

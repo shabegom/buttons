@@ -51,8 +51,6 @@ export default class ReactStarterPlugin extends Plugin {
       button.on("click", "button", () => {
         clickHandler(args);
       });
-
-      console.log(el, args);
     });
   }
 }
