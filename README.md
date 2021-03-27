@@ -14,14 +14,16 @@ Buttons have 4 arguments: name, type, action, color
 -----------|--------------------------------------------|----------------------------------------------|------------|
 | name     | the name of the button                     | any string                                   | My Button  |
 | type     | run a command or open a url                | command, link                                | command    |
-| action   | the command to run or link to open         | any command from the command paletter or url | Toggle Pin |
+| action   | the command to run or link to open         | any command from the command palette or url | Toggle Pin |
 | color    | optional arg to change color of the button | blue, green, red, purple. yellow             | blue       |
 
 You create a button using a `button` codeblock
 
 ## Examples
 
+### Command Button
 
+Command buttons can run commands you would find in the Command Paletter. `type` will be _command_ and `action` is the exact wording of the command found in the palette.
 
 \`\`\`button  
 name My Awesome Button  
@@ -30,7 +32,9 @@ action Toggle Pin
 color blue  
 \`\`\`
 
+### Link Button
 
+A Link Button will open the specified link in your web browser. `type` will be _link_ and `action` is the link you want to open (https:// is required)
 
 \`\`\`button  
 name My Link Button  
