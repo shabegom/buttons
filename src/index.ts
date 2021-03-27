@@ -14,6 +14,7 @@ interface Arguments {
   type?: string;
   action?: string;
   color?: string;
+  customClass?: string;
 }
 
 export default class ReactStarterPlugin extends Plugin {
@@ -46,7 +47,9 @@ export default class ReactStarterPlugin extends Plugin {
       //create the button element
       const button = el.createEl("button", {
         text: args.name,
-        cls: `button-default ${args.color ? args.color : ""}`,
+        cls: `button-default ${args.color ? args.color : ""} ${
+          args.customClass ? args.customClass : ""
+        }`,
       });
       button.on("click", "button", () => {
         clickHandler(args);
