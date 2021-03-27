@@ -16,7 +16,7 @@ Buttons have 4 arguments: name, type, action, color
 | type        | run a command or open a url                                     | command, link                               | command    |
 | action      | the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
 | color       | optional: arg to change color of the button                     | blue, green, red, purple. yellow            | blue       |
-| class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | myClass    |
+| class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | button-default, button-shine    |
 | id    | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
 
 
