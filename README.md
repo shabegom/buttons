@@ -22,7 +22,7 @@ You create a button using a `button` codeblock
 
 
 
-\`\`\`button 
+\`\`\`button  
 name My Awesome Button  
 type command  
 action Toggle Pin  
