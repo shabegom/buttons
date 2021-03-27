@@ -2,7 +2,7 @@
   "id": "buttons",
   "name": "Buttons",
   "description": "Create Buttons in your Obsidian notes to run commands",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "shabegom",
   "authorUrl": "https://shbgm.ca",
   "isDesktopOnly": false,
