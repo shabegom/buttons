@@ -1,25 +1,41 @@
-# obsidian-preact-starter
+# Obsidian Buttons
 
-A starter template for creating an [Obsidian](https://obsidian.md/) plugin with [PreactJS](https://preactjs.com/).
+Run commands and open links by clicking on ✨ Buttons ✨
 
-## Features
+## Manual Install
 
-This project comes preconfigured with [Typescript](https://www.typescriptlang.org/), [Babel](https://babeljs.io/), and [Rollup.js](https://www.rollupjs.org).
+Grab the latest release and add it to: <vault>/.obsidian/plugins/
 
-## Getting Started
+## Usage
 
-Click "use this template" to create your own fork of this repo. Make sure to reference [the official sample plugin](https://github.com/obsidianmd/obsidian-sample-plugin) for information about how to get started with the Obsidian API and how to submit your plugin to the Community Plugin Gallery.
+Buttons have 4 arguments: name, type, action, color
 
-```bash
-# for local development
-npm install
-npm run dev
+| argument | description                                | options                                      | example    |
+| name     | the name of the button                     | any string                                   | My Button  |
+| type     | run a command or open a url                | command, link                                | command    |
+| action   | the command to run or link to open         | any command from the command paletter or url | Toggle Pin |
+| color    | optional arg to change color of the button | blue, green, red, purple. yellow             | blue       |
 
-# for a production bundle
-npm install
-npm run build
+You create a button using a `button` codeblock
+
+Example command button:
+
+```
+\`\`\`button
+name My Awesome Button
+type command
+action Toggle Pin
+color blue
+\`\`\`
 ```
 
-## Stats
+Example link button:
 
-The production output of this sample plugin is **~13 KB**.
+```
+\`\`\`button
+name My Link Button
+type link
+action https://booked.email
+\`\`\`
+```
+

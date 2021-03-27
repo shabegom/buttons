@@ -1,7 +1,35 @@
-.DiceRoller__container {
-    display: flex;
+.default-button {
+  border-radius: 100px;
+  padding: 20px 60px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.45em;
+  margin: 0 15px;
 }
 
-.DiceRoller__container input {
-    width: 60px;
+.default-button:hover {
+  -webkit-animation: hover 1200ms linear 2 alternate;
+  animation: hover 1200ms linear 2 alternate;
+}
+
+.blue {
+  background: #76b3fa;
+  color: black;
+}
+
+.red {
+  background: red;
+}
+
+.green {
+  background: green;
+}
+
+.yellow {
+  background: yellow;
+  color: black;
+}
+
+.purple {
+  background: #725585;
 }

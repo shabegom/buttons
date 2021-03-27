@@ -1,51 +1,58 @@
-import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
-import { h, render, VNode } from "preact";
+import { Plugin } from "obsidian";
 
-import DiceRoller from "./ui/DicerRoller.tsx";
-
-const VIEW_TYPE = "react-view";
-
-class MyReactView extends ItemView {
-  private reactComponent: VNode;
-
-  getViewType(): string {
-    return VIEW_TYPE;
-  }
-
-  getDisplayText(): string {
-    return "Dice Roller";
-  }
-
-  getIcon(): string {
-    return "calendar-with-checkmark";
-  }
-
-  async onOpen(): Promise<void> {
-    this.reactComponent = h(DiceRoller, {});
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render(this.reactComponent, (this as any).contentEl);
+declare module "obsidian" {
+  interface App {
+    commands: {
+      executeCommandById: (id: string) => unknown;
+      listCommands: () => [{ id: string; name: string }];
+    };
   }
 }
 
+interface Arguments {
+  name?: string;
+  type?: string;
+  action?: string;
+  color?: string;
+}
+
 export default class ReactStarterPlugin extends Plugin {
-  private view: MyReactView;
-
   async onload(): Promise<void> {
-    this.registerView(
-      VIEW_TYPE,
-      (leaf: WorkspaceLeaf) => (this.view = new MyReactView(leaf))
-    );
+    this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
+      // create an object out of the arguments
+      const args: Arguments = source.split("\n").reduce((acc, i: string) => {
+        const split = i.split(" ");
+        acc[split[0]] = split.filter((item) => item !== split[0]).join(" ");
+        return acc;
+      }, {});
+      //handle button clicks
+      const clickHandler = (args: Arguments) => {
+        console.log("handling click");
+        if (args.type === "command") {
+          console.log("executing command:", args.action);
+          const allCommands = this.app.commands.listCommands();
+          const command = allCommands.filter(
+            (command) =>
+              command.name.toUpperCase() === args.action.toUpperCase().trim()
+          )[0];
+          this.app.commands.executeCommandById(command.id);
+        }
+        if (args.type === "link") {
+          console.log("opening link: ", args.action);
+          const link = args.action.trim();
+          open(link);
+        }
+      };
+      //create the button element
+      const button = el.createEl("button", {
+        text: args.name,
+        cls: `button-default ${args.color ? args.color : ""}`,
+      });
+      button.on("click", "button", () => {
+        clickHandler(args);
+      });
 
-    this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
-  }
-
-  onLayoutReady(): void {
-    if (this.app.workspace.getLeavesOfType(VIEW_TYPE).length) {
-      return;
-    }
-    this.app.workspace.getRightLeaf(false).setViewState({
-      type: VIEW_TYPE,
+      console.log(el, args);
     });
   }
 }
