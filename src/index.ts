@@ -15,6 +15,7 @@ interface Arguments {
   action?: string;
   color?: string;
   customClass?: string;
+  customId?: string;
 }
 
 export default class ReactStarterPlugin extends Plugin {
@@ -51,6 +52,7 @@ export default class ReactStarterPlugin extends Plugin {
           args.customClass ? args.customClass : ""
         }`,
       });
+      args.customId ? button.setAttribute("id", args.customId) : "";
       button.on("click", "button", () => {
         clickHandler(args);
       });

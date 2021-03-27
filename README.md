@@ -12,11 +12,13 @@ Buttons have 4 arguments: name, type, action, color
 
 | argument | description                                | options                                      | example    |
 -----------|--------------------------------------------|----------------------------------------------|------------|
-| name        | the name of the button                                | any string                                  | My Button  |
-| type        | run a command or open a url                           | command, link                               | command    |
-| action      | the command to run or link to open                    | any command from the command palette or url | Toggle Pin |
-| color       | optional arg to change color of the button            | blue, green, red, purple. yellow            | blue       |
-| customClass | add a class to the button for more customized styling | a string representing your custom class     | myClass    |
+| name        | the name of the button                                          | any string                                  | My Button  |
+| type        | run a command or open a url                                     | command, link                               | command    |
+| action      | the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
+| color       | optional: arg to change color of the button                     | blue, green, red, purple. yellow            | blue       |
+| customClass | optional: add a class to the button for more customized styling | a string representing your custom class     | myClass    |
+| customId    | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
+
 
 You create a button using a `button` codeblock
 
@@ -43,7 +45,7 @@ type link
 action https://booked.email  
 \`\`\`
 
-### Custom Class
+### Custom Class & ID
 
 You can add an optional `customClass` argument to target the button with any css styling tweaks you'd want to add
 
@@ -52,6 +54,7 @@ name My Round Link Button
 type link  
 action https://booked.email  
 customClass roundButton
+customId myId
 \`\`\`
 
 then in your css tweaks:
@@ -59,6 +62,10 @@ then in your css tweaks:
 ```
 .roundButton {
  border-radius: 100% !important;
+}
+
+#myId {
+ color: rebeccapurple;
 }
 ```
 
