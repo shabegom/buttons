@@ -11,6 +11,7 @@ Grab the [laest release](https://github.com/shabegom/buttons/releases) and add i
 Buttons have 4 arguments: name, type, action, color
 
 | argument | description                                | options                                      | example    |
+-----------|--------------------------------------------|----------------------------------------------|------------|
 | name     | the name of the button                     | any string                                   | My Button  |
 | type     | run a command or open a url                | command, link                                | command    |
 | action   | the command to run or link to open         | any command from the command paletter or url | Toggle Pin |
