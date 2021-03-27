@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    // "inlineSourceMap": true,
+    // "inlineSources": true,
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "module": "ESNext",
+    "target": "esnext",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "lib": ["dom", "esnext"]
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
+}
