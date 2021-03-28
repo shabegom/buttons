@@ -1,4 +1,4 @@
-import { Plugin } from "obsidian";
+import { Plugin, MarkdownView } from "obsidian";
 
 declare module "obsidian" {
   interface App {
@@ -17,6 +17,7 @@ interface Arguments {
   color?: string;
   class?: string;
   id?: string;
+  remove?: string;
 }
 
 export default class ReactStarterPlugin extends Plugin {
@@ -39,6 +40,9 @@ export default class ReactStarterPlugin extends Plugin {
               command.name.toUpperCase() === args.action.toUpperCase().trim()
           )[0];
           this.app.commands.executeCommandById(command.id);
+          if (args.remove) {
+            setTimeout(() => removeButton(this.app, args.name), 100);
+          }
         }
         if (args.type === "link") {
           console.log("opening link: ", args.action);
@@ -60,3 +64,13 @@ export default class ReactStarterPlugin extends Plugin {
     });
   }
 }
+
+const removeButton = async (app, buttonName: string) => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const originalContent = await app.vault.read(activeView.file);
+  const button = `\u0060{3}button\nname ${buttonName}.*?remove true\n\u0060{3}`;
+  const re = new RegExp(button, "gms");
+  const splitContent = originalContent.split(re);
+  const content = `${splitContent[0]} ${splitContent[1]}`;
+  await app.vault.modify(activeView.file, content);
+};
