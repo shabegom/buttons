@@ -170,8 +170,8 @@ For right now, you should use this with `type prepend template` unless you know 
 \`\`\`button  
 name My Replace Button  
 type prepend template  
-action A Template
-replace ## Section Heading
+action A Template  
+replace ## Section Heading   
 \`\`\`  
 
 ## Known Issues
