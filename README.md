@@ -28,6 +28,7 @@ remove optional
 | class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | button-default, button-shine    |
 | id | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
 | remove | optional: if `true` removes button after command runs | true | true | 
+| replace | optional: specify a section header above the button and it will remove content from the section (and replace if used with _prepend template_)| The section header directly above the button | ## Replace this Section |
 
 ## Examples
 
