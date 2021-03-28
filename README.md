@@ -17,7 +17,8 @@ Buttons have 4 arguments: name, type, action, color
 | action      | the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
 | color       | optional: arg to change color of the button                     | blue, green, red, purple. yellow            | blue       |
 | class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | button-default, button-shine    |
-| id    | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
+| id | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
+| remove | optional: if `true` removes button after command runs | true | true | 
 
 
 You create a button using a `button` codeblock
@@ -86,3 +87,21 @@ type link
 action https://booked.email  
 class button-default button-shine purple myCustomClass
 \`\`\`
+
+### Remove Button after command execution
+
+if you add `remove true` as the las argument, the button will be removed from the file after the button click.  
+**Use at your own risk! Deleting things can be dangerous, so make sure to test your button in a safe note**
+
+#### Requirements
+- first argument must be `name`
+- last argument must be `remove true`
+- `name` must be unique in the file
+
+\`\`\`button  
+name My Removable Button
+type command
+action Some Command that adds content
+remove true
+\`\`\`
+
