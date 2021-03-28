@@ -106,6 +106,31 @@ export default class ButtonsPLugin extends Plugin {
             new Notice("You need to have the Templates plugin enabled", 2000);
           }
         }
+        if (args.type === "calculate") {
+          const calculationArray = args.action.split(" ");
+          const output = calculationArray.map(async (value) => {
+            if (value.startsWith("l")) {
+              const activeView = this.app.workspace.getActiveViewOfType(
+                MarkdownView
+              );
+              if (activeView) {
+                const file = activeView.file;
+                const originalContent = await this.app.vault.read(file);
+                const arr = originalContent.split("\n");
+                console.log(arr);
+                const lineNumber = parseInt(value.substring(1)) - 1;
+                console.log(lineNumber, arr[lineNumber]);
+                return arr[lineNumber];
+              }
+            }
+            return value;
+          });
+          const resolved = await Promise.all(output);
+          console.log(resolved);
+          const fun = Function(`return ${resolved.join("")}`)();
+          console.log(fun);
+          appendContent(this.app, `Result: ${fun}`, args.name);
+        }
         //handle removing the button
         if (args.remove) {
           setTimeout(() => removeButton(this.app, args.name), 100);
