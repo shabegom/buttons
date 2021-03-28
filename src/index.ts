@@ -1,4 +1,5 @@
 import { Plugin, MarkdownView, TFile, App, Notice } from "obsidian";
+import cp from "child_process";
 
 //extend the obsidian module with some additional typings
 declare module "obsidian" {
@@ -105,6 +106,17 @@ export default class ButtonsPLugin extends Plugin {
           } else {
             new Notice("You need to have the Templates plugin enabled", 2000);
           }
+        }
+        if (args.type === "shell") {
+          cp.exec(args.action, (err, stdout, stderr) => {
+            if (err) {
+              new Notice(err, 5000);
+            } else if (stderr) {
+              new Notice(stderr, 5000);
+            } else {
+              appendContent(this.app, stdout, args.name);
+            }
+          });
         }
         //handle removing the button
         if (args.remove) {
