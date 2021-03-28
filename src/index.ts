@@ -1,5 +1,6 @@
 import { Plugin, MarkdownView, TFile } from "obsidian";
 
+//extend the obsidian module with some additional typings
 declare module "obsidian" {
   interface App {
     internalPlugins: {
@@ -32,7 +33,7 @@ interface Arguments {
   remove?: string;
 }
 
-export default class ReactStarterPlugin extends Plugin {
+export default class ButtonsPLugin extends Plugin {
   async onload(): Promise<void> {
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
@@ -44,8 +45,8 @@ export default class ReactStarterPlugin extends Plugin {
       //handle button clicks
       const clickHandler = async (args: Arguments) => {
         console.log("handling click");
+        //handle command buttons
         if (args.type === "command") {
-          console.log("executing command:", args.action);
           const allCommands = this.app.commands.listCommands();
           const command = allCommands.filter(
             (command) =>
@@ -53,14 +54,17 @@ export default class ReactStarterPlugin extends Plugin {
           )[0];
           this.app.commands.executeCommandById(command.id);
         }
+        //handle link buttons
         if (args.type === "link") {
           console.log("opening link: ", args.action);
           const link = args.action.trim();
           open(link);
         }
+        //handle template buttons
         if (args.type.includes("template")) {
           const templatesEnabled = this.app.internalPlugins.plugins.templates
             .enabled;
+          //only run if templates plugin is enabled
           if (templatesEnabled) {
             const folder = this.app.internalPlugins.plugins.templates.instance
               .options.folder;
@@ -70,6 +74,7 @@ export default class ReactStarterPlugin extends Plugin {
             )[0];
             if (file) {
               const content = await this.app.vault.read(file);
+              //prepend template above the button
               if (args.type.includes("prepend")) {
                 prependContent(this.app, content, args.name);
                 setTimeout(
@@ -80,6 +85,7 @@ export default class ReactStarterPlugin extends Plugin {
                   100
                 );
               }
+              // append template below the button
               if (args.type.includes("append")) {
                 appendContent(this.app, content, args.name);
                 setTimeout(
@@ -93,6 +99,7 @@ export default class ReactStarterPlugin extends Plugin {
             }
           }
         }
+        //handle removing the button
         if (args.remove) {
           setTimeout(() => removeButton(this.app, args.name), 100);
         }
