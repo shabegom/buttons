@@ -57,15 +57,15 @@ A Template button will append or prepend the specified template into your note. 
 - the template you want to insert must be in the specified Template folder
 
 \`\`\`button  
-name My Template Button
-type prepend template 
-action My Template
+name My Template Button  
+type prepend template   
+action My Template  
 \`\`\`
 
 \`\`\`button  
-name My Template Button
-type append template 
-action My Template
+name My Template Button  
+type append template   
+action My Template  
 \`\`\`
 
 ### Custom Class & ID
@@ -121,9 +121,9 @@ if you add `remove true` as the las argument, the button will be removed from th
 - `name` must be unique in the file
 
 \`\`\`button  
-name My Removable Button
-type command
-action Some Command that adds content
-remove true
-\`\`\`
+name My Removable Button  
+type command  
+action Some Command that adds content  
+remove true  
+\`\`\`  
 
