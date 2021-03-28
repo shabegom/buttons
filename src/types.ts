@@ -28,5 +28,6 @@ export interface Arguments {
   class?: string;
   id?: string;
   remove?: string;
+  replace?: string;
   [key: string]: string;
 }

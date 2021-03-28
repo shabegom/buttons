@@ -27,6 +27,27 @@ export const removeButton = async (
   }
 };
 
+export const removeSection = async (
+  app: App,
+  section: string,
+  buttonName: string
+): Promise<void> => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  if (activeView) {
+    const file = activeView.file;
+    const originalContent = await app.vault.read(file);
+    const splitContentBeforeSection = originalContent.split(`\n${section}\n`);
+    const button = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+    const buttonRe = new RegExp(button, "gms");
+    const buttonMatch = originalContent.match(buttonRe);
+    const splitContentAfterButton = originalContent.split(buttonRe);
+    const content = `${splitContentBeforeSection[0]}\n${section}${buttonMatch[0]}${splitContentAfterButton[1]}`;
+    await app.vault.modify(file, content);
+  } else {
+    new Notice("There was an issue adding content, please try again", 2000);
+  }
+};
+
 export const prependContent = async (
   app: App,
   insert: string,
@@ -42,8 +63,7 @@ export const prependContent = async (
     const splitContent = originalContent.split(re);
     const content = `${splitContent[0] ? splitContent[0] : ""}
 ${insert}
-${button}
-${splitContent[1] ? splitContent[1] : ""}`;
+${button}${splitContent[1] ? splitContent[1] : ""}`;
     await app.vault.modify(file, content);
   } else {
     new Notice("There was an issue prepending content, please try again", 2000);
@@ -70,5 +90,25 @@ ${splitContent[1] ? splitContent[1] : ""}`;
     await app.vault.modify(file, content);
   } else {
     new Notice("There was an issue appending content, please try again", 2000);
+  }
+};
+
+export const createNote = async (
+  app: App,
+  content: string,
+  type: string
+): Promise<void> => {
+  const path = type.match(/\((.*)\)/);
+  if (path) {
+    try {
+      await app.vault.create(`${path[1]}.md`, content);
+      const vault = app.vault.getName();
+      window.open(`obsidian://vault/${vault}/${path[1]}`);
+    } catch (e) {
+      console.log(e);
+      new Notice("There was an error!", 2000);
+    }
+  } else {
+    new Notice(`couldn't parse the path!`, 2000);
   }
 };

@@ -1,9 +1,19 @@
 import { App, TFile, Notice } from "obsidian";
-import { removeButton, appendContent, prependContent } from "./utils";
+import {
+  removeButton,
+  removeSection,
+  appendContent,
+  prependContent,
+  createNote,
+} from "./utils";
 import { Arguments } from "./types";
 
 export const remove = (app: App, { name }: Arguments): void => {
   setTimeout(() => removeButton(app, name), 100);
+};
+
+export const replace = (app: App, { replace, name }: Arguments): void => {
+  removeSection(app, replace, name);
 };
 
 export const template = async (
@@ -43,6 +53,9 @@ export const template = async (
             ),
           100
         );
+      }
+      if (type.includes("note")) {
+        createNote(app, content, type);
       }
     } else {
       new Notice(
