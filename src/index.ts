@@ -116,7 +116,7 @@ export default class ButtonsPLugin extends Plugin {
         text: args.name,
         cls: args.class
           ? `${args.class} ${args.color}`
-          : `button-default button-shine ${args.color ? args.color : ""}`,
+          : `button-default ${args.color ? args.color : ""}`,
       });
       args.id ? button.setAttribute("id", args.id) : "";
       button.on("click", "button", () => {
