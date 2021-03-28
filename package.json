@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "dev": "npm run lint && rollup -c",
+    "dev": "npm run lint && rollup -c -w",
     "build:nolint": "NODE_ENV=production rollup -c",
     "build": "NODE_ENV=production npm run lint && rollup -c",
     "test": "jest",
@@ -16,16 +16,9 @@
   "dependencies": {
     "@babel/runtime": "7.13.10",
     "obsidian": "obsidianmd/obsidian-api#master",
-    "preact": "10.5.13",
     "tslib": "2.1.0"
   },
   "devDependencies": {
-    "@babel/core": "7.13.8",
-    "@babel/plugin-transform-react-jsx": "7.12.17",
-    "@babel/plugin-transform-runtime": "^7.13.10",
-    "@babel/preset-env": "7.13.10",
-    "@babel/preset-typescript": "^7.13.0",
-    "@rollup/plugin-babel": "5.3.0",
     "@rollup/plugin-commonjs": "17.1.0",
     "@rollup/plugin-json": "4.1.0",
     "@rollup/plugin-node-resolve": "11.2.0",
