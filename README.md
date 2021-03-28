@@ -7,22 +7,27 @@ Run commands and open links by clicking on ✨ Buttons ✨
 Grab the [laest release](https://github.com/shabegom/buttons/releases) and add it to: <vault>/.obsidian/plugins/
 
 ## Usage
+You create a button using a `button` codeblock
 
-Buttons have 4 arguments: name, type, action, color
+\`\`\`button  
+name **required**  
+type **required**  
+action **required**  
+color optional  
+class optional  
+id optional  
+remove optional  
+\`\`\`
 
 | argument | description                                | options                                      | example    |
 -----------|--------------------------------------------|----------------------------------------------|------------|
-| name        | the name of the button                                          | any string                                  | My Button  |
-| type        | run a command or open a url                                     | command, link                               | command    |
-| action      | the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
+| name        | **required**: the name of the button                                          | any string                                  | My Button  |
+| type        | **required** run a command or open a url                                     | command, link                               | command    |
+| action      | **required** the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
 | color       | optional: arg to change color of the button                     | blue, green, red, purple. yellow            | blue       |
 | class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | button-default, button-shine    |
 | id | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
 | remove | optional: if `true` removes button after command runs | true | true | 
-
-
-
-You create a button using a `button` codeblock
 
 ## Examples
 
@@ -127,3 +132,5 @@ action Some Command that adds content
 remove true  
 \`\`\`  
 
+## Known Issues
+- The `remove` command gets funky if the button adds a button of the same name via a `template`
