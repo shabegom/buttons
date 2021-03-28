@@ -40,14 +40,14 @@ export default class ReactStarterPlugin extends Plugin {
               command.name.toUpperCase() === args.action.toUpperCase().trim()
           )[0];
           this.app.commands.executeCommandById(command.id);
-          if (args.remove) {
-            setTimeout(() => removeButton(this.app, args.name), 100);
-          }
         }
         if (args.type === "link") {
           console.log("opening link: ", args.action);
           const link = args.action.trim();
           open(link);
+        }
+        if (args.remove) {
+          setTimeout(() => removeButton(this.app, args.name), 100);
         }
       };
       //create the button element
