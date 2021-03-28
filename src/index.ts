@@ -1,4 +1,4 @@
-import { Plugin, MarkdownView, TFile } from "obsidian";
+import { Plugin, MarkdownView, TFile, App, Notice } from "obsidian";
 
 //extend the obsidian module with some additional typings
 declare module "obsidian" {
@@ -58,7 +58,7 @@ export default class ButtonsPLugin extends Plugin {
         if (args.type === "link") {
           console.log("opening link: ", args.action);
           const link = args.action.trim();
-          open(link);
+          window.open(link);
         }
         //handle template buttons
         if (args.type.includes("template")) {
@@ -96,7 +96,14 @@ export default class ButtonsPLugin extends Plugin {
                   100
                 );
               }
+            } else {
+              new Notice(
+                `Couldn't find the specified template, please check and try again`,
+                2000
+              );
             }
+          } else {
+            new Notice("You need to have the Templates plugin enabled", 2000);
           }
         }
         //handle removing the button
@@ -119,40 +126,55 @@ export default class ButtonsPLugin extends Plugin {
   }
 }
 
-const removeButton = async (app, buttonName: string) => {
+const removeButton = async (app: App, buttonName: string) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-  const originalContent = await app.vault.read(activeView.file);
-  const button = `\u0060{3}button\nname ${buttonName}.*?remove true\n\u0060{3}`;
-  const re = new RegExp(button, "gms");
-  const splitContent = originalContent.split(re);
-  const content = `${splitContent[0]} ${splitContent[1]}`;
-  await app.vault.modify(activeView.file, content);
+  if (activeView) {
+    const file = activeView.file;
+    const originalContent = await app.vault.read(file);
+    const button = `\u0060{3}button\nname ${buttonName}.*?remove true\n\u0060{3}`;
+    const re = new RegExp(button, "gms");
+    const splitContent = originalContent.split(re);
+    const content = `${splitContent[0]} ${splitContent[1]}`;
+    await app.vault.modify(file, content);
+  } else {
+    new Notice("There was an issue adding content, please try again", 2000);
+  }
 };
 
-const prependContent = async (app, insert: string, buttonName) => {
+const prependContent = async (app: App, insert: string, buttonName: string) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-  const originalContent = await app.vault.read(activeView.file);
-  const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
-  const re = new RegExp(buttonRegex, "gms");
-  const button = originalContent.match(re)[0];
-  const splitContent = originalContent.split(re);
-  const content = `${splitContent[0] ? splitContent[0] : ""}
+  if (activeView) {
+    const file = activeView.file;
+    const originalContent = await app.vault.read(file);
+    const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+    const re = new RegExp(buttonRegex, "gms");
+    const button = originalContent.match(re)[0];
+    const splitContent = originalContent.split(re);
+    const content = `${splitContent[0] ? splitContent[0] : ""}
 ${insert}
 ${button}
 ${splitContent[1] ? splitContent[1] : ""}`;
-  await app.vault.modify(activeView.file, content);
+    await app.vault.modify(file, content);
+  } else {
+    new Notice("There was an issue prepending content, please try again", 2000);
+  }
 };
 
-const appendContent = async (app, insert: string, buttonName: string) => {
+const appendContent = async (app: App, insert: string, buttonName: string) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-  const originalContent = await app.vault.read(activeView.file);
-  const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
-  const re = new RegExp(buttonRegex, "gms");
-  const button = originalContent.match(re);
-  const splitContent = originalContent.split(re);
-  const content = `${splitContent[0] ? splitContent[0] : ""}
+  if (activeView) {
+    const file = activeView.file;
+    const originalContent = await app.vault.read(file);
+    const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+    const re = new RegExp(buttonRegex, "gms");
+    const button = originalContent.match(re);
+    const splitContent = originalContent.split(re);
+    const content = `${splitContent[0] ? splitContent[0] : ""}
 ${button}
 ${insert}
 ${splitContent[1] ? splitContent[1] : ""}`;
-  await app.vault.modify(activeView.file, content);
+    await app.vault.modify(file, content);
+  } else {
+    new Notice("There was an issue appending content, please try again", 2000);
+  }
 };
