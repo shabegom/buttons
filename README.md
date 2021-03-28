@@ -21,6 +21,7 @@ Buttons have 4 arguments: name, type, action, color
 | remove | optional: if `true` removes button after command runs | true | true | 
 
 
+
 You create a button using a `button` codeblock
 
 ## Examples
@@ -44,6 +45,27 @@ A Link Button will open the specified link in your web browser. `type` will be _
 name My Link Button  
 type link  
 action https://booked.email  
+\`\`\`
+
+### Template Button
+
+A Template button will append or prepend the specified template into your note. `type` will be _apped template_ or _prepend template_ and `action` is the name of the template you want to insert.  
+
+#### Requirements
+- `name` must be the first argument in the button
+- the Templates plugin needs to be enabled and a Template folder specified
+- the template you want to insert must be in the specified Template folder
+
+\`\`\`button  
+name My Template Button
+type prepend template 
+action My Template
+\`\`\`
+
+\`\`\`button  
+name My Template Button
+type append template 
+action My Template
 \`\`\`
 
 ### Custom Class & ID

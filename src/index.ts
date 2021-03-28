@@ -1,7 +1,19 @@
-import { Plugin, MarkdownView } from "obsidian";
+import { Plugin, MarkdownView, TFile } from "obsidian";
 
 declare module "obsidian" {
   interface App {
+    internalPlugins: {
+      plugins: {
+        templates: {
+          enabled: boolean;
+          instance: {
+            options: {
+              folder: string;
+            };
+          };
+        };
+      };
+    };
     commands: {
       executeCommandById: (id: string) => unknown;
       listCommands: () => [{ id: string; name: string }];
@@ -30,7 +42,7 @@ export default class ReactStarterPlugin extends Plugin {
         return acc;
       }, {});
       //handle button clicks
-      const clickHandler = (args: Arguments) => {
+      const clickHandler = async (args: Arguments) => {
         console.log("handling click");
         if (args.type === "command") {
           console.log("executing command:", args.action);
@@ -45,6 +57,41 @@ export default class ReactStarterPlugin extends Plugin {
           console.log("opening link: ", args.action);
           const link = args.action.trim();
           open(link);
+        }
+        if (args.type.includes("template")) {
+          const templatesEnabled = this.app.internalPlugins.plugins.templates
+            .enabled;
+          if (templatesEnabled) {
+            const folder = this.app.internalPlugins.plugins.templates.instance
+              .options.folder;
+            const allFiles = this.app.vault.getFiles();
+            const file: TFile = allFiles.filter(
+              (file) => file.path === `${folder}/${args.action}.md`
+            )[0];
+            if (file) {
+              const content = await this.app.vault.read(file);
+              if (args.type.includes("prepend")) {
+                prependContent(this.app, content, args.name);
+                setTimeout(
+                  () =>
+                    this.app.commands.executeCommandById(
+                      "templater-obsidian:replace-in-file-templater"
+                    ),
+                  100
+                );
+              }
+              if (args.type.includes("append")) {
+                appendContent(this.app, content, args.name);
+                setTimeout(
+                  () =>
+                    this.app.commands.executeCommandById(
+                      "templater-obsidian:replace-in-file-templater"
+                    ),
+                  100
+                );
+              }
+            }
+          }
         }
         if (args.remove) {
           setTimeout(() => removeButton(this.app, args.name), 100);
@@ -72,5 +119,33 @@ const removeButton = async (app, buttonName: string) => {
   const re = new RegExp(button, "gms");
   const splitContent = originalContent.split(re);
   const content = `${splitContent[0]} ${splitContent[1]}`;
+  await app.vault.modify(activeView.file, content);
+};
+
+const prependContent = async (app, insert: string, buttonName) => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const originalContent = await app.vault.read(activeView.file);
+  const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+  const re = new RegExp(buttonRegex, "gms");
+  const button = originalContent.match(re)[0];
+  const splitContent = originalContent.split(re);
+  const content = `${splitContent[0] ? splitContent[0] : ""}
+${insert}
+${button}
+${splitContent[1] ? splitContent[1] : ""}`;
+  await app.vault.modify(activeView.file, content);
+};
+
+const appendContent = async (app, insert: string, buttonName: string) => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const originalContent = await app.vault.read(activeView.file);
+  const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+  const re = new RegExp(buttonRegex, "gms");
+  const button = originalContent.match(re);
+  const splitContent = originalContent.split(re);
+  const content = `${splitContent[0] ? splitContent[0] : ""}
+${button}
+${insert}
+${splitContent[1] ? splitContent[1] : ""}`;
   await app.vault.modify(activeView.file, content);
 };
