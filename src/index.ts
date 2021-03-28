@@ -1,6 +1,6 @@
 import { Plugin } from "obsidian";
 import { createArgumentObject } from "./utils";
-import { remove, template, link, command } from "./buttonTypes";
+import { remove, replace, template, link, command } from "./buttonTypes";
 
 //extend the obsidian module with some additional typings
 
@@ -12,6 +12,9 @@ export default class ButtonsPLugin extends Plugin {
       //handle button clicks
       const clickHandler = async () => {
         //handle command buttons
+        if (args.replace) {
+          replace(this.app, args);
+        }
         if (args.type === "command") {
           command(this.app, args);
         }

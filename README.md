@@ -54,7 +54,7 @@ action https://booked.email
 
 ### Template Button
 
-A Template button will append or prepend the specified template into your note. `type` will be _apped template_ or _prepend template_ and `action` is the name of the template you want to insert.  
+A Template button will append or prepend the specified template into your note. `type` will be _apped template_,  _prepend template_, or _note(Path/Note Name) template_ and `action` is the name of the template you want to insert.  
 
 #### Requirements
 - `name` must be the first argument in the button
@@ -71,6 +71,30 @@ action My Template
 name My Template Button  
 type append template   
 action My Template  
+\`\`\`
+
+\`\`\`button  
+name My Template Button  
+type note(Path/Note Name) template   
+action My Template  
+\`\`\`
+
+The _note()_ type will open the newly created note after creation.  
+I'm looking into including variables in the note name to avoid creating many notes. You could achieve this right now by creating a template for the button:  
+
+\`\`\`button  
+name My Template Button  
+type note(Path/{{date}}) template   
+action My Template  
+remove true
+\`\`\`
+
+and then having another template button that creates the _note() template_ button. Buttons on buttons.
+
+\`\`\`button  
+name My Template Button  
+type append template   
+action My Note Creation Button
 \`\`\`
 
 ### Custom Class & ID
@@ -130,6 +154,23 @@ name My Removable Button
 type command  
 action Some Command that adds content  
 remove true  
+\`\`\`  
+
+### Replace content in section
+
+if you add `replace` and specify a section header, the button will replace content in that section.  
+For right now, you should use this with `type prepend template` unless you know the output will appear above the button. This implementation assumes the content you want to replace is between the specified header and the button.  
+**Use at your own risk! Deleting things can be dangerous, so make sure to test your button in a safe note**
+
+### Requirements
+- first argument must be `name`
+- The button must be directly below the content you want to replace.
+
+\`\`\`button  
+name My Replace Button  
+type prepend template  
+action A Template
+replace ## Section Heading
 \`\`\`  
 
 ## Known Issues
