@@ -34,7 +34,7 @@ remove optional
 
 ### Command Button
 
-Command buttons can run commands you would find in the Command Paletter. `type` will be _command_ and `action` is the exact wording of the command found in the palette.
+Command buttons can run commands you would find in the Command Palette. `type` will be _command_ and `action` is the exact wording of the command found in the palette.
 
 \`\`\`button  
 name My Awesome Button  
@@ -122,13 +122,13 @@ then in your css tweaks:
 }
 ```
 
-You can also add the default classes to the class argument. There are two defaults: `button-default` and `button-shine`. So if you don't like the shine hover effect you can remove it, but keep default styling:
+You can also add the default classes to the class argument: `button-default`. 
 
 \`\`\`button  
 name My Default Button Without Shine
 type link  
 action https://booked.email  
-class button-default
+class button-default myCustomClass
 \`\`\`
 
 You can add multiple classes to the `class` argument including colors:
