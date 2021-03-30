@@ -4,11 +4,12 @@ import {
   removeSection,
   appendContent,
   prependContent,
-  createNote,
+  createNote
 } from "./utils";
 import { Arguments } from "./types";
 
 export const remove = (app: App, { name }: Arguments): void => {
+  console.log("firing removeButton");
   setTimeout(() => removeButton(app, name), 100);
 };
 
@@ -28,7 +29,7 @@ export const template = async (
       app.internalPlugins.plugins.templates.instance.options.folder;
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(
-      (file) => file.path === `${folder}/${action}.md`
+      file => file.path === `${folder}/${action}.md`
     )[0];
     if (file) {
       const content = await app.vault.read(file);
@@ -76,7 +77,7 @@ export const link = ({ action }: Arguments): void => {
 export const command = (app: App, { action }: Arguments): void => {
   const allCommands = app.commands.listCommands();
   const command = allCommands.filter(
-    (command) => command.name.toUpperCase() === action.toUpperCase().trim()
+    command => command.name.toUpperCase() === action.toUpperCase().trim()
   )[0];
   app.commands.executeCommandById(command.id);
 };
