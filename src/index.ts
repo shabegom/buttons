@@ -6,7 +6,6 @@ import { remove, replace, template, link, command } from "./buttonTypes";
 
 export default class ButtonsPlugin extends Plugin {
   async onload(): Promise<void> {
-    monkeyPatchConsole(this);
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
       const args = createArgumentObject(source);
@@ -48,24 +47,24 @@ export default class ButtonsPlugin extends Plugin {
 }
 
 // Call this method inside your plugin's `onLoad` function
-function monkeyPatchConsole(plugin: Plugin) {
-  if (!plugin.app.isMobile) {
-    return;
-  }
-
-  const logFile = `${plugin.manifest.dir}/logs.txt`;
-  const logs: string[] = [];
-  const logMessages = (prefix: string) => (...messages: unknown[]) => {
-    logs.push(`\n[${prefix}]`);
-    for (const message of messages) {
-      logs.push(String(message));
-    }
-    plugin.app.vault.adapter.write(logFile, logs.join(" "));
-  };
-
-  console.debug = logMessages("debug");
-  console.error = logMessages("error");
-  console.info = logMessages("info");
-  console.log = logMessages("log");
-  console.warn = logMessages("warn");
-}
+// function monkeyPatchConsole(plugin: Plugin) {
+// if (!plugin.app.isMobile) {
+// return;
+// }
+//
+// const logFile = `${plugin.manifest.dir}/logs.txt`;
+// const logs: string[] = [];
+// const logMessages = (prefix: string) => (...messages: unknown[]) => {
+// logs.push(`\n[${prefix}]`);
+// for (const message of messages) {
+// logs.push(String(message));
+// }
+// plugin.app.vault.adapter.write(logFile, logs.join(" "));
+// };
+//
+// console.debug = logMessages("debug");
+// console.error = logMessages("error");
+// console.info = logMessages("info");
+// console.log = logMessages("log");
+// console.warn = logMessages("warn");
+// }
