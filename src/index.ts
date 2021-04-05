@@ -1,32 +1,42 @@
 import { Plugin } from "obsidian";
 import { createArgumentObject } from "./utils";
-import { remove, replace, template, link, command } from "./buttonTypes";
+import {
+  calculate,
+  remove,
+  replace,
+  template,
+  link,
+  command
+} from "./buttonTypes";
 
-//extend the obsidian module with some additional typings
+// extend the obsidian module with some additional typings
 
 export default class ButtonsPlugin extends Plugin {
   async onload(): Promise<void> {
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
       const args = createArgumentObject(source);
-      //handle button clicks
+      // handle button clicks
       const clickHandler = async () => {
-        //handle command buttons
+        // handle command buttons
         if (args.replace) {
           replace(this.app, args);
         }
         if (args.type === "command") {
           command(this.app, args);
         }
-        //handle link buttons
+        // handle link buttons
         if (args.type === "link") {
           link(args);
         }
-        //handle template buttons
+        // handle template buttons
         if (args.type.includes("template")) {
           template(this.app, args);
         }
-        //handle removing the button
+        if (args.type === "calculate") {
+          calculate(this.app, args);
+        }
+        // handle removing the button
         if (args.remove) {
           remove(this.app, args);
         }
