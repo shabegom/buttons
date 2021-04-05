@@ -16,22 +16,24 @@ export const calculate = async (
 ): Promise<void> => {
   let equation = action;
   const variables = action.match(/\$[0-9]*/g);
-  const output = variables.map(async value => {
-    const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-    if (activeView) {
-      const file = activeView.file;
-      const originalContent = await app.vault.read(file);
-      const arr = originalContent.split("\n");
-      const lineNumber = parseInt(value.substring(1)) - 1;
-      return { variable: value, value: arr[lineNumber].split(" ").pop() };
-    } else {
-      new Notice(`couldn't read file`, 2000);
-    }
-  });
-  const resolved = await Promise.all(output);
-  resolved.forEach((term: { variable: string; value: string }) => {
-    equation = equation.replace(term.variable, term.value);
-  });
+  if (variables) {
+    const output = variables.map(async value => {
+      const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+      if (activeView) {
+        const file = activeView.file;
+        const originalContent = await app.vault.read(file);
+        const arr = originalContent.split("\n");
+        const lineNumber = parseInt(value.substring(1)) - 1;
+        return { variable: value, value: arr[lineNumber].split(" ").pop() };
+      } else {
+        new Notice(`couldn't read file`, 2000);
+      }
+    });
+    const resolved = await Promise.all(output);
+    resolved.forEach((term: { variable: string; value: string }) => {
+      equation = equation.replace(term.variable, term.value);
+    });
+  }
   const fun = mexp.eval(equation);
   appendContent(app, `Result: ${fun}`, name);
 };
