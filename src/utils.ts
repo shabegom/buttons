@@ -83,10 +83,9 @@ export const appendContent = async (
     const re = new RegExp(buttonRegex, "gms");
     const button = originalContent.match(re);
     const splitContent = originalContent.split(re);
-    const content = `${splitContent[0] ? splitContent[0] : ""}
-${button}
-${insert}
-${splitContent[1] ? splitContent[1] : ""}`;
+    const content = `${
+      splitContent[0] ? splitContent[0] : ""
+    }${button}\n${insert}${splitContent[1] ? splitContent[1] : ""}`;
     await app.vault.modify(file, content);
   } else {
     new Notice("There was an issue appending content, please try again", 2000);
