@@ -16,7 +16,7 @@ action **required**
 color optional  
 class optional  
 id optional  
-replace optional
+replace optional  
 remove optional  
 \`\`\`
 
@@ -105,25 +105,25 @@ A Calculate button will run a math equation and output the results below the but
 #### Requirements
 - `name` must be the first argument in the button
 
-/`/`/`button
-name Add 1+2
-type calculate
-action 1+2
-\`\`\`
-Result: 3
+\`\`\`button  
+name Add 1+2  
+type calculate  
+action 1+2  
+\`\`\`  
+Result: 3  
 
-_Imagine the following is on line 94 and 95 in your obsidian note_
-apples: 5
-oranges: 3
+_Imagine the following is on line 94 and 95 in your obsidian note_  
+apples: 5  
+oranges: 3  
 
-/`/`/`button
-name Subtract Apples from Oranges
-type calculate
-action $94-\$95
-\`\`\`
-Result: 2
+\`\`\`button  
+name Subtract Apples from Oranges   
+type calculate  
+action $94-$95  
+\`\`\`  
+Result: 2  
 
-The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so should support any symbol supported by that library.
+The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so should support any symbol supported by that library.  
 
 ### Custom Class & ID
 
