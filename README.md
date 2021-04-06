@@ -16,19 +16,20 @@ action **required**
 color optional  
 class optional  
 id optional  
+replace optional  
 remove optional  
 \`\`\`
 
 | argument | description                                | options                                      | example    |
 -----------|--------------------------------------------|----------------------------------------------|------------|
-| name        | **required**: the name of the button                                          | any string                                  | My Button  |
-| type        | **required** run a command or open a url                                     | command, link                               | command    |
-| action      | **required** the command to run or link to open                              | any command from the command palette or url | Toggle Pin |
-| color       | optional: arg to change color of the button                     | blue, green, red, purple. yellow            | blue       |
-| class | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes** | a string representing your custom class     | button-default, button-shine    |
-| id | optional: add a custom id to the button for styling             | a string representing your custom id        | myId       |
-| remove | optional: if `true` removes button after command runs | true | true | 
-| replace | optional: specify a section header above the button and it will remove content from the section (and replace if used with _prepend template_)| The section header directly above the button | ## Replace this Section |
+| name    | **required**: the name of the button                                                                                                          | any string                                              | My Button                    |
+| type    | **required** run a command or open a url                                                                                                      | command, link, template, calculate                      | command                      |
+| action  | **required** depending on button type this will be a command, link, template, or equation                                                     | Toggle Pin or https://obsidian.md or My Template or 1+2 | Toggle Pin                   |
+| color   | optional: arg to change color of the button                                                                                                   | blue, green, red, purple. yellow                        | blue                         |
+| class   | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes**                        | a string representing your custom class                 | button-default, button-shine |
+| id      | optional: add a custom id to the button for styling                                                                                           | a string representing your custom id                    | myId                         |
+| remove  | optional: if `true` removes button after command runs                                                                                         | true                                                    | true                         |
+| replace | optional: specify a section header above the button and it will remove content from the section (and replace if used with _prepend template_) | The section header directly above the button            | ## Replace this Section      |
 
 ## Examples
 
@@ -97,6 +98,32 @@ name My Template Button
 type append template   
 action My Note Creation Button
 \`\`\`
+
+### Calculate Button
+A Calculate button will run a math equation and output the results below the button. The equation can be put within the button itself, or be referenced via line number. To reference a line-number, you use a dollar sign and the line number: $2
+
+#### Requirements
+- `name` must be the first argument in the button
+
+\`\`\`button  
+name Add 1+2  
+type calculate  
+action 1+2  
+\`\`\`  
+Result: 3  
+
+_Imagine the following is on line 94 and 95 in your obsidian note_  
+apples: 5  
+oranges: 3  
+
+\`\`\`button  
+name Subtract Apples from Oranges   
+type calculate  
+action $94-$95  
+\`\`\`  
+Result: 2  
+
+The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so should support any symbol supported by that library.  
 
 ### Custom Class & ID
 
@@ -213,7 +240,7 @@ replace ## Section Heading
 - Adding a class argument will remove default button styling. You can add that styling back by including the class names as values to the class argument:  
 `class button-default button-shine`  
 
-### 0.0.3: All `customId` argument
+### 0.0.3: Add `customId` argument
 - Added `customId` to further customize button styles
 
 ### 0.0.2: Add `customClass` argument
