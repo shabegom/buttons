@@ -1,10 +1,15 @@
 .button-default {
-  border-radius: 100px;
+  border: 0;
+  border: 0.5px solid var(--text-highlight-bg);
+  border-radius: 5px;
+  background-color: var(--background-primary-alt);
   padding: 10px 30px;
-  color: #fff;
+  color: var(--text-normal);
   text-decoration: none;
   font-size: 1em;
   margin: 0 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .button-shine:before {
@@ -34,17 +39,17 @@
   transition: 1s;
 }
 
-.button-default:hover {
+.theme-light .button-default:hover {
   z-index: 100;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  color: #fff;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  transform: translate3d(0px, -1.5px, 0px);
 }
 
-.button-default:active {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  color: #fff;
+.theme-dark .button-default:hover {
+  z-index: 100;
+  box-shadow: 0 4px 4px rgba(210, 210, 210, 0.25),
+    0 10px 10px rgba(210, 210, 210, 0.22);
+  transform: translate3d(0px, -1.5px, 0px);
 }
 
 .blue {

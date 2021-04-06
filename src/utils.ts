@@ -37,7 +37,9 @@ export const removeSection = async (
     const file = activeView.file;
     const originalContent = await app.vault.read(file);
     const splitContentBeforeSection = originalContent.split(`\n${section}\n`);
-    const button = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+    const button = `\u0060{3}button\nname ${escapeRegExp(
+      buttonName
+    )}.*?\n\u0060{3}`;
     const buttonRe = new RegExp(button, "gms");
     const buttonMatch = originalContent.match(buttonRe);
     const splitContentAfterButton = originalContent.split(buttonRe);
@@ -57,7 +59,9 @@ export const prependContent = async (
   if (activeView) {
     const file = activeView.file;
     const originalContent = await app.vault.read(file);
-    const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+    const buttonRegex = `\u0060{3}button\nname ${escapeRegExp(
+      buttonName
+    )}.*?\n\u0060{3}`;
     const re = new RegExp(buttonRegex, "gms");
     const button = originalContent.match(re)[0];
     const splitContent = originalContent.split(re);
@@ -79,14 +83,15 @@ export const appendContent = async (
   if (activeView) {
     const file = activeView.file;
     const originalContent = await app.vault.read(file);
-    const buttonRegex = `\u0060{3}button\nname ${buttonName}.*?\n\u0060{3}`;
+    const buttonRegex = `\u0060{3}button\nname ${escapeRegExp(
+      buttonName
+    )}.*?\n\u0060{3}`;
     const re = new RegExp(buttonRegex, "gms");
     const button = originalContent.match(re);
     const splitContent = originalContent.split(re);
-    const content = `${splitContent[0] ? splitContent[0] : ""}
-${button}
-${insert}
-${splitContent[1] ? splitContent[1] : ""}`;
+    const content = `${
+      splitContent[0] ? splitContent[0] : ""
+    }${button}\n${insert}${splitContent[1] ? splitContent[1] : ""}`;
     await app.vault.modify(file, content);
   } else {
     new Notice("There was an issue appending content, please try again", 2000);
@@ -112,3 +117,8 @@ export const createNote = async (
     new Notice(`couldn't parse the path!`, 2000);
   }
 };
+
+// https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+}

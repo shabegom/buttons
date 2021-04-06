@@ -1,12 +1,42 @@
-import { App, TFile, Notice } from "obsidian";
-import {
-  removeButton,
-  removeSection,
-  appendContent,
-  prependContent,
-  createNote
-} from "./utils";
+import { App, MarkdownView, Notice, TFile } from "obsidian";
+import mexp from "math-expression-evaluator";
+
 import { Arguments } from "./types";
+import {
+  appendContent,
+  createNote,
+  prependContent,
+  removeButton,
+  removeSection
+} from "./utils";
+
+export const calculate = async (
+  app: App,
+  { name, action }: Arguments
+): Promise<void> => {
+  let equation = action;
+  const variables = action.match(/\$[0-9]*/g);
+  if (variables) {
+    const output = variables.map(async value => {
+      const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+      if (activeView) {
+        const file = activeView.file;
+        const originalContent = await app.vault.read(file);
+        const arr = originalContent.split("\n");
+        const lineNumber = parseInt(value.substring(1)) - 1;
+        return { variable: value, value: arr[lineNumber].split(" ").pop() };
+      } else {
+        new Notice(`couldn't read file`, 2000);
+      }
+    });
+    const resolved = await Promise.all(output);
+    resolved.forEach((term: { variable: string; value: string }) => {
+      equation = equation.replace(term.variable, term.value);
+    });
+  }
+  const fun = mexp.eval(equation);
+  appendContent(app, `Result: ${fun}`, name);
+};
 
 export const remove = (app: App, { name }: Arguments): void => {
   console.log("firing removeButton");
@@ -23,7 +53,7 @@ export const template = async (
 ): Promise<void> => {
   console.log("template button");
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
-  //only run if templates plugin is enabled
+  // only run if templates plugin is enabled
   if (templatesEnabled) {
     const folder =
       app.internalPlugins.plugins.templates.instance.options.folder;
@@ -33,7 +63,7 @@ export const template = async (
     )[0];
     if (file) {
       const content = await app.vault.read(file);
-      //prepend template above the button
+      // prepend template above the button
       if (type.includes("prepend")) {
         prependContent(app, content, name);
         setTimeout(
