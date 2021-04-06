@@ -163,7 +163,7 @@ if you add `replace` and specify a section header, the button will replace conte
 For right now, you should use this with `type prepend template` unless you know the output will appear above the button. This implementation assumes the content you want to replace is between the specified header and the button.  
 **Use at your own risk! Deleting things can be dangerous, so make sure to test your button in a safe note**
 
-### Requirements
+#### Requirements
 - first argument must be `name`
 - The button must be directly below the content you want to replace.
 
@@ -176,3 +176,48 @@ replace ## Section Heading
 
 ## Known Issues
 - The `remove` command gets funky if the button adds a button of the same name via a `template`
+
+## Releases
+
+### 0.2.3: Calculate button type
+- Added a `calculate` button type that can do maths and output results
+- `calculate` can reference numbers outside the button by their line number
+- Bug Fix: Removed extra whitespace when using the append action
+- Bug Fix: Button names are now escaped in regex which prevents an error when adding content to a note
+
+### 0.2.2: Remove logging
+- Remove mobile logging that was accidentally included in the previous release
+
+### 0.2.1: Styling update
+- Updated default button styling
+
+### 0.2.0: Add replace argument and note() template feature
+- Removed the shine hover effect because it looked crummy on movible
+- Added a `replace` argument that replaces content between a specified header and the button
+- Added a `note() template` feature that will create a new note based on a specified template
+
+### 0.1.1: Released to Community Plugins!
+- Buttons is now available in the list of community plugins within Obsidian
+
+### 0.1.0: Add template feature
+- Added the `template` button type
+- prepend or append a specified template into a note
+
+### 0.0.5: Add remove feature
+- Added a `remove` argument. If `remove true` is the last argument in a button the button will be removed from the note after it is clicked.
+
+### 0.0.4: Updated Styling
+**This release includes a breaking change from the previous release (0.0.3)**  
+- customClass argument is now class
+- customId argument is now id
+- Adding a class argument will remove default button styling. You can add that styling back by including the class names as values to the class argument:  
+`class button-default button-shine`  
+
+### 0.0.3: All `customId` argument
+- Added `customId` to further customize button styles
+
+### 0.0.2: Add `customClass` argument
+- Added `customClass` to define your own class for button stylinh
+
+### 0.0.1: Initial Release
+- The first release of Buttons!
