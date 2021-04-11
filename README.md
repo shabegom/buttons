@@ -127,7 +127,7 @@ The calculate button uses [math-expression-evaluator](https://github.com/bugwhee
 
 ### Custom Class & ID
 
-You can add an optional `customClass` argument to target the button with any css styling tweaks you'd want to add
+You can add an optional `class` argument to target the button with any css styling tweaks you'd want to add
 
 \`\`\`button  
 name My Round Link Button  
@@ -167,6 +167,8 @@ action https://booked.email
 class button-default button-shine purple myCustomClass
 \`\`\`
 
+You can edit the default button styles with the Style Settings plugin
+
 ### Remove Button after command execution
 
 if you add `remove true` as the las argument, the button will be removed from the file after the button click.  
@@ -205,6 +207,10 @@ replace ## Section Heading
 - The `remove` command gets funky if the button adds a button of the same name via a `template`
 
 ## Releases
+
+### 0.2.4
+- Add a command palette command to add a button codeblock to a note
+- Set default button styles with Style Settings plugin
 
 ### 0.2.3: Calculate button type
 - Added a `calculate` button type that can do maths and output results
