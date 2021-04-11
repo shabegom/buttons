@@ -1,11 +1,22 @@
 import { MarkdownView, App, Notice } from "obsidian";
 import { Arguments } from "./types";
 
+export const insertButton = (app: App): void => {
+  const button = `\`\`\`button
+name
+type
+action
+\`\`\``;
+  const page = app.workspace.getActiveViewOfType(MarkdownView);
+  const editor = page.sourceMode.cmEditor;
+  editor.replaceSelection(button);
+};
+
 export const createArgumentObject = (source: string): Arguments =>
   source.split("\n").reduce((acc: Arguments, i: string) => {
     const split: string[] = i.split(" ");
     const key: string = split[0];
-    acc[key] = split.filter(item => item !== split[0]).join(" ");
+    acc[key] = split.filter((item) => item !== split[0]).join(" ");
     return acc;
   }, {});
 

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
     // "inlineSourceMap": true,
     // "inlineSources": true,
     "jsx": "preserve",

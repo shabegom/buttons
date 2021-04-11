@@ -1,18 +1,23 @@
 import { Plugin } from "obsidian";
-import { createArgumentObject } from "./utils";
+import { createArgumentObject, insertButton } from "./utils";
 import {
   calculate,
   remove,
   replace,
   template,
   link,
-  command
+  command,
 } from "./buttonTypes";
 
 // extend the obsidian module with some additional typings
 
 export default class ButtonsPlugin extends Plugin {
   async onload(): Promise<void> {
+    this.addCommand({
+      id: "insert-button-template",
+      name: "Insert Button",
+      callback: () => insertButton(this.app),
+    });
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
       const args = createArgumentObject(source);
@@ -46,7 +51,7 @@ export default class ButtonsPlugin extends Plugin {
         text: args.name,
         cls: args.class
           ? `${args.class} ${args.color}`
-          : `button-default ${args.color ? args.color : ""}`
+          : `button-default ${args.color ? args.color : ""}`,
       });
       args.id ? button.setAttribute("id", args.id) : "";
       button.on("click", "button", () => {
@@ -55,26 +60,3 @@ export default class ButtonsPlugin extends Plugin {
     });
   }
 }
-
-// Call this method inside your plugin's `onLoad` function
-// function monkeyPatchConsole(plugin: Plugin) {
-// if (!plugin.app.isMobile) {
-// return;
-// }
-//
-// const logFile = `${plugin.manifest.dir}/logs.txt`;
-// const logs: string[] = [];
-// const logMessages = (prefix: string) => (...messages: unknown[]) => {
-// logs.push(`\n[${prefix}]`);
-// for (const message of messages) {
-// logs.push(String(message));
-// }
-// plugin.app.vault.adapter.write(logFile, logs.join(" "));
-// };
-//
-// console.debug = logMessages("debug");
-// console.error = logMessages("error");
-// console.info = logMessages("info");
-// console.log = logMessages("log");
-// console.warn = logMessages("warn");
-// }
