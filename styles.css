@@ -1,54 +1,85 @@
+/* @settings
+
+name: Buttons
+id: buttons-styles
+settings:
+    - 
+        id: button-background
+        title: Background
+        type: variable-themed-color
+        format: hex
+        opacity: false
+        default-light: '#f5f6f8'
+        default-dark: '#1b1b1b'
+    - 
+        id: button-text
+        title: Text
+        type: variable-themed-color
+        format: hex
+        opacity: false
+        default-light: '#1b1b1b'
+        default-dark: '#f5f6f8'
+    - 
+        id: button-border
+        title: Border
+        type: variable-themed-color
+        format: hex
+        opacity: false
+        default-light: '#7a9486'
+        default-dark: '#84a83a'
+    - 
+        id: button-box-shadow
+        title: Box Shadow
+        type: variable-themed-color
+        format: rgb
+        opacity: true
+        default-light: '#1b1b1b'
+        default-dark: '#f5f6f8'
+    -
+        id: button-border-radius
+        title: Border Radius
+        type: variable-number
+        format: px
+        default: 5
+    -
+        id: button-size
+        title: Font Size
+        type: variable-number
+        format: em
+        default: 1
+
+*/
+
 .button-default {
-  border: 0;
-  border: 0.5px solid var(--text-highlight-bg);
-  border-radius: 5px;
-  background-color: var(--background-primary-alt);
+  border: 0.5px solid var(--button-border, #7a9486);
+  border-radius: var(--button-border-radius, 5px);
+  background-color: var(--button-background);
   padding: 10px 30px;
-  color: var(--text-normal);
+  color: var(--button-text);
   text-decoration: none;
-  font-size: 1em;
+  font-size: var(--button-size);
   margin: 0 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 1px 3px var(--button-box-shadow, rgba(0, 0, 0, 0.12)),
+    0 1px 2px var(--button-box-shadow, rgba(0, 0, 0, 0.24));
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.button-shine:before {
-  z-index: -100;
-  content: "";
-  display: block;
-  position: absolute;
-  background: rgba(255, 255, 255, 0.5);
-  width: 110px;
-  height: 50%;
-  top: 0;
-  filter: blur(25px);
-  transform: translateX(-25px) skewX(-15deg);
-  transition: 1s;
-}
-
-.button-shine:after {
-  z-index: -100;
-  content: "";
-  display: block;
-  position: absolute;
-  width: 100px;
-  height: 50%;
-  top: 0;
-  filter: blur(25px);
-  transform: translateX(-25px) skewX(-15deg);
-  transition: 1s;
-}
-
-.theme-light .button-default:hover {
+.button-default:hover {
   z-index: 100;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 4px 4px var(--button-box-shadow, rgba(0, 0, 0, 0.25)),
+    0 10px 10px var(--button-box-shadow, rgba(0, 0, 0, 0.22));
   transform: translate3d(0px, -1.5px, 0px);
+  background-color: var(--button-background);
+}
+
+.theme-dark .button-default {
+  border: 0.5px solid var(--button-border, #84a83a);
 }
 
 .theme-dark .button-default:hover {
   z-index: 100;
-  box-shadow: 0 4px 4px rgba(210, 210, 210, 0.25),
-    0 10px 10px rgba(210, 210, 210, 0.22);
+  box-shadow: 0 4px 4px var(--button-box-shadow, rgba(210, 210, 210, 0.25)),
+    0 10px 10px var(--button-box-shadow, rgba(210, 210, 210, 0.22));
   transform: translate3d(0px, -1.5px, 0px);
 }
 
