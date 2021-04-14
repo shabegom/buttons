@@ -55,11 +55,10 @@ export const template = async (
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   // only run if templates plugin is enabled
   if (templatesEnabled) {
-    const folder =
-      app.internalPlugins.plugins.templates.instance.options.folder;
+    const folder = app.internalPlugins.plugins.templates.instance.options.folder.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(
-      file => file.path === `${folder}/${action}.md`
+      file => file.path.toLowerCase() === `${folder}/${action}.md`
     )[0];
     if (file) {
       const content = await app.vault.read(file);
