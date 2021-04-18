@@ -1,3 +1,5 @@
+import { Node } from "unist";
+
 declare module "obsidian" {
   interface App {
     isMobile: boolean;
@@ -20,15 +22,25 @@ declare module "obsidian" {
   }
 }
 
-export interface Arguments {
-  name?: string;
-  type?: string;
-  action?: string;
-  style?: string;
+export interface ButtonNode extends Node {
+  value: string;
+}
+
+export interface Args {
+  name: string;
+  id?: string;
+  type: string;
+  action: string;
   color?: string;
   class?: string;
-  id?: string;
-  remove?: string;
-  replace?: string;
-  [key: string]: string;
+  replace?: string | string[];
+  remove?: string | string[];
+}
+
+export interface Button {
+  start: number;
+  end: number;
+  args: Args;
+  path: string;
+  id: string;
 }
