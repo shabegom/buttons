@@ -41,6 +41,7 @@ export interface Button {
   start: number;
   end: number;
   args: Args;
-  path: string;
   id: string;
+  index?: number;
+  path: string;
 }

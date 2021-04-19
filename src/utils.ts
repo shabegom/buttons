@@ -1,5 +1,5 @@
 import { MarkdownView, App, Notice } from "obsidian";
-import { Arguments } from "./types";
+import { Args } from "./types";
 
 export const insertButton = (app: App): void => {
   const button = `\`\`\`button
@@ -17,15 +17,15 @@ export const getButtonId = (source: string): string => {
   return args.id;
 };
 
-export const createArgumentObject = (source: string): Arguments =>
-  source.split("\n").reduce((acc: Arguments, i: string) => {
+export const createArgumentObject = (source: string): Args =>
+  source.split("\n").reduce((acc: Args, i: string) => {
     const split: string[] = i.split(" ");
     const key: string = split[0].toLowerCase();
-    if (key === "name" || key === "replace") {
-      acc[key] = split.filter((item) => item !== split[0]).join(" ");
+    if (key === "name" || key === "replace" || key === "id") {
+      acc[key] = split.filter(item => item !== split[0]).join(" ");
     } else {
       acc[key] = split
-        .filter((item) => item !== split[0])
+        .filter(item => item !== split[0])
         .join(" ")
         .toLowerCase();
     }

@@ -1,7 +1,7 @@
 import { App, MarkdownView, Notice, TFile } from "obsidian";
 import mexp from "math-expression-evaluator";
 
-import { Arguments } from "./types";
+import { Args } from "./types";
 import {
   appendContent,
   createNote,
@@ -12,7 +12,7 @@ import {
 
 export const calculate = async (
   app: App,
-  { name, action }: Arguments
+  { name, action }: Args
 ): Promise<void> => {
   let equation = action;
   const variables = action.match(/\$[0-9]*/g);
@@ -38,18 +38,18 @@ export const calculate = async (
   appendContent(app, `Result: ${fun}`, name);
 };
 
-export const remove = (app: App, { name }: Arguments): void => {
+export const remove = (app: App, { name }: Args): void => {
   console.log("firing removeButton");
   setTimeout(() => removeButton(app, name), 100);
 };
 
-export const replace = (app: App, { replace, name }: Arguments): void => {
+export const replace = (app: App, { replace, name }: Args): void => {
   removeSection(app, replace, name);
 };
 
 export const template = async (
   app: App,
-  { name, type, action }: Arguments
+  { name, type, action }: Args
 ): Promise<void> => {
   console.log("template button");
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
@@ -98,12 +98,12 @@ export const template = async (
   }
 };
 
-export const link = ({ action }: Arguments): void => {
+export const link = ({ action }: Args): void => {
   const link = action.trim();
   window.open(link);
 };
 
-export const command = (app: App, { action }: Arguments): void => {
+export const command = (app: App, { action }: Args): void => {
   const allCommands = app.commands.listCommands();
   const command = allCommands.filter(
     command => command.name.toUpperCase() === action.toUpperCase().trim()

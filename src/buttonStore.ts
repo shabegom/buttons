@@ -1,25 +1,61 @@
 import { App, MarkdownView } from "obsidian";
-import { parseButtons, addIdToButton } from "./parser";
-import { Button, Args } from "./types";
 
-export const createButtonStore = async (app: App): Promise<void> => {
+import {
+  addIdToButton,
+  buttonExists,
+  parseButtonById,
+  parseButtons
+} from "./parser";
+import { Args, Button } from "./types";
+
+export const store = JSON.parse(localStorage.getItem("buttons"));
+
+export const initializeButtonStore = async (app: App): Promise<void> => {
   const files = app.vault.getMarkdownFiles();
-  const buttons = files.map(async (file) => {
+  const buttons = files.map(async file => {
     const text = await app.vault.read(file);
     return parseButtons(text, file.path);
   });
-  const buttonStore = await Promise.all(buttons).then((result) =>
-    result.filter((arr) => arr[0]).flat()
+  const buttonStore = removeDuplicates(
+    await Promise.all(buttons).then(result =>
+      result
+        .filter(arr => arr[0])
+        .flat()
+        .map((button, i) => {
+          button.index = i;
+          return button;
+        })
+    )
   );
-  localStorage.setItem(
-    "buttons",
-    JSON.stringify(removeDuplicates(buttonStore))
+  console.log("initial store: ", buttonStore);
+  localStorage.setItem("buttons", JSON.stringify(buttonStore));
+};
+
+export const cleanButtonStore = async (app: App): Promise<void> => {
+  const store = JSON.parse(localStorage.getItem("buttons"));
+  const files = app.vault.getMarkdownFiles();
+  const buttons = files.map(async file => {
+    const text = await app.vault.read(file);
+    return store.filter((button: Button) => buttonExists(text, button.id));
+  });
+  const cleanedStore = removeDuplicates(
+    await Promise.all(buttons).then(result =>
+      result
+        .filter(arr => arr[0])
+        .flat()
+        .map((button, i) => {
+          button.index = i;
+          return button;
+        })
+    )
   );
+  console.log("cleaned store: ", cleanedStore);
+  localStorage.setItem("buttons", JSON.stringify(cleanedStore));
 };
 
 export const addIdsToButtons = async (app: App): Promise<void> => {
   const files = app.vault.getMarkdownFiles();
-  files.map(async (file) => {
+  files.map(async file => {
     const text = await app.vault.read(file);
     const newText = addIdToButton(text);
     await app.vault.modify(file, newText);
@@ -32,45 +68,53 @@ export const getButtonFromStore = async (
 ): Promise<Button> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   const file = activeView.file;
+  const size = activeView.sourceMode.cmEditor.doc.size;
   const text = await app.vault.read(file);
-  const buttons = parseButtons(text, file.path);
-  const store = JSON.parse(localStorage.getItem("buttons"));
-  const buttonFromArgs = buttons.filter(
-    (button: Button) => button.args.id === args.id
-  )[0];
-  let button;
-  if (buttonFromArgs) {
-    button = store.reverse().reduce((obj: Button, item: Button) => {
-      if (buttonFromArgs.id === item.id) {
-        obj = item;
-        obj.args = { ...item.args, ...args };
-      }
-      return obj;
-    }, {});
-  }
+  const parsedButton = args && parseButtonById(text, args.id, file.path);
+  if (parsedButton) {
+    const store = JSON.parse(localStorage.getItem("buttons"));
+    let button = store.filter(
+      (storeItem: Button) => storeItem.id === parsedButton.id
+    );
 
-  if (button && button.id) {
-    return button;
-  } else if (buttonFromArgs) {
-    if (!args.id) {
-      const newText = addIdToButton(text);
+    button = button[0]
+      ? button.reduce((acc: Button, item: Button) =>
+          item.index < acc.index ? item : acc
+        )
+      : undefined;
+    console.log(button);
+    if (button && button.id) {
+      console.log("hey we got a button over here");
+      cleanButtonStore(app);
+      button.args = { ...button.args, ...args };
+      return button;
+    }
+    if (!parsedButton.id) {
+      console.log("adding id");
+      const newText = addIdToButton(text, size);
       const editor = activeView.sourceMode.cmEditor;
       const oldCursor = editor.getCursor();
       await app.vault.modify(file, newText);
-      let cursor = editor.getCursor();
+      const cursor = editor.getCursor();
       if (oldCursor.line !== cursor.line) {
         cursor.line = cursor.line - 3;
         cursor.ch = cursor.ch + 1;
         editor.setCursor(cursor);
       }
     }
-    createButtonStore(app);
+    if (!button && parsedButton.id) {
+      console.log("adding button to the store");
+      addButtonToStore(store, parsedButton);
+    }
   }
 };
 
-export async function addButtonToStore(store: Button[], button: Button) {
-  console.log("adding button to store");
+export async function addButtonToStore(
+  store: Button[],
+  button: Button
+): Promise<void> {
   const updatedStore = removeDuplicates([button, ...store]);
+  console.log("updated store after adding button: ", updatedStore);
   localStorage.setItem("buttons", JSON.stringify(updatedStore));
 }
 
@@ -78,36 +122,7 @@ function removeDuplicates(arr: Button[]) {
   return arr.filter(
     (v, i, a) =>
       a.findIndex(
-        (t) => t.path === v.path && t.start === v.start && t.end === v.end
+        t => t.path === v.path && t.start === v.start && t.end === v.end
       ) === i
   );
-}
-
-function combineButtons(buttons: Button[]) {
-  return buttons.reduce((acc, button) => {
-    if (acc[0]) {
-      const combined = acc.reduce((obj, item, index) => {
-        if (item.id === button.id) {
-          const args = button.args.name ? button.args : item.args;
-          obj = {
-            id: item.id,
-            start: [item.start, ...button.start],
-            end: [...item.end, ...button.end],
-            args,
-            path: [...item.path, ...button.path],
-            count: item.count ? item.count++ : 2,
-          };
-        }
-        return { index, obj };
-      }, {});
-      if (combined.obj.id) {
-        acc[combined.index] = combined.obj;
-      } else {
-        acc.push(button);
-      }
-    } else {
-      acc.push(button);
-    }
-    return acc;
-  }, []);
 }
