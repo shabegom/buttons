@@ -52,7 +52,18 @@ export const getButtonFromStore = async (
   if (button && button.id) {
     return button;
   } else if (buttonFromArgs) {
-    addIdsToButtons(app);
+    if (!args.id) {
+      const newText = addIdToButton(text);
+      const editor = activeView.sourceMode.cmEditor;
+      const oldCursor = editor.getCursor();
+      await app.vault.modify(file, newText);
+      let cursor = editor.getCursor();
+      if (oldCursor.line !== cursor.line) {
+        cursor.line = cursor.line - 3;
+        cursor.ch = cursor.ch + 1;
+        editor.setCursor(cursor);
+      }
+    }
     createButtonStore(app);
   }
 };

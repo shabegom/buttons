@@ -29,7 +29,7 @@ export default class ButtonsPlugin extends Plugin {
 
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
-      if (source.includes(" ")) {
+      if (source.includes("")) {
         const sourceArgs = createArgumentObject(source);
         const buttonObject = await getButtonFromStore(this.app, sourceArgs);
         const args = buttonObject ? buttonObject.args : sourceArgs;

@@ -60,7 +60,7 @@ export const addIdToButton = (note): string => {
       const value = node.value;
       const args: Args = createArgumentObject(value);
       const id = args.id ? args.id : nanoid(6);
-      const newValue = args.id ? value : value.concat("\n", `id ${id}`);
+      const newValue = args.id ? value : `id ${id}`;
       return Object.assign({}, node, { value: newValue });
     }
     return node;
