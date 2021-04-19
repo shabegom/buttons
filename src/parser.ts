@@ -22,7 +22,6 @@ export const returnMD = (tree: Node): string => {
 };
 
 export const parseNote = (note: string): Node => {
-  console.log("parsing note: ", note);
   return parser.parse(note);
 };
 
@@ -80,10 +79,13 @@ export const removeButton = (tree: Node, id: string): Node => {
   return tree;
 };
 
-export const addIdToButton = (note: string, size: number): string => {
+export const addIdToButton = (
+  note: string,
+  size: number
+): { note: string; oldValue: string } => {
   const tree = parser.parse(note);
-  let oldValue: string;
-  let newTree = map(tree, (node: ButtonNode) => {
+  let oldValue = "";
+  const newTree = map(tree, (node: ButtonNode) => {
     if (node.type == "code" && node.lang === "button") {
       const value = node.value;
       const args: Args = createArgumentObject(value);
@@ -92,34 +94,13 @@ export const addIdToButton = (note: string, size: number): string => {
       const newCodeNode = Object.assign({}, node, { value: newValue });
       const nodeEnd = node.position.end.line + 1;
       if (nodeEnd === size) {
-        oldValue = Object.assign(
-          {},
-          {
-            type: "text",
-            value,
-            position: {
-              start: { line: node.position.end.line, column: 0, offset: 0 },
-              end: { line: size, column: 0, offset: 0 }
-            }
-          }
-        );
+        oldValue = value;
       }
       return newCodeNode;
     }
     return node;
   });
-  let newNewTree;
-  if (oldValue) {
-    newNewTree = map(newTree, (node: Node) => {
-      if (node.type == "root") {
-        const newChildren = [...node.children, oldValue];
-        return Object.assign({}, node, { children: newChildren });
-      }
-      return node;
-    });
-  }
-  console.log(newNewTree);
-  return newNewTree ? returnMD(newNewTree) : returnMD(newTree);
+  return { note: returnMD(newTree), oldValue };
 };
 
 const buttonVisitor = (

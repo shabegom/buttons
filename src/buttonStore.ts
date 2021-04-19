@@ -27,7 +27,6 @@ export const initializeButtonStore = async (app: App): Promise<void> => {
         })
     )
   );
-  console.log("initial store: ", buttonStore);
   localStorage.setItem("buttons", JSON.stringify(buttonStore));
 };
 
@@ -49,7 +48,6 @@ export const cleanButtonStore = async (app: App): Promise<void> => {
         })
     )
   );
-  console.log("cleaned store: ", cleanedStore);
   localStorage.setItem("buttons", JSON.stringify(cleanedStore));
 };
 
@@ -57,8 +55,8 @@ export const addIdsToButtons = async (app: App): Promise<void> => {
   const files = app.vault.getMarkdownFiles();
   files.map(async file => {
     const text = await app.vault.read(file);
-    const newText = addIdToButton(text);
-    await app.vault.modify(file, newText);
+    const newText = addIdToButton(text, 0);
+    await app.vault.modify(file, newText.note);
   });
 };
 
@@ -82,19 +80,16 @@ export const getButtonFromStore = async (
           item.index < acc.index ? item : acc
         )
       : undefined;
-    console.log(button);
     if (button && button.id) {
-      console.log("hey we got a button over here");
       cleanButtonStore(app);
       button.args = { ...button.args, ...args };
       return button;
     }
     if (!parsedButton.id) {
-      console.log("adding id");
-      const newText = addIdToButton(text, size);
+      const newNote = addIdToButton(text, size);
       const editor = activeView.sourceMode.cmEditor;
       const oldCursor = editor.getCursor();
-      await app.vault.modify(file, newText);
+      await app.vault.modify(file, `${newNote.note}${newNote.oldValue}`);
       const cursor = editor.getCursor();
       if (oldCursor.line !== cursor.line) {
         cursor.line = cursor.line - 3;
@@ -103,7 +98,6 @@ export const getButtonFromStore = async (
       }
     }
     if (!button && parsedButton.id) {
-      console.log("adding button to the store");
       addButtonToStore(store, parsedButton);
     }
   }
@@ -114,7 +108,6 @@ export async function addButtonToStore(
   button: Button
 ): Promise<void> {
   const updatedStore = removeDuplicates([button, ...store]);
-  console.log("updated store after adding button: ", updatedStore);
   localStorage.setItem("buttons", JSON.stringify(updatedStore));
 }
 
