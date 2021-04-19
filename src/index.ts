@@ -8,12 +8,17 @@ import {
   link,
   command,
 } from "./buttonTypes";
-import { createButtonStore, getButtonFromStore } from "./buttonStore";
+import {
+  createButtonStore,
+  getButtonFromStore,
+  addIdsToButtons,
+} from "./buttonStore";
 
 // extend the obsidian module with some additional typings
 
 export default class ButtonsPlugin extends Plugin {
   async onload(): Promise<void> {
+    addIdsToButtons(this.app);
     createButtonStore(this.app);
 
     this.addCommand({

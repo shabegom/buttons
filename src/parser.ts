@@ -3,6 +3,7 @@ import parse from "remark-parse";
 import stringify from "remark-stringify";
 import gfm from "remark-gfm";
 import visit from "unist-util-visit";
+import { map } from "unist-util-map";
 import { nanoid } from "nanoid";
 import { createArgumentObject } from "./utils";
 import { Node } from "unist";
@@ -50,4 +51,19 @@ export const removeButton = (tree: Node, id: string): Node => {
     return [visit.SKIP, index];
   });
   return tree;
+};
+
+export const addIdToButton = (note): string => {
+  const tree = parser.parse(note);
+  const newTree = map(tree, (node: ButtonNode) => {
+    if (node.type == "code" && node.lang === "button") {
+      const value = node.value;
+      const args: Args = createArgumentObject(value);
+      const id = args.id ? args.id : nanoid(6);
+      const newValue = args.id ? value : value.concat("\n", `id ${id}`);
+      return Object.assign({}, node, { value: newValue });
+    }
+    return node;
+  });
+  return returnMD(newTree);
 };

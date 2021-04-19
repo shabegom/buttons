@@ -1,5 +1,5 @@
 import { App, MarkdownView } from "obsidian";
-import { parseButtons } from "./parser";
+import { parseButtons, addIdToButton } from "./parser";
 import { Button, Args } from "./types";
 
 export const createButtonStore = async (app: App): Promise<void> => {
@@ -15,6 +15,15 @@ export const createButtonStore = async (app: App): Promise<void> => {
     "buttons",
     JSON.stringify(removeDuplicates(buttonStore))
   );
+};
+
+export const addIdsToButtons = async (app: App): Promise<void> => {
+  const files = app.vault.getMarkdownFiles();
+  files.map(async (file) => {
+    const text = await app.vault.read(file);
+    const newText = addIdToButton(text);
+    await app.vault.modify(file, newText);
+  });
 };
 
 export const getButtonFromStore = async (
@@ -43,6 +52,7 @@ export const getButtonFromStore = async (
   if (button && button.id) {
     return button;
   } else if (buttonFromArgs) {
+    addIdsToButtons(app);
     createButtonStore(app);
   }
 };
