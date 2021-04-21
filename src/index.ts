@@ -6,13 +6,13 @@ import {
   replace,
   template,
   link,
-  command
+  command,
 } from "./buttonTypes";
 import {
   store,
   initializeButtonStore,
   getButtonFromStore,
-  addIdsToButtons
+  addIdsToButtons,
 } from "./buttonStore";
 
 // extend the obsidian module with some additional typings
@@ -21,11 +21,16 @@ export default class ButtonsPlugin extends Plugin {
   async onload(): Promise<void> {
     addIdsToButtons(this.app);
     initializeButtonStore(this.app);
+    const buttons = store;
+    console.log(buttons);
+    buttons.forEach(async (button) => {
+      getButtonFromStore(this.app, button.args);
+    });
 
     this.addCommand({
       id: "insert-button-template",
       name: "Insert Button",
-      callback: () => insertButton(this.app)
+      callback: () => insertButton(this.app),
     });
 
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
@@ -65,7 +70,7 @@ export default class ButtonsPlugin extends Plugin {
         text: args.name,
         cls: args.class
           ? `${args.class} ${args.color}`
-          : `button-default ${args.color ? args.color : ""}`
+          : `button-default ${args.color ? args.color : ""}`,
       });
       args.id ? button.setAttribute("id", args.id) : "";
       button.on("click", "button", () => {

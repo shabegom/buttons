@@ -90,8 +90,45 @@ export const addIdToButton = (
       const value = node.value;
       const args: Args = createArgumentObject(value);
       const id = args.id ? args.id : nanoid(6);
-      const newValue = args.id ? value : `id ${id}`;
-      const newCodeNode = Object.assign({}, node, { value: newValue });
+      let newValue = "";
+      if (args.name) {
+        newValue += `\nname ${args.name}`;
+      }
+      if (args.type) {
+        newValue += `\ntype ${args.type}`;
+      }
+      if (args.action) {
+        newValue += `\naction ${args.action}`;
+      }
+      if (args.color) {
+        newValue += `\ncolor ${args.color}`;
+      }
+      if (args.class) {
+        newValue += `\nclass ${args.class}`;
+      }
+      if (args.remove) {
+        newValue += `\nremove ${args.remove}`;
+      }
+      if (args.replace) {
+        typeof args.replace === "string"
+          ? (newValue += `\nreplace ${args.replace}`)
+          : (newValue += `\nreplace ${args.replace.join(" ")}`);
+      }
+      if (args.parent) {
+        newValue += `\nparent ${args.parent.toString()}`;
+      }
+      if (!args.id) {
+        newValue += `\nid ${id}`;
+      } else {
+        newValue = value;
+      }
+      console.log(newValue.split("\n").filter(item => item));
+      const newCodeNode = Object.assign({}, node, {
+        value: newValue
+          .split("\n")
+          .filter(item => item)
+          .join("\n")
+      });
       const nodeEnd = node.position.end.line + 1;
       if (nodeEnd === size) {
         oldValue = value;

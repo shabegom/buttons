@@ -35,6 +35,7 @@ export interface Args {
   class?: string;
   replace?: string | string[];
   remove?: string | string[];
+  parent?: boolean;
 }
 
 export interface Button {

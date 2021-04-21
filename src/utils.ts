@@ -1,14 +1,16 @@
 import { MarkdownView, App, Notice } from "obsidian";
 import { Args } from "./types";
+import { nanoid } from "nanoid";
 
 export const insertButton = (app: App): void => {
   const button = `\`\`\`button
 name
 type
 action
+id ${nanoid(6)}
 \`\`\``;
   const page = app.workspace.getActiveViewOfType(MarkdownView);
-  const editor = page.sourceMode.cmEditor;
+  const editor = page.editor;
   editor.replaceSelection(button);
 };
 
@@ -22,10 +24,10 @@ export const createArgumentObject = (source: string): Args =>
     const split: string[] = i.split(" ");
     const key: string = split[0].toLowerCase();
     if (key === "name" || key === "replace" || key === "id") {
-      acc[key] = split.filter(item => item !== split[0]).join(" ");
+      acc[key] = split.filter((item) => item !== split[0]).join(" ");
     } else {
       acc[key] = split
-        .filter(item => item !== split[0])
+        .filter((item) => item !== split[0])
         .join(" ")
         .toLowerCase();
     }
