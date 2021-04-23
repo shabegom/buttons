@@ -10,15 +10,10 @@ import visit from "unist-util-visit";
 import { Args, Button, ButtonNode } from "./types";
 import { createArgumentObject } from "./utils";
 
-const parser = unified()
-  .use(parse)
-  .use(gfm);
+const parser = unified().use(parse).use(gfm);
 
 export const returnMD = (tree: Node): string => {
-  return unified()
-    .use(stringify)
-    .use(gfm)
-    .stringify(tree);
+  return unified().use(stringify).use(gfm).stringify(tree);
 };
 
 export const parseNote = (note: string): Node => {
@@ -43,7 +38,7 @@ export const parseButtons = (note: string, path: string): Button[] => {
 export const buttonExists = (note: string, buttonId: string): boolean => {
   const tree = parser.parse(note);
   let button = false;
-  buttonVisitor(tree, (node, args) => {
+  buttonVisitor(tree, (_, args) => {
     if (args.id == buttonId) {
       button = true;
     }
@@ -67,7 +62,7 @@ export const parseButtonById = (
 };
 
 export const removeButton = (tree: Node, id: string): Node => {
-  visit(tree, "code", function(node: ButtonNode, index, parent) {
+  visit(tree, "code", function (node: ButtonNode, index, parent) {
     if (node.lang === "button") {
       if (node.value.includes(id)) {
         parent.children.splice(index, 1);
@@ -122,12 +117,12 @@ export const addIdToButton = (
       } else {
         newValue = value;
       }
-      console.log(newValue.split("\n").filter(item => item));
+      console.log(newValue.split("\n").filter((item) => item));
       const newCodeNode = Object.assign({}, node, {
         value: newValue
           .split("\n")
-          .filter(item => item)
-          .join("\n")
+          .filter((item) => item)
+          .join("\n"),
       });
       const nodeEnd = node.position.end.line + 1;
       if (nodeEnd === size) {
@@ -162,6 +157,6 @@ const createButtonObject = (
     end: node.position.end.line + 1,
     args,
     path,
-    id: args.id
+    id: args.id,
   };
 };
