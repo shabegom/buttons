@@ -23,14 +23,7 @@ export const createArgumentObject = (source: string): Args =>
   source.split("\n").reduce((acc: Args, i: string) => {
     const split: string[] = i.split(" ");
     const key: string = split[0].toLowerCase();
-    if (key === "name" || key === "replace" || key === "id") {
-      acc[key] = split.filter((item) => item !== split[0]).join(" ");
-    } else {
-      acc[key] = split
-        .filter((item) => item !== split[0])
-        .join(" ")
-        .toLowerCase();
-    }
+    acc[key] = split.filter((item) => item !== split[0]).join(" ");
     return acc;
   }, {});
 
