@@ -208,6 +208,10 @@ replace ## Section Heading
 
 ## Releases
 
+### 0.2.6
+- Bugfix for converting button values to lowercase
+- add some padding around the button
+
 ### 0.2.4
 - Add a command palette command to add a button codeblock to a note
 - Set default button styles with Style Settings plugin
