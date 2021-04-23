@@ -9,7 +9,6 @@ import {
   command,
 } from "./buttonTypes";
 import {
-  store,
   initializeButtonStore,
   getButtonFromStore,
   addIdsToButtons,
@@ -21,11 +20,6 @@ export default class ButtonsPlugin extends Plugin {
   async onload(): Promise<void> {
     addIdsToButtons(this.app);
     initializeButtonStore(this.app);
-    const buttons = store;
-    console.log(buttons);
-    buttons.forEach(async (button) => {
-      getButtonFromStore(this.app, button.args);
-    });
 
     this.addCommand({
       id: "insert-button-template",

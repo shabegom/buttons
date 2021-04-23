@@ -80,7 +80,6 @@ export const getButtonFromStore = async (
           item.args.parent ? item : acc
         )
       : undefined;
-    console.log(button);
     if (button && button.id) {
       cleanButtonStore(app);
       button.args = { ...button.args, ...args };
@@ -88,15 +87,7 @@ export const getButtonFromStore = async (
     }
     if (!parsedButton.id) {
       const newNote = addIdToButton(text, size);
-      const editor = activeView.editor;
-      const oldCursor = editor.getCursor();
-      await app.vault.modify(file, `${newNote.note}${newNote.oldValue}`);
-      const cursor = editor.getCursor();
-      if (oldCursor.line !== cursor.line) {
-        cursor.line = cursor.line - 3;
-        cursor.ch = cursor.ch + 1;
-        editor.setCursor(cursor);
-      }
+      await updateCursorPostion(app, newNote);
     }
     if (!button && parsedButton.id) {
       addButtonToStore(store, parsedButton);
@@ -119,4 +110,21 @@ function removeDuplicates(arr: Button[]) {
         (t) => t.path === v.path && t.start === v.start && t.end === v.end
       ) === i
   );
+}
+
+async function updateCursorPostion(
+  app: App,
+  newNote: { note: string; oldValue: string }
+): Promise<void> {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const file = activeView.file;
+  const editor = activeView.editor;
+  const oldCursor = editor.getCursor();
+  await app.vault.modify(file, `${newNote.note}${newNote.oldValue}`);
+  const cursor = editor.getCursor();
+  if (oldCursor.line !== cursor.line) {
+    cursor.line = cursor.line - 3;
+    cursor.ch = cursor.ch + 1;
+    editor.setCursor(cursor);
+  }
 }

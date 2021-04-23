@@ -7,7 +7,7 @@ import { Node } from "unist";
 import { map } from "unist-util-map";
 import visit from "unist-util-visit";
 
-import { Args, Button, ButtonNode } from "./types";
+import { Args, Button, ButtonNode, TextNode } from "./types";
 import { createArgumentObject } from "./utils";
 
 const parser = unified().use(parse).use(gfm);
@@ -18,6 +18,19 @@ export const returnMD = (tree: Node): string => {
 
 export const parseNote = (note: string): Node => {
   return parser.parse(note);
+};
+
+export const findNumber = (note: string, lineNumber: number) => {
+  const tree = parser.parse(note);
+  const value: string[] = [];
+  visit(tree, "text", (node: TextNode) => {
+    if (node.position.start.line === lineNumber) {
+      const line: string = node.value;
+      value.push(line);
+    }
+  });
+  const numbers = value.join("").match(/[+\-*/]?\d+/g);
+  return numbers;
 };
 
 export const parseButtons = (note: string, path: string): Button[] => {
@@ -117,7 +130,6 @@ export const addIdToButton = (
       } else {
         newValue = value;
       }
-      console.log(newValue.split("\n").filter((item) => item));
       const newCodeNode = Object.assign({}, node, {
         value: newValue
           .split("\n")

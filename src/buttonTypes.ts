@@ -9,6 +9,7 @@ import {
   removeButton,
   removeSection,
 } from "./utils";
+import { findNumber } from "./parser";
 
 export const calculate = async (
   app: App,
@@ -22,16 +23,16 @@ export const calculate = async (
       if (activeView) {
         const file = activeView.file;
         const originalContent = await app.vault.read(file);
-        const arr = originalContent.split("\n");
-        const lineNumber = parseInt(value.substring(1)) - 1;
-        return { variable: value, value: arr[lineNumber].split(" ").pop() };
+        const lineNumber = parseInt(value.substring(1));
+        const numbers = findNumber(originalContent, lineNumber);
+        return { variable: value, numbers };
       } else {
         new Notice(`couldn't read file`, 2000);
       }
     });
     const resolved = await Promise.all(output);
-    resolved.forEach((term: { variable: string; value: string }) => {
-      equation = equation.replace(term.variable, term.value);
+    resolved.forEach((term: { variable: string; numbers: number[] }) => {
+      equation = equation.replace(term.variable, term.numbers.join(""));
     });
   }
   const fun = mexp.eval(equation);

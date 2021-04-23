@@ -26,6 +26,10 @@ export interface ButtonNode extends Node {
   value: string;
 }
 
+export interface TextNode extends Node {
+  value: string;
+}
+
 export interface Args {
   name: string;
   id?: string;
