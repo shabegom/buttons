@@ -7,7 +7,7 @@ import {
   createNote,
   prependContent,
   removeButton,
-  removeSection
+  removeSection,
 } from "./utils";
 
 export const calculate = async (
@@ -17,7 +17,7 @@ export const calculate = async (
   let equation = action;
   const variables = action.match(/\$[0-9]*/g);
   if (variables) {
-    const output = variables.map(async value => {
+    const output = variables.map(async (value) => {
       const activeView = app.workspace.getActiveViewOfType(MarkdownView);
       if (activeView) {
         const file = activeView.file;
@@ -56,9 +56,10 @@ export const template = async (
   // only run if templates plugin is enabled
   if (templatesEnabled) {
     const folder = app.internalPlugins.plugins.templates.instance.options.folder.toLowerCase();
+    const templateFile = action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(
-      file => file.path.toLowerCase() === `${folder}/${action}.md`
+      (file) => file.path.toLowerCase() === `${folder}/${templateFile}.md`
     )[0];
     if (file) {
       const content = await app.vault.read(file);
@@ -106,7 +107,7 @@ export const link = ({ action }: Args): void => {
 export const command = (app: App, { action }: Args): void => {
   const allCommands = app.commands.listCommands();
   const command = allCommands.filter(
-    command => command.name.toUpperCase() === action.toUpperCase().trim()
+    (command) => command.name.toUpperCase() === action.toUpperCase().trim()
   )[0];
   app.commands.executeCommandById(command.id);
 };
