@@ -60,7 +60,7 @@ A Template button will append or prepend the specified template into your note. 
 
 #### Requirements
 - `name` must be the first argument in the button
-- the Templates plugin needs to be enabled and a Template folder specified
+- the Templates or Templater plugin needs to be enabled and a Template folder specified
 - the template you want to insert must be in the specified Template folder
 
 \`\`\`button  
@@ -207,6 +207,9 @@ replace ## Section Heading
 - The `remove` command gets funky if the button adds a button of the same name via a `template`
 
 ## Releases
+
+### 0.2.8
+- You can now have the core Templates plugin disabled if you are using Templater. You still need to define a Templates folder
 
 ### 0.2.6
 - Bugfix for converting button values to lowercase
