@@ -19,7 +19,6 @@ const parser = unified()
   .use(footnotes);
 
 export const returnMD = (tree: Node): string => {
-  console.log(tree);
   return unified()
     .use(stringify, {
       bullet: "-",
@@ -51,7 +50,6 @@ export const findNumber = (note: string, lineNumber: number) => {
     .replace("times", "*")
     .replace(/divide(d)?(\sby)?/g, "/");
   const numbers = convertWords.replace(/\s/g, "").match(/[^\w:]+?\d+?/g);
-  console.log(numbers);
   return numbers;
 };
 
