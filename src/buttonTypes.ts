@@ -8,7 +8,7 @@ import {
   prependContent,
   removeSection,
 } from "./utils";
-import { findNumber, removeButton } from "./parser";
+import { findNumber } from "./parser";
 
 export const calculate = async (
   app: App,

@@ -1,10 +1,9 @@
-import { App, MarkdownView } from "obsidian";
+import { App, Vault, MarkdownView, TFile } from "obsidian";
 
 import {
-  addIdToButton,
-  buttonExists,
-  parseButtonById,
-  parseButtons,
+  getButtonById,
+  getButtonWithoutId,
+  getButtonsFromNote,
 } from "./parser";
 import { Args, Button } from "./types";
 
@@ -14,7 +13,7 @@ export const initializeButtonStore = async (app: App): Promise<void> => {
   const files = app.vault.getMarkdownFiles();
   const buttons = files.map(async (file) => {
     const text = await app.vault.read(file);
-    return parseButtons(text, file.path);
+    return getButtonsFromNote(text, file.path).map((obj) => obj.button);
   });
   const buttonStore = removeDuplicates(
     await Promise.all(buttons).then((result) =>
@@ -35,7 +34,9 @@ export const cleanButtonStore = async (app: App): Promise<void> => {
   const files = app.vault.getMarkdownFiles();
   const buttons = files.map(async (file) => {
     const text = await app.vault.read(file);
-    return store.filter((button: Button) => buttonExists(text, button.id));
+    return store.filter((button: Button) =>
+      getButtonById(text, button.id, file.path)
+    );
   });
   const cleanedStore = removeDuplicates(
     await Promise.all(buttons).then((result) =>
@@ -53,45 +54,80 @@ export const cleanButtonStore = async (app: App): Promise<void> => {
 
 export const addIdsToButtons = async (app: App): Promise<void> => {
   const files = app.vault.getMarkdownFiles();
-  files.map(async (file) => {
-    const text = await app.vault.read(file);
-    const newText = addIdToButton(text, 0);
-    await app.vault.modify(file, newText.note);
-  });
+  for (let i = 0; i < files.length; i++) {
+    const text = await app.vault.read(files[i]);
+    const buttons = getButtonsFromNote(text, files[i].path);
+    for (let j = 0; j < buttons.length; j++) {
+      if (!buttons[j].hasId) {
+        writeInactiveViewButtonId(app.vault, files[i], buttons[j].button);
+      }
+    }
+  }
+};
+
+const addIdToButton = async (app: App): Promise<Button> => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const file = activeView.file;
+  const text = await app.vault.read(file);
+  const path = file.path;
+  const button = getButtonWithoutId(text, path);
+  if (button) {
+    await writeButtonId(button, app);
+    return button;
+  }
+};
+
+const writeInactiveViewButtonId = async (vault, file, button) {
+    const text = await vault.read(file)
+    const textArray = text.split("\n")
+    const buttonPosStart = button.start
+    const buttonPosEnd = button.end
+  textArray.splice(buttonPosStart, buttonPosEnd, button.buttonString);
+  await vault.modify(file, textArray.join("\n"));
+}
+
+const writeButtonId = async (
+  button: Button,
+  app
+): Promise<void> => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView)
+    if (activeView) {
+  const file = activeView.file
+  const editor = activeView.editor
+  const text = await app.vault.read(file)
+  const buttonPosStart = button.start;
+  const buttonPosEnd = button.end;
+
+    } else {
+        addIdsToButtons(app)
+    }
 };
 
 export const getButtonFromStore = async (
   app: App,
   args: Args
 ): Promise<Button> => {
-  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-  const file = activeView.file;
-  const size = activeView.editor.lastLine() + 1;
+  const store = JSON.parse(localStorage.getItem("buttons"));
+  const file = app.workspace.getActiveViewOfType(MarkdownView).file;
   const text = await app.vault.read(file);
-  const parsedButton = args && parseButtonById(text, args.id, file.path);
-  if (parsedButton) {
-    const store = JSON.parse(localStorage.getItem("buttons"));
-    let button = store.filter(
-      (storeItem: Button) => storeItem.id === parsedButton.id
-    );
-
-    button = button[0]
-      ? button.reduce((acc: Button, item: Button) =>
-          item.args.parent ? item : acc
-        )
-      : undefined;
-    if (button && button.id) {
+  const path = file.path;
+  if (args.id) {
+    let button = store.filter((storeItem: Button) => storeItem.id === args.id);
+    if (button[0]) {
+      button = button.reduce((acc: Button, item: Button) =>
+        item.args.parent ? item : acc
+      );
       cleanButtonStore(app);
       button.args = { ...button.args, ...args };
       return button;
+    } else {
+      button = getButtonById(text, args.id, path);
+      if (button) {
+        addButtonToStore(store, button);
+      }
     }
-    if (!parsedButton.id) {
-      const newNote = addIdToButton(text, size);
-      await updateCursorPostion(app, newNote);
-    }
-    if (!button && parsedButton.id) {
-      addButtonToStore(store, parsedButton);
-    }
+  } else {
+    await addIdToButton(app);
   }
 };
 
@@ -112,15 +148,10 @@ function removeDuplicates(arr: Button[]) {
   );
 }
 
-async function updateCursorPostion(
-  app: App,
-  newNote: { note: string; oldValue: string }
-): Promise<void> {
+async function updateCursorPostion(app: App): Promise<void> {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-  const file = activeView.file;
   const editor = activeView.editor;
   const oldCursor = editor.getCursor();
-  await app.vault.modify(file, `${newNote.note}${newNote.oldValue}`);
   const cursor = editor.getCursor();
   if (oldCursor.line !== cursor.line) {
     cursor.line = cursor.line - 3;

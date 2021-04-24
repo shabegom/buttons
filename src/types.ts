@@ -40,7 +40,7 @@ export interface Args {
   action: string;
   color?: string;
   class?: string;
-  replace?: string | string[];
+  replace?: string[];
   remove?: string | string[];
   parent?: boolean;
 }
@@ -52,4 +52,5 @@ export interface Button {
   id: string;
   index?: number;
   path: string;
+  buttonString?: string;
 }
