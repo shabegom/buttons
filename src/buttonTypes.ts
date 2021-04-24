@@ -6,10 +6,9 @@ import {
   appendContent,
   createNote,
   prependContent,
-  removeButton,
   removeSection,
 } from "./utils";
-import { findNumber } from "./parser";
+import { findNumber, removeButton } from "./parser";
 
 export const calculate = async (
   app: App,
@@ -31,7 +30,7 @@ export const calculate = async (
       }
     });
     const resolved = await Promise.all(output);
-    resolved.forEach((term: { variable: string; numbers: number[] }) => {
+    resolved.forEach((term: { variable: string; numbers: string[] }) => {
       equation = equation.replace(term.variable, term.numbers.join(""));
     });
   }
@@ -39,9 +38,14 @@ export const calculate = async (
   appendContent(app, `Result: ${fun}`, name);
 };
 
-export const remove = (app: App, { name }: Args): void => {
-  console.log("firing removeButton");
-  setTimeout(() => removeButton(app, name), 100);
+export const remove = async (app: App, { id }: Args): Promise<void> => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  if (activeView) {
+    const file = activeView.file;
+    const note = await app.vault.read(file);
+    const newNote = removeButton(note, id);
+    await app.vault.modify(file, newNote);
+  }
 };
 
 export const replace = (app: App, { replace, name }: Args): void => {

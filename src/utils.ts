@@ -27,10 +27,7 @@ export const createArgumentObject = (source: string): Args =>
     return acc;
   }, {});
 
-export const removeButton = async (
-  app: App,
-  buttonName: string
-): Promise<void> => {
+export const remove = async (app: App, buttonName: string): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;

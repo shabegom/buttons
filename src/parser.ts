@@ -1,5 +1,7 @@
 import { nanoid } from "nanoid";
 import gfm from "remark-gfm";
+import frontmatter from "remark-frontmatter";
+import footnotes from "remark-footnotes";
 import parse from "remark-parse";
 import stringify from "remark-stringify";
 import unified from "unified";
@@ -10,10 +12,23 @@ import visit from "unist-util-visit";
 import { Args, Button, ButtonNode, TextNode } from "./types";
 import { createArgumentObject } from "./utils";
 
-const parser = unified().use(parse).use(gfm);
+const parser = unified()
+  .use(parse)
+  .use(gfm)
+  .use(frontmatter, [{ type: "yaml", marker: "-" }])
+  .use(footnotes);
 
 export const returnMD = (tree: Node): string => {
-  return unified().use(stringify).use(gfm).stringify(tree);
+  console.log(tree);
+  return unified()
+    .use(stringify, {
+      bullet: "-",
+      fences: true,
+    })
+    .use(frontmatter, [{ type: "yaml", marker: "-" }])
+    .use(gfm)
+    .use(footnotes)
+    .stringify(tree);
 };
 
 export const parseNote = (note: string): Node => {
@@ -29,7 +44,14 @@ export const findNumber = (note: string, lineNumber: number) => {
       value.push(line);
     }
   });
-  const numbers = value.join("").match(/[+\-*/]?\d+/g);
+  const convertWords = value
+    .join("")
+    .replace("plus", "+")
+    .replace("minus", "-")
+    .replace("times", "*")
+    .replace(/divide(d)?(\sby)?/g, "/");
+  const numbers = convertWords.replace(/\s/g, "").match(/[^\w:]+?\d+?/g);
+  console.log(numbers);
   return numbers;
 };
 
@@ -74,17 +96,17 @@ export const parseButtonById = (
   return button;
 };
 
-export const removeButton = (tree: Node, id: string): Node => {
+export const removeButton = (note: string, id: string): string => {
+  const tree = parser.parse(note);
   visit(tree, "code", function (node: ButtonNode, index, parent) {
     if (node.lang === "button") {
       if (node.value.includes(id)) {
         parent.children.splice(index, 1);
+        return [visit.SKIP, index];
       }
     }
-    // Do not traverse `node`, continue at the node *now* at `index`.
-    return [visit.SKIP, index];
   });
-  return tree;
+  return returnMD(tree);
 };
 
 export const addIdToButton = (
