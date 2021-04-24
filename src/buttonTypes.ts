@@ -58,9 +58,16 @@ export const template = async (
 ): Promise<void> => {
   console.log("template button");
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
+  const templaterPlugin = app.plugins.plugins["templater-obsidian"];
+  console.log(templatesEnabled, templaterPlugin);
   // only run if templates plugin is enabled
-  if (templatesEnabled) {
-    const folder = app.internalPlugins.plugins.templates.instance.options.folder.toLowerCase();
+  if (templatesEnabled || templaterPlugin) {
+    const folder = templatesEnabled
+      ? app.internalPlugins.plugins.templates.instance.options.folder.toLowerCase()
+      : templaterPlugin
+      ? templaterPlugin.settings.template_folder.toLowerCase()
+      : undefined;
+    console.log(folder);
     const templateFile = action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(
@@ -100,7 +107,10 @@ export const template = async (
       );
     }
   } else {
-    new Notice("You need to have the Templates plugin enabled", 2000);
+    new Notice(
+      "You need to have the Templates or Templater plugin enabled and Template folder defined",
+      2000
+    );
   }
 };
 
