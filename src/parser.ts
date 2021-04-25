@@ -88,8 +88,8 @@ const createButtonObject = (
   stringArray.push("```");
   const buttonString = stringArray.join("\n");
   return {
-    start: node.position.start.line - 1,
-    end: node.position.end.line - 1,
+    start: node.position.start.line,
+    end: node.position.end.line,
     args,
     path,
     id: args.id ? args.id : generatedId,

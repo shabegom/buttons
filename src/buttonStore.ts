@@ -77,30 +77,45 @@ const addIdToButton = async (app: App): Promise<Button> => {
   }
 };
 
-const writeInactiveViewButtonId = async (vault, file, button) {
-    const text = await vault.read(file)
-    const textArray = text.split("\n")
-    const buttonPosStart = button.start
-    const buttonPosEnd = button.end
-  textArray.splice(buttonPosStart, buttonPosEnd, button.buttonString);
-  await vault.modify(file, textArray.join("\n"));
-}
-
-const writeButtonId = async (
-  button: Button,
-  app
-): Promise<void> => {
-  const activeView = app.workspace.getActiveViewOfType(MarkdownView)
-    if (activeView) {
-  const file = activeView.file
-  const editor = activeView.editor
-  const text = await app.vault.read(file)
+const writeInactiveViewButtonId = async (
+  vault: Vault,
+  file: TFile,
+  button: Button
+) => {
+  const text = await vault.read(file);
+  const textArray = text.split("\n");
   const buttonPosStart = button.start;
   const buttonPosEnd = button.end;
+  textArray.splice(buttonPosStart - 1, buttonPosEnd - 1, button.buttonString);
+  await vault.modify(file, textArray.join("\n"));
+};
 
-    } else {
-        addIdsToButtons(app)
+const writeButtonId = async (button: Button, app: App): Promise<void> => {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  if (activeView) {
+    const file = activeView.file;
+    const text = await app.vault.read(file);
+    const textArray = text.split("\n");
+    const buttonPosStart = button.start;
+    const buttonPosEnd = button.end;
+    const findClosedButton = text.match(
+      /\`{3}button\n([\w\d()/,\n\s]*)\`{3}(.*+)?/gm
+    );
+    const findOpenButton = text.match(/\`{3}button([a-zA-Z0-9\ns]*)[^\`{3}]/g);
+
+    textArray.splice(buttonPosStart - 1, buttonPosEnd - 1, button.buttonString);
+    console.log("closed: ", findClosedButton);
+    console.log("open: ", findOpenButton);
+    if (findClosedButton && findClosedButton[1]) {
+      textArray.push(findClosedButton[2]);
     }
+    if (findOpenButton && findOpenButton[1]) {
+      textArray.push(findOpenButton[1]);
+    }
+    app.vault.modify(file, textArray.join("\n"));
+  } else {
+    addIdsToButtons(app);
+  }
 };
 
 export const getButtonFromStore = async (

@@ -117,7 +117,7 @@ export const createNote = async (
   content: string,
   type: string
 ): Promise<void> => {
-  const path = type.match(/\(([A-Za-z0-9\s/]*),?\s?(split)?\)/);
+  const path = type.match(/\(([\s\S]*?),?\s?(split)?\)/);
   if (path) {
     try {
       await app.vault.create(`${path[1]}.md`, content);
