@@ -216,6 +216,9 @@ replace ## Section Heading
 
 ## Releases
 
+### 0.2.9
+- You can open a note created via template type button in a split pane by using `note(Note Name, split) template`
+
 ### 0.2.8
 - You can now have the core Templates plugin disabled if you are using Templater. You still need to define a Templates folder
 
