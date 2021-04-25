@@ -1,4 +1,4 @@
-import { MarkdownView, App, Notice } from "obsidian";
+import { MarkdownView, App, Notice, TFile } from "obsidian";
 import { Arguments } from "./types";
 
 export const insertButton = (app: App): void => {
@@ -114,15 +114,18 @@ export const createNote = async (
   content: string,
   type: string
 ): Promise<void> => {
-  const path = type.match(/\((.*)\)/);
+  const path = type.match(/\(([A-Za-z0-9\s/]*),?\s?(split)?\)/);
   if (path) {
     try {
       await app.vault.create(`${path[1]}.md`, content);
-      const vault = app.vault.getName();
-      window.open(`obsidian://vault/${vault}/${path[1]}`);
+      const file = app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
+      if (path[2]) {
+        await app.workspace.splitActiveLeaf().openFile(file);
+      } else {
+        app.workspace.activeLeaf.openFile(file);
+      }
     } catch (e) {
-      console.log(e);
-      new Notice("There was an error!", 2000);
+      new Notice("There was an error! Maybe the file already exists?", 2000);
     }
   } else {
     new Notice(`couldn't parse the path!`, 2000);

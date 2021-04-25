@@ -81,6 +81,14 @@ type note(Path/Note Name) template
 action My Template  
 \`\`\`
 
+If you want your note to open in a split write `note(Note Name, split) template` as the type
+
+\`\`\`button  
+name My Template Button  
+type note(Path/Note Name, split) template   
+action My Template  
+\`\`\`
+
 The _note()_ type will open the newly created note after creation.  
 I'm looking into including variables in the note name to avoid creating many notes. You could achieve this right now by creating a template for the button:  
 
