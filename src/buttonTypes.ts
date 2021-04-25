@@ -56,10 +56,8 @@ export const template = async (
   app: App,
   { name, type, action }: Args
 ): Promise<void> => {
-  console.log("template button");
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   const templaterPlugin = app.plugins.plugins["templater-obsidian"];
-  console.log(templatesEnabled, templaterPlugin);
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPlugin) {
     const folder = templatesEnabled
@@ -67,7 +65,6 @@ export const template = async (
       : templaterPlugin
       ? templaterPlugin.settings.template_folder.toLowerCase()
       : undefined;
-    console.log(folder);
     const templateFile = action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(

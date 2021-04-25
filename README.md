@@ -81,6 +81,14 @@ type note(Path/Note Name) template
 action My Template  
 \`\`\`
 
+If you want your note to open in a split write `note(Note Name, split) template` as the type
+
+\`\`\`button  
+name My Template Button  
+type note(Path/Note Name, split) template   
+action My Template  
+\`\`\`
+
 The _note()_ type will open the newly created note after creation.  
 I'm looking into including variables in the note name to avoid creating many notes. You could achieve this right now by creating a template for the button:  
 
@@ -207,6 +215,9 @@ replace ## Section Heading
 - The `remove` command gets funky if the button adds a button of the same name via a `template`
 
 ## Releases
+
+### 0.2.9
+- You can open a note created via template type button in a split pane by using `note(Note Name, split) template`
 
 ### 0.2.8
 - You can now have the core Templates plugin disabled if you are using Templater. You still need to define a Templates folder
