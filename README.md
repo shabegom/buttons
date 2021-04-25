@@ -216,6 +216,9 @@ replace ## Section Heading
 
 ## Releases
 
+### 0.2.10
+- Bugfix: new notes created by a template can now have `-` and `!` and other characters in their title.
+
 ### 0.2.9
 - You can open a note created via template type button in a split pane by using `note(Note Name, split) template`
 
