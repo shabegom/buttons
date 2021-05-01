@@ -38,12 +38,16 @@ export const calculate = async (
   appendContent(app, `Result: ${fun}`, name);
 };
 
-export const remove = (app: App, { name }: Arguments): void => {
-  setTimeout(() => removeButton(app, name), 100);
+export const remove = (
+  app: App,
+  { remove }: Arguments,
+  { lineStart, lineEnd }: { lineStart: number; lineEnd: number }
+): void => {
+  setTimeout(() => removeButton(app, remove, lineStart, lineEnd), 100);
 };
 
-export const replace = (app: App, { replace, name }: Arguments): void => {
-  removeSection(app, replace, name);
+export const replace = (app: App, { replace }: Arguments): void => {
+  removeSection(app, replace);
 };
 
 export const template = async (

@@ -1,4 +1,4 @@
-import { App, TFile, CachedMetadata, EditorPosition } from "obsidian";
+import { App, TFile, CachedMetadata } from "obsidian";
 import { ExtendedBlockCache, Arguments } from "./types";
 import { createArgumentObject } from "./utils";
 
@@ -24,7 +24,10 @@ export const addButtonToStore = (app: App, file: TFile): void => {
   localStorage.setItem("buttons", JSON.stringify(newStore));
 };
 
-export const getButtonFromStore = async (app: App, args: Arguments) => {
+export const getButtonFromStore = async (
+  app: App,
+  args: Arguments
+): Promise<Arguments> | undefined => {
   const store = JSON.parse(localStorage.getItem("buttons"));
   if (args.id) {
     const storedButton = store.filter(
