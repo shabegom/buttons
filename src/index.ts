@@ -1,6 +1,10 @@
 import { Plugin, EventRef } from "obsidian";
 import { createArgumentObject, insertButton } from "./utils";
-import { initializeButtonStore, addButtonToStore } from "./buttonStore";
+import {
+  initializeButtonStore,
+  addButtonToStore,
+  getButtonFromStore,
+} from "./buttonStore";
 import { buttonEventListener, initializeListener } from "./events";
 import {
   calculate,
@@ -31,7 +35,9 @@ export default class ButtonsPlugin extends Plugin {
     });
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
-      const args = createArgumentObject(source);
+      let args = createArgumentObject(source);
+      const storeArgs = await getButtonFromStore(this.app, args);
+      args = storeArgs ? storeArgs : args;
       // handle button clicks
       const clickHandler = async () => {
         // handle command buttons

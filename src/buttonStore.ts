@@ -1,5 +1,6 @@
-import { App, TFile, CachedMetadata } from "obsidian";
-import { ExtendedBlockCache } from "./types";
+import { App, TFile, CachedMetadata, EditorPosition } from "obsidian";
+import { ExtendedBlockCache, Arguments } from "./types";
+import { createArgumentObject } from "./utils";
 
 export const initializeButtonStore = (app: App): void => {
   const files = app.vault.getMarkdownFiles();
@@ -21,6 +22,28 @@ export const addButtonToStore = (app: App, file: TFile): void => {
     ? removeDuplicates([...buttons, ...store])
     : removeDuplicates(store);
   localStorage.setItem("buttons", JSON.stringify(newStore));
+};
+
+export const getButtonFromStore = async (app: App, args: Arguments) => {
+  const store = JSON.parse(localStorage.getItem("buttons"));
+  if (args.id) {
+    const storedButton = store.filter(
+      (item: ExtendedBlockCache) => `button-${args.id}` === item.id
+    )[0];
+    if (storedButton) {
+      const file = app.vault.getAbstractFileByPath(storedButton.path);
+      const content = await app.vault.cachedRead(file as TFile);
+      const contentArray = content.split("\n");
+      const button = contentArray
+        .slice(
+          storedButton.position.start.line + 1,
+          storedButton.position.end.line
+        )
+        .join("\n");
+      const storedArgs = createArgumentObject(button);
+      return { ...storedArgs, ...args };
+    }
+  }
 };
 
 export const buildButtonArray = (
