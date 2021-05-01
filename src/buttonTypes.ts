@@ -12,7 +12,8 @@ import {
 
 export const calculate = async (
   app: App,
-  { name, action }: Arguments
+  { action }: Arguments,
+  position
 ): Promise<void> => {
   let equation = action;
   const variables = action.match(/\$[0-9]*/g);
@@ -35,20 +36,25 @@ export const calculate = async (
     });
   }
   const fun = mexp.eval(equation);
-  appendContent(app, `Result: ${fun}`, name);
+  appendContent(app, `Result: ${fun}`, position.lineEnd);
 };
 
-export const remove = (app: App, { name }: Arguments): void => {
-  setTimeout(() => removeButton(app, name), 100);
+export const remove = (
+  app: App,
+  { remove }: Arguments,
+  { lineStart, lineEnd }: { lineStart: number; lineEnd: number }
+): void => {
+  setTimeout(() => removeButton(app, remove, lineStart, lineEnd), 100);
 };
 
-export const replace = (app: App, { replace, name }: Arguments): void => {
-  removeSection(app, replace, name);
+export const replace = (app: App, { replace }: Arguments): void => {
+  removeSection(app, replace);
 };
 
 export const template = async (
   app: App,
-  { name, type, action }: Arguments
+  { type, action }: Arguments,
+  position
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   const templaterPlugin = app.plugins.plugins["templater-obsidian"];
@@ -68,7 +74,7 @@ export const template = async (
       const content = await app.vault.read(file);
       // prepend template above the button
       if (type.includes("prepend")) {
-        prependContent(app, content, name);
+        prependContent(app, content, position.lineStart);
         setTimeout(
           () =>
             app.commands.executeCommandById(
@@ -79,7 +85,7 @@ export const template = async (
       }
       // append template below the button
       if (type.includes("append")) {
-        appendContent(app, content, name);
+        appendContent(app, content, position.lineEnd);
         setTimeout(
           () =>
             app.commands.executeCommandById(

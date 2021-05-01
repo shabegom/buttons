@@ -2,6 +2,16 @@
 
 Run commands and open links by clicking on ✨ Buttons ✨
 
+---
+
+**last updated:** May 1, 2021  
+- You can add a block-id below a button block. The button block-id can be used to inherit arguments from a button or to remove multiple buttons
+- `remove` can now be an array of button block-ids to remove (it can still be true to remove the clicked button)
+- `replace` now takes an array like [startLine,endLine] to define the start and end line to be replaced.
+- `append`, `prepend`, `remove`, `replace` have been updated to use the button position. `name` is no longer required.
+
+---
+
 ## Manual Install
 
 Grab the [latest release](https://github.com/shabegom/buttons/releases) and add it to: <vault>/.obsidian/plugins/
@@ -19,6 +29,7 @@ id optional
 replace optional  
 remove optional  
 \`\`\`
+^button-myId
 
 | argument | description                                | options                                      | example    |
 -----------|--------------------------------------------|----------------------------------------------|------------|
@@ -27,9 +38,10 @@ remove optional
 | action  | **required** depending on button type this will be a command, link, template, or equation                                                     | Toggle Pin or https://obsidian.md or My Template or 1+2 | Toggle Pin                   |
 | color   | optional: arg to change color of the button                                                                                                   | blue, green, red, purple. yellow                        | blue                         |
 | class   | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes**                        | a string representing your custom class                 | button-default, button-shine |
-| id      | optional: add a custom id to the button for styling                                                                                           | a string representing your custom id                    | myId                         |
-| remove  | optional: if `true` removes button after command runs                                                                                         | true                                                    | true                         |
-| replace | optional: specify a section header above the button and it will remove content from the section (and replace if used with _prepend template_) | The section header directly above the button            | ## Replace this Section      |
+| id      | optional: add a block id of an existing button to inherit the arguments of that button                                                                                           | a string representing your the block id                    | myId                         |
+| remove  | optional: if `true` removes button after command runs. If array of button ids is supplied, will remove those buttons from note.                                                                                         | true or an array of button ids                                                    | true, [first, second]                         |
+| replace | optional: specify a [start,end] array with the line numbers to be replaced | an array with the first item being the line to start replacing and the second item being the line to end            | [1,5]      |
+| ^button-myId | optional: give the button a block ID to reference it in other buttons | a unique id that starts with `button` | ^button-uniqueId |
 
 ## Examples
 
@@ -59,7 +71,6 @@ action https://booked.email
 A Template button will append or prepend the specified template into your note. `type` will be _apped template_,  _prepend template_, or _note(Path/Note Name) template_ and `action` is the name of the template you want to insert.  
 
 #### Requirements
-- `name` must be the first argument in the button
 - the Templates or Templater plugin needs to be enabled and a Template folder specified
 - the template you want to insert must be in the specified Template folder
 
@@ -110,9 +121,6 @@ action My Note Creation Button
 ### Calculate Button
 A Calculate button will run a math equation and output the results below the button. The equation can be put within the button itself, or be referenced via line number. To reference a line-number, you use a dollar sign and the line number: $2
 
-#### Requirements
-- `name` must be the first argument in the button
-
 \`\`\`button  
 name Add 1+2  
 type calculate  
@@ -133,7 +141,21 @@ Result: 2
 
 The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so should support any symbol supported by that library.  
 
-### Custom Class & ID
+### Button Block ID
+If you supply a block ID below the button, you can use the ID in other buttons to inherit the arguments. You can also use the ID to remove buttons from the note.
+
+\`\`\`button  
+name My Blue Button
+color blue
+\`\`\`  
+^button-blue
+
+This button will be blue with the name My Blue Button
+\`\`\`button  
+id blue
+\`\`\`  
+
+### Custom Class
 
 You can add an optional `class` argument to target the button with any css styling tweaks you'd want to add
 
@@ -179,13 +201,8 @@ You can edit the default button styles with the Style Settings plugin
 
 ### Remove Button after command execution
 
-if you add `remove true` as the las argument, the button will be removed from the file after the button click.  
-**Use at your own risk! Deleting things can be dangerous, so make sure to test your button in a safe note**
-
-#### Requirements
-- first argument must be `name`
-- last argument must be `remove true`
-- `name` must be unique in the file
+- if you add `remove true` as the las argument, the button will be removed from the file after the button click.  
+- if you supply an array of button IDs `remove` will remove those buttons from the note.
 
 \`\`\`button  
 name My Removable Button  
@@ -194,27 +211,53 @@ action Some Command that adds content
 remove true  
 \`\`\`  
 
-### Replace content in section
-
-if you add `replace` and specify a section header, the button will replace content in that section.  
-For right now, you should use this with `type prepend template` unless you know the output will appear above the button. This implementation assumes the content you want to replace is between the specified header and the button.  
-**Use at your own risk! Deleting things can be dangerous, so make sure to test your button in a safe note**
-
-#### Requirements
-- first argument must be `name`
-- The button must be directly below the content you want to replace.
+---
 
 \`\`\`button  
-name My Replace Button  
-type prepend template  
-action A Template  
-replace ## Section Heading   
+name First Button
+\`\`\`  
+^button-first
+
+\`\`\`button  
+name Second Button
+\`\`\`  
+^button-second
+
+This button will remove both First Button and Second Button
+\`\`\`button  
+name My Removable Button  
+type command  
+action Some Command that adds content  
+remove [first, second]
 \`\`\`  
 
-## Known Issues
-- The `remove` command gets funky if the button adds a button of the same name via a `template`
+
+### Replace content in section
+The `replace` should be an array with two values. The first value indicates the line to start replacing and the second value indicates the line to end replacing. For example `[1,5]` will remove any existing content from lines 1 through 5 in the note. If the Button is below line 5, you would us a `prepend template` type. If you button is above the range indicated to replace you would use the `append template` type. You can also use replace to remove arbitrary lines from a note if use without `prepend` or `append` types.
+
+
+\`\`\`button  
+name My Prepend Replace Button  
+type prepend template  
+action A Template  
+replace [1,5]
+\`\`\`  
+
+\`\`\`button  
+name My Append Replace Button  
+type append template  
+action A Template  
+replace [7,25]
+\`\`\`  
+
 
 ## Releases
+
+### 0.3.0
+- You can add a block-id below a button block. The button block-id can be used to inherit arguments from a button or to remove multiple buttons
+- `remove` can now be an array of button block-ids to remove (it can still be true to remove the clicked button)
+- `replace` now takes an array like [startLine,endLine] to define the start and end line to be replaced.
+- `append`, `prepend`, `remove`, `replace` have been updated to use the button position. `name` is no longer required.
 
 ### 0.2.10
 - Bugfix: new notes created by a template can now have `-` and `!` and other characters in their title.

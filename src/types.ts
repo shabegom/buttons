@@ -1,11 +1,15 @@
+import { BlockCache, TFile } from "obsidian";
+
 declare module "obsidian" {
   interface App {
+    plugins: {
+      plugins: {
+        "templater-obsidian": { settings: { template_folder: string } };
+      };
+    };
     isMobile: boolean;
     internalPlugins: {
       plugins: {
-        plugins: {
-          "templater-obsidian": {};
-        };
         templates: {
           enabled: boolean;
           instance: {
@@ -21,6 +25,10 @@ declare module "obsidian" {
       listCommands: () => [{ id: string; name: string }];
     };
   }
+}
+
+export interface ExtendedBlockCache extends BlockCache {
+  path?: string;
 }
 
 export interface Arguments {
