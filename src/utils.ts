@@ -8,7 +8,7 @@ type
 action
 \`\`\``;
   const page = app.workspace.getActiveViewOfType(MarkdownView);
-  const editor = page.sourceMode.cmEditor;
+  const editor = page.editor;
   editor.replaceSelection(button);
 };
 

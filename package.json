@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "dev": "npm run lint && rollup -c -w",
+    "dev": "yarn lint && rollup -c -w",
     "build:nolint": "NODE_ENV=production rollup -c",
     "build": "NODE_ENV=production npm run lint && rollup -c",
     "test": "jest",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@babel/runtime": "7.13.10",
     "math-expression-evaluator": "^1.3.7",
-    "obsidian": "obsidianmd/obsidian-api#master",
+    "obsidian": "^0.12.0",
     "tslib": "2.1.0"
   },
   "devDependencies": {

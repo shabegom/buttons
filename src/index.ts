@@ -1,5 +1,7 @@
-import { Plugin } from "obsidian";
+import { Plugin, EventRef } from "obsidian";
 import { createArgumentObject, insertButton } from "./utils";
+import { initializeButtonStore, addButtonToStore } from "./buttonStore";
+import { buttonEventListener, initializeListener } from "./events";
 import {
   calculate,
   remove,
@@ -12,7 +14,16 @@ import {
 // extend the obsidian module with some additional typings
 
 export default class ButtonsPlugin extends Plugin {
+  private buttonEvents: EventRef;
+  private initializeEvent: EventRef;
   async onload(): Promise<void> {
+    this.initializeEvent = initializeListener(this.app, initializeButtonStore);
+    this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
+
+    setTimeout(() => {
+      this.app.metadataCache.offref(this.initializeEvent);
+    }, 500);
+
     this.addCommand({
       id: "insert-button-template",
       name: "Insert Button",
@@ -58,5 +69,8 @@ export default class ButtonsPlugin extends Plugin {
         clickHandler();
       });
     });
+  }
+  onunload(): void {
+    this.app.metadataCache.offref(this.buttonEvents);
   }
 }
