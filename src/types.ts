@@ -6,8 +6,10 @@ declare module "obsidian" {
       plugins: {
         "templater-obsidian": { settings: { template_folder: string } };
       };
-      isMobile: boolean;
-      internalPlugins: {
+    };
+    isMobile: boolean;
+    internalPlugins: {
+      plugins: {
         templates: {
           enabled: boolean;
           instance: {

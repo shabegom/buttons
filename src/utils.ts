@@ -104,21 +104,15 @@ export const removeSection = async (
 export const prependContent = async (
   app: App,
   insert: string,
-  buttonName: string
+  lineStart: number
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;
-    const originalContent = await app.vault.read(file);
-    const buttonRegex = `\u0060{3}button\nname ${escapeRegExp(
-      buttonName
-    )}.*?\n\u0060{3}`;
-    const re = new RegExp(buttonRegex, "gms");
-    const button = originalContent.match(re)[0];
-    const splitContent = originalContent.split(re);
-    const content = `${splitContent[0] ? splitContent[0] : ""}
-${insert}
-${button}${splitContent[1] ? splitContent[1] : ""}`;
+    let content = await app.vault.read(file);
+    const contentArray = content.split("\n");
+    contentArray.splice(lineStart, 0, insert);
+    content = contentArray.join("\n");
     await app.vault.modify(file, content);
   } else {
     new Notice("There was an issue prepending content, please try again", 2000);
@@ -128,21 +122,22 @@ ${button}${splitContent[1] ? splitContent[1] : ""}`;
 export const appendContent = async (
   app: App,
   insert: string,
-  buttonName: string
+  lineEnd: number
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;
-    const originalContent = await app.vault.read(file);
-    const buttonRegex = `\u0060{3}button\nname ${escapeRegExp(
-      buttonName
-    )}.*?\n\u0060{3}`;
-    const re = new RegExp(buttonRegex, "gms");
-    const button = originalContent.match(re);
-    const splitContent = originalContent.split(re);
-    const content = `${
-      splitContent[0] ? splitContent[0] : ""
-    }${button}\n${insert}${splitContent[1] ? splitContent[1] : ""}`;
+    let content = await app.vault.read(file);
+    const contentArray = content.split("\n");
+    console.log(contentArray[lineEnd + 1].includes("^button"), lineEnd);
+    let insertionPoint;
+    if (contentArray[lineEnd + 1].includes("^button")) {
+      insertionPoint = lineEnd + 2;
+    } else {
+      insertionPoint = lineEnd;
+    }
+    contentArray.splice(insertionPoint, 0, `\n${insert}`);
+    content = contentArray.join("\n");
     await app.vault.modify(file, content);
   } else {
     new Notice("There was an issue appending content, please try again", 2000);
@@ -171,8 +166,3 @@ export const createNote = async (
     new Notice(`couldn't parse the path!`, 2000);
   }
 };
-
-// https://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
-function escapeRegExp(string: string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
-}

@@ -38,7 +38,6 @@ export default class ButtonsPlugin extends Plugin {
       async (source, el, ctx) => {
         // create an object out of the arguments
         const position = ctx.getSectionInfo(el);
-        console.log(position);
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs : args;
@@ -57,10 +56,10 @@ export default class ButtonsPlugin extends Plugin {
           }
           // handle template buttons
           if (args.type && args.type.includes("template")) {
-            template(this.app, args);
+            template(this.app, args, position);
           }
           if (args.type === "calculate") {
-            calculate(this.app, args);
+            calculate(this.app, args, position);
           }
           // handle removing the button
           if (args.remove) {
