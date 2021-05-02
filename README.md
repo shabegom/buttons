@@ -10,6 +10,9 @@ Run commands and open links by clicking on ✨ Buttons ✨
 - `replace` now takes an array like [startLine,endLine] to define the start and end line to be replaced.
 - `append`, `prepend`, `remove`, `replace` have been updated to use the button position. `name` is no longer required.
 
+**known issues with current release**
+- If you're using the mobile beta the button block-ids aren't working properly.
+
 ---
 
 ## Manual Install
