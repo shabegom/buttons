@@ -32,8 +32,9 @@ export const getButtonFromStore = async (
   app: App,
   args: Arguments
 ): Promise<Arguments> | undefined => {
-  let store = JSON.parse(localStorage.getItem("buttons"));
-  store = store ? store : buttonStore;
+  const store = app.isMobile
+    ? buttonStore
+    : JSON.parse(localStorage.getItem("buttons"));
   if (args.id) {
     const storedButton = store.filter(
       (item: ExtendedBlockCache) => `button-${args.id}` === item.id
