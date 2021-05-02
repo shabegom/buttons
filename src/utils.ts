@@ -34,7 +34,10 @@ export const removeButton = async (
     if (remove === "true") {
       const numberOfItems = lineEnd - lineStart;
       contentArray.splice(lineStart, numberOfItems + 1);
-      if (contentArray[lineStart].includes("^button-")) {
+      if (
+        contentArray[lineStart] &&
+        contentArray[lineStart].includes("^button-")
+      ) {
         contentArray.splice(lineStart, 1);
       }
       content = contentArray.join("\n");
@@ -129,12 +132,14 @@ export const appendContent = async (
     const file = activeView.file;
     let content = await app.vault.read(file);
     const contentArray = content.split("\n");
-    console.log(contentArray[lineEnd + 1].includes("^button"), lineEnd);
     let insertionPoint;
-    if (contentArray[lineEnd + 1].includes("^button")) {
+    if (
+      contentArray[lineEnd + 1] &&
+      contentArray[lineEnd + 1].includes("^button")
+    ) {
       insertionPoint = lineEnd + 2;
     } else {
-      insertionPoint = lineEnd;
+      insertionPoint = lineEnd + 1;
     }
     contentArray.splice(insertionPoint, 0, `\n${insert}`);
     content = contentArray.join("\n");
