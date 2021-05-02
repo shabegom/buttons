@@ -1,34 +1,34 @@
-import parse from "remark-parse";
-import unified from "unified";
-import { visit } from "unist-util-visit";
-import { Node } from "unist";
-import { Arguments } from "./types";
-
-const parser = unified().use(parse);
-
-interface ButtonNode extends Node {
-  lang: string;
-  value: string;
-}
-
-interface Position {
-  lineStart: number;
-  lineEnd: number;
-}
+import { Arguments, Position } from "./types";
 
 export const getButtonPosition = (
   content: string,
   args: Arguments
 ): Position => {
-  const tree = parser.parse(content);
-  const position = { lineStart: 0, lineEnd: 0 };
-  visit(tree, "code", (node: ButtonNode) => {
-    if (node.lang === "button") {
-      if (args && node.value.includes(args.name)) {
-        position.lineStart = node.position.start.line - 1;
-        position.lineEnd = node.position.end.line - 1;
+  let finalPosition: Position;
+  const possiblePositions: Position[] = [];
+  let possiblePosition: Position = { lineStart: 0, lineEnd: 0 };
+  const contentArray = content.split("\n");
+  let open = false;
+  contentArray.forEach((item, index) => {
+    if (item.includes("```")) {
+      if (open === false) {
+        possiblePosition.lineStart = index;
+        open = true;
+      } else {
+        possiblePosition.lineEnd = index;
+        possiblePositions.push(possiblePosition);
+        possiblePosition = { lineStart: 0, lineEnd: 0 };
+        open = false;
       }
     }
   });
-  return position;
+  possiblePositions.forEach((position) => {
+    const codeblock = contentArray
+      .slice(position.lineStart, position.lineEnd + 1)
+      .join("\n");
+    if (codeblock.includes("button") && codeblock.includes(args.name)) {
+      finalPosition = position;
+    }
+  });
+  return finalPosition;
 };
