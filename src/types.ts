@@ -1,4 +1,4 @@
-import { BlockCache, TFile } from "obsidian";
+import { BlockCache } from "obsidian";
 
 declare module "obsidian" {
   interface App {

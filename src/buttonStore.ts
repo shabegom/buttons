@@ -68,14 +68,16 @@ export const buildButtonArray = (
 };
 
 function removeDuplicates(arr: ExtendedBlockCache[]) {
-  return arr.filter(
-    (v, i, a) =>
-      a.findIndex(
-        (t) =>
-          t.id === v.id ||
-          (t.path === v.path &&
-            t.position.start.line === v.position.start.line &&
-            t.position.end.line === v.position.end.line)
-      ) === i
-  );
+  return arr
+    ? arr.filter(
+        (v, i, a) =>
+          a.findIndex(
+            (t) =>
+              t.id === v.id ||
+              (t.path === v.path &&
+                t.position.start.line === v.position.start.line &&
+                t.position.end.line === v.position.end.line)
+          ) === i
+      )
+    : arr;
 }
