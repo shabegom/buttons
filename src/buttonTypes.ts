@@ -1,7 +1,7 @@
 import { App, MarkdownView, Notice, TFile } from "obsidian";
 import mexp from "math-expression-evaluator";
 
-import { Arguments } from "./types";
+import { Arguments, Position } from "./types";
 import {
   appendContent,
   createNote,
@@ -13,7 +13,7 @@ import {
 export const calculate = async (
   app: App,
   { action }: Arguments,
-  position
+  position: Position
 ): Promise<void> => {
   let equation = action;
   const variables = action.match(/\$[0-9]*/g);
@@ -54,7 +54,7 @@ export const replace = (app: App, { replace }: Arguments): void => {
 export const template = async (
   app: App,
   args: Arguments,
-  position
+  position: Position
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   const templaterPlugin = app.plugins.plugins["templater-obsidian"];

@@ -43,3 +43,8 @@ export interface Arguments {
   replace?: string;
   [key: string]: string;
 }
+
+export interface Position {
+  lineStart: number;
+  lineEnd: number;
+}
