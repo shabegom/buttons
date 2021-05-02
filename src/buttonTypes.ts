@@ -53,7 +53,7 @@ export const replace = (app: App, { replace }: Arguments): void => {
 
 export const template = async (
   app: App,
-  { type, action }: Arguments,
+  args: Arguments,
   position
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
@@ -65,7 +65,7 @@ export const template = async (
       : templaterPlugin
       ? templaterPlugin.settings.template_folder.toLowerCase()
       : undefined;
-    const templateFile = action.toLowerCase();
+    const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(
       (file) => file.path.toLowerCase() === `${folder}/${templateFile}.md`
@@ -73,8 +73,8 @@ export const template = async (
     if (file) {
       const content = await app.vault.read(file);
       // prepend template above the button
-      if (type.includes("prepend")) {
-        prependContent(app, content, position.lineStart);
+      if (args.type.includes("prepend")) {
+        prependContent(app, content, position.lineStart, args.replace);
         setTimeout(
           () =>
             app.commands.executeCommandById(
@@ -84,7 +84,7 @@ export const template = async (
         );
       }
       // append template below the button
-      if (type.includes("append")) {
+      if (args.type.includes("append")) {
         appendContent(app, content, position.lineEnd);
         setTimeout(
           () =>
@@ -94,8 +94,8 @@ export const template = async (
           100
         );
       }
-      if (type.includes("note")) {
-        createNote(app, content, type);
+      if (args.type.includes("note")) {
+        createNote(app, content, args.type);
       }
     } else {
       new Notice(

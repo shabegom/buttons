@@ -107,14 +107,30 @@ export const removeSection = async (
 export const prependContent = async (
   app: App,
   insert: string,
-  lineStart: number
+  lineStart: number,
+  replace: string
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;
     let content = await app.vault.read(file);
     const contentArray = content.split("\n");
-    contentArray.splice(lineStart, 0, insert);
+    if (replace) {
+      if (replace.includes("[") && replace.includes("]")) {
+        const args = replace.match(/\[(.*)\]/);
+        if (args[1]) {
+          const argArray = args[1].split(/,\s?/);
+          if (argArray[0]) {
+            const start = parseInt(argArray[0]) - 1;
+            const end = parseInt(argArray[1]);
+            const numLines = end - start;
+            contentArray.splice(lineStart - numLines, 0, insert);
+          }
+        }
+      }
+    } else {
+      contentArray.splice(lineStart, 0, insert);
+    }
     content = contentArray.join("\n");
     await app.vault.modify(file, content);
   } else {
