@@ -4,7 +4,7 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** May 1, 2021  
+**last updated:** May 2, 2021  
 - You can add a block-id below a button block. The button block-id can be used to inherit arguments from a button or to remove multiple buttons
 - `remove` can now be an array of button block-ids to remove (it can still be true to remove the clicked button)
 - `replace` now takes an array like [startLine,endLine] to define the start and end line to be replaced.
@@ -252,6 +252,10 @@ replace [7,25]
 
 
 ## Releases
+
+### 0.3.2
+- Fix the uncaught Type Error if there are no button block-ids in the vault
+- Fix the position error if not on insiders build
 
 ### 0.3.0
 - You can add a block-id below a button block. The button block-id can be used to inherit arguments from a button or to remove multiple buttons
