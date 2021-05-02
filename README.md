@@ -11,7 +11,7 @@ Run commands and open links by clicking on ✨ Buttons ✨
 - `append`, `prepend`, `remove`, `replace` have been updated to use the button position. `name` is no longer required.
 
 **known issues with current release**
-- If you're using the mobile beta the button block-ids aren't working properly.
+- If you're not on insiders, or on mobile, your button needs to have a name. I mean, why wouldn't you have a name?
 
 ---
 
