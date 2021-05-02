@@ -2,6 +2,8 @@ import { App, TFile, CachedMetadata } from "obsidian";
 import { ExtendedBlockCache, Arguments } from "./types";
 import { createArgumentObject } from "./utils";
 
+let buttonStore: ExtendedBlockCache[];
+
 export const initializeButtonStore = (app: App): void => {
   const files = app.vault.getMarkdownFiles();
   const blocksArr = files
@@ -12,6 +14,7 @@ export const initializeButtonStore = (app: App): void => {
     .filter((arr) => arr !== undefined)
     .flat();
   localStorage.setItem("buttons", JSON.stringify(blocksArr));
+  buttonStore = blocksArr;
 };
 
 export const addButtonToStore = (app: App, file: TFile): void => {
@@ -22,13 +25,15 @@ export const addButtonToStore = (app: App, file: TFile): void => {
     ? removeDuplicates([...buttons, ...store])
     : removeDuplicates(store);
   localStorage.setItem("buttons", JSON.stringify(newStore));
+  buttonStore = newStore;
 };
 
 export const getButtonFromStore = async (
   app: App,
   args: Arguments
 ): Promise<Arguments> | undefined => {
-  const store = JSON.parse(localStorage.getItem("buttons"));
+  let store = JSON.parse(localStorage.getItem("buttons"));
+  store = store ? store : buttonStore;
   if (args.id) {
     const storedButton = store.filter(
       (item: ExtendedBlockCache) => `button-${args.id}` === item.id
