@@ -26,11 +26,9 @@ export const getButtonPosition = (
     const codeblock = contentArray
       .slice(position.lineStart, position.lineEnd + 1)
       .join("\n");
-    console.log(codeblock);
     if (codeblock.includes("button") && codeblock.includes(args.name)) {
       finalPosition = position;
     }
   });
-  console.log(finalPosition);
   return finalPosition;
 };
