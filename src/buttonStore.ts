@@ -36,9 +36,11 @@ export const getButtonFromStore = async (
     ? buttonStore
     : JSON.parse(localStorage.getItem("buttons"));
   if (args.id) {
-    const storedButton = store.filter(
-      (item: ExtendedBlockCache) => `button-${args.id}` === item.id
-    )[0];
+    const storedButton =
+      store &&
+      store.filter(
+        (item: ExtendedBlockCache) => `button-${args.id}` === item.id
+      )[0];
     if (storedButton) {
       const file = app.vault.getAbstractFileByPath(storedButton.path);
       const content = await app.vault.cachedRead(file as TFile);
@@ -74,7 +76,7 @@ export const buildButtonArray = (
 };
 
 function removeDuplicates(arr: ExtendedBlockCache[]) {
-  return arr
+  return arr[0]
     ? arr.filter(
         (v, i, a) =>
           a.findIndex(
