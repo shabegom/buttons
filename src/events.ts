@@ -17,3 +17,12 @@ export const initializeListener = (
     callback(app);
   });
 };
+
+export const openFileListener = (
+  app: App,
+  callback: (app: App) => void
+): EventRef => {
+  return app.workspace.on("file-open", () => {
+    callback(app);
+  });
+};

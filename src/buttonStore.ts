@@ -4,6 +4,9 @@ import { createArgumentObject } from "./utils";
 
 let buttonStore: ExtendedBlockCache[];
 
+export const getStore = (isMobile: boolean) =>
+  isMobile ? buttonStore : JSON.parse(localStorage.getItem("buttons"));
+
 export const initializeButtonStore = (app: App): void => {
   const files = app.vault.getMarkdownFiles();
   const blocksArr = files
@@ -20,10 +23,15 @@ export const initializeButtonStore = (app: App): void => {
 export const addButtonToStore = (app: App, file: TFile): void => {
   const cache = app.metadataCache.getFileCache(file);
   const buttons = buildButtonArray(cache, file);
-  const store = JSON.parse(localStorage.getItem("buttons"));
-  const newStore = buttons
-    ? removeDuplicates([...buttons, ...store])
-    : removeDuplicates(store);
+  const store = getStore(app.isMobile);
+  const newStore =
+    buttons && store
+      ? removeDuplicates([...buttons, ...store])
+      : store
+      ? removeDuplicates(store)
+      : buttons
+      ? removeDuplicates(buttons)
+      : [];
   localStorage.setItem("buttons", JSON.stringify(newStore));
   buttonStore = newStore;
 };
@@ -32,9 +40,7 @@ export const getButtonFromStore = async (
   app: App,
   args: Arguments
 ): Promise<Arguments> | undefined => {
-  const store = app.isMobile
-    ? buttonStore
-    : JSON.parse(localStorage.getItem("buttons"));
+  const store = getStore(app.isMobile);
   if (args.id) {
     const storedButton =
       store &&
@@ -61,7 +67,7 @@ export const buildButtonArray = (
   cache: CachedMetadata,
   file: TFile
 ): ExtendedBlockCache[] => {
-  const blocks = cache.blocks;
+  const blocks = cache && cache.blocks;
   if (blocks) {
     const blockKeys = Array.from(Object.keys(blocks));
     const blockArray: ExtendedBlockCache[] = blockKeys
@@ -76,7 +82,7 @@ export const buildButtonArray = (
 };
 
 function removeDuplicates(arr: ExtendedBlockCache[]) {
-  return arr[0]
+  return arr && arr[0]
     ? arr.filter(
         (v, i, a) =>
           a.findIndex(

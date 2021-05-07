@@ -8,7 +8,7 @@ import {
   prependContent,
   removeButton,
   removeSection,
-} from "./utils";
+} from "./handlers";
 
 export const calculate = async (
   app: App,
@@ -74,7 +74,7 @@ export const template = async (
       const content = await app.vault.read(file);
       // prepend template above the button
       if (args.type.includes("prepend")) {
-        prependContent(app, content, position.lineStart, args.replace);
+        prependContent(app, content, position.lineStart);
         setTimeout(
           () =>
             app.commands.executeCommandById(
