@@ -8,7 +8,7 @@ import {
   prependContent,
   removeButton,
   removeSection,
-} from "./utils";
+} from "./handlers";
 
 export const calculate = async (
   app: App,
