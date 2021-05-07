@@ -5,9 +5,9 @@ Run commands and open links by clicking on ✨ Buttons ✨
 ---
 
 **last updated:** May 6, 2021  
-0.3.8
+**0.3.8**  
 - I think I've fixed most of the bugs introduced in 0.3.0, thanks for your patience!
-0.3.0
+**0.3.0**  
 - You can add a block-id below a button block. The button block-id can be used to inherit arguments from a button or to remove multiple buttons
 - `remove` can now be an array of button block-ids to remove (it can still be true to remove the clicked button)
 - `replace` now takes an array like [startLine,endLine] to define the start and end line to be replaced.
