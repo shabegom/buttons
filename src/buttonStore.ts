@@ -24,11 +24,14 @@ export const addButtonToStore = (app: App, file: TFile): void => {
   const cache = app.metadataCache.getFileCache(file);
   const buttons = buildButtonArray(cache, file);
   const store = getStore(app.isMobile);
-  const newStore = buttons
-    ? removeDuplicates([...buttons, ...store])
-    : store
-    ? removeDuplicates(store)
-    : [];
+  const newStore =
+    buttons && store
+      ? removeDuplicates([...buttons, ...store])
+      : store
+      ? removeDuplicates(store)
+      : buttons
+      ? removeDuplicates(buttons)
+      : [];
   localStorage.setItem("buttons", JSON.stringify(newStore));
   buttonStore = newStore;
 };
@@ -64,7 +67,7 @@ export const buildButtonArray = (
   cache: CachedMetadata,
   file: TFile
 ): ExtendedBlockCache[] => {
-  const blocks = cache.blocks;
+  const blocks = cache && cache.blocks;
   if (blocks) {
     const blockKeys = Array.from(Object.keys(blocks));
     const blockArray: ExtendedBlockCache[] = blockKeys
