@@ -63,6 +63,28 @@ export const getButtonFromStore = async (
   }
 };
 
+export const getButtonById = async (
+  app: App,
+  id: string
+): Promise<Arguments> => {
+  const store = getStore(app.isMobile);
+  const storedButton = store.filter(
+    (item: ExtendedBlockCache) => `button-${id}` === item.id
+  )[0];
+  if (storedButton) {
+    const file = app.vault.getAbstractFileByPath(storedButton.path);
+    const content = await app.vault.cachedRead(file as TFile);
+    const contentArray = content.split("\n");
+    const button = contentArray
+      .slice(
+        storedButton.position.start.line + 1,
+        storedButton.position.end.line
+      )
+      .join("\n");
+    return createArgumentObject(button);
+  }
+};
+
 export const buildButtonArray = (
   cache: CachedMetadata,
   file: TFile
