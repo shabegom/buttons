@@ -23,30 +23,37 @@ export const removeButton = async (
     const content = contentArray.join("\n");
     await app.vault.modify(file, content);
   }
-  handleValueArray(remove, async (argArray) => {
-    const buttons =
-      store &&
-      store.filter((item: ExtendedBlockCache) => {
-        let exists;
-        argArray.forEach((arg) => {
-          if (item.id === `button-${arg}`) {
-            exists = true;
-          }
+  if (lineStart === lineEnd) {
+    contentArray.splice(lineStart, 1);
+    const content = contentArray.join("\n");
+    await app.vault.modify(file, content);
+  } else {
+    handleValueArray(remove, async (argArray) => {
+      const buttons =
+        store &&
+        store.filter((item: ExtendedBlockCache) => {
+          let exists;
+          argArray.forEach((arg) => {
+            if (item.id === `button-${arg}` && item.path === file.path) {
+              exists = true;
+            }
+          });
+          return exists;
         });
-        return exists;
-      });
-    if (buttons[0]) {
-      let offset = 0;
-      buttons.forEach((button: ExtendedBlockCache) => {
-        const start = button.position.start.line - offset;
-        const numLines = button.position.end.line - button.position.start.line;
-        contentArray.splice(start, numLines + 2);
-        offset += numLines + 2;
-      });
-      const content = contentArray.join("\n");
-      await app.vault.modify(file, content);
-    }
-  });
+      if (buttons[0]) {
+        let offset = 0;
+        buttons.forEach((button: ExtendedBlockCache) => {
+          const start = button.position.start.line - offset;
+          const numLines =
+            button.position.end.line - button.position.start.line;
+          contentArray.splice(start, numLines + 2);
+          offset += numLines + 2;
+        });
+        const content = contentArray.join("\n");
+        await app.vault.modify(file, content);
+      }
+    });
+  }
 };
 
 export const removeSection = async (
@@ -107,7 +114,7 @@ export const appendContent = async (
     } else {
       insertionPoint = lineEnd + 1;
     }
-    contentArray.splice(insertionPoint, 0, `\n${insert}`);
+    contentArray.splice(insertionPoint, 0, `${insert}`);
     content = contentArray.join("\n");
     await app.vault.modify(file, content);
   } else {

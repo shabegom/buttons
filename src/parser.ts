@@ -48,9 +48,31 @@ export const getInlineButtonPosition = async (
         if (word.startsWith("`button")) {
           if (word === `\`button-${id}\``) {
             position.lineStart = index;
+            position.lineEnd = index;
           }
         }
       });
     });
   return position;
+};
+
+export const findNumber = async (
+  app: App,
+  lineNumber: number
+): Promise<string[]> => {
+  const content = await createContentArray(app);
+  const value: string[] = [];
+  content.contentArray.forEach((line: string, index: number) => {
+    if (index === lineNumber - 1) {
+      value.push(line);
+    }
+  });
+  const convertWords = value
+    .join("")
+    .replace("plus", "+")
+    .replace("minus", "-")
+    .replace("times", "*")
+    .replace(/divide(d)?(\sby)?/g, "/");
+  const numbers = convertWords.replace(/\s/g, "").match(/[^\w:]*?\d+?/g);
+  return numbers;
 };
