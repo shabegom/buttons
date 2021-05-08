@@ -9,7 +9,17 @@ import {
   removeButton,
   removeSection,
 } from "./handlers";
-import { findNumber } from "./parser";
+import {
+  getButtonPosition,
+  getInlineButtonPosition,
+  findNumber,
+} from "./parser";
+import { handleValueArray } from "./utils";
+import {
+  getButtonSwapById,
+  setButtonSwapById,
+  getButtonById,
+} from "./buttonStore";
 
 export const calculate = async (
   app: App,
@@ -126,4 +136,56 @@ export const command = (app: App, { action }: Arguments): void => {
     (command) => command.name.toUpperCase() === action.toUpperCase().trim()
   )[0];
   app.commands.executeCommandById(command.id);
+};
+
+export const swap = async (
+  app: App,
+  swap: string,
+  id: string,
+  inline: boolean,
+  file: TFile
+): Promise<void> => {
+  handleValueArray(swap, async (argArray) => {
+    const swap = await getButtonSwapById(app, id);
+    const newSwap = swap + 1 > argArray.length - 1 ? 0 : swap + 1;
+    setButtonSwapById(app, id, newSwap);
+    const args = await getButtonById(app, argArray[swap]);
+    let position;
+    let content;
+    if (args) {
+      if (args.replace) {
+        replace(app, args);
+      }
+      if (args.type === "command") {
+        command(app, args);
+      }
+      // handle link buttons
+      if (args.type === "link") {
+        link(args);
+      }
+      // handle template buttons
+      if (args.type && args.type.includes("template")) {
+        setTimeout(async () => {
+          content = await app.vault.read(file);
+          position = inline
+            ? await getInlineButtonPosition(app, id)
+            : getButtonPosition(content, args);
+          template(app, args, position);
+        }, 50);
+      }
+      if (args.type === "calculate") {
+        calculate(app, args, position);
+      }
+      // handle removing the button
+      if (args.remove) {
+        setTimeout(async () => {
+          content = await app.vault.read(file);
+          position = inline
+            ? await getInlineButtonPosition(app, id)
+            : getButtonPosition(content, args);
+          remove(app, args, position);
+        }, 75);
+      }
+    }
+  });
 };

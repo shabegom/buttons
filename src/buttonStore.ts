@@ -4,7 +4,7 @@ import { createArgumentObject } from "./utils";
 
 let buttonStore: ExtendedBlockCache[];
 
-export const getStore = (isMobile: boolean) =>
+export const getStore = (isMobile: boolean): ExtendedBlockCache[] =>
   isMobile ? buttonStore : JSON.parse(localStorage.getItem("buttons"));
 
 export const initializeButtonStore = (app: App): void => {
@@ -39,7 +39,7 @@ export const addButtonToStore = (app: App, file: TFile): void => {
 export const getButtonFromStore = async (
   app: App,
   args: Arguments
-): Promise<Arguments> | undefined => {
+): Promise<{ args: Arguments; id: string }> | undefined => {
   const store = getStore(app.isMobile);
   if (args.id) {
     const storedButton =
@@ -58,7 +58,10 @@ export const getButtonFromStore = async (
         )
         .join("\n");
       const storedArgs = createArgumentObject(button);
-      return { ...storedArgs, ...args };
+      return {
+        args: { ...storedArgs, ...args },
+        id: storedButton.id.split("button-")[1],
+      };
     }
   }
 };
@@ -85,6 +88,36 @@ export const getButtonById = async (
   }
 };
 
+export const getButtonSwapById = async (
+  app: App,
+  id: string
+): Promise<number> => {
+  const store = getStore(app.isMobile);
+  const storedButton = store.filter(
+    (item: ExtendedBlockCache) => `button-${id}` === item.id
+  )[0];
+  if (storedButton) {
+    return storedButton.swap;
+  }
+};
+
+export const setButtonSwapById = async (
+  app: App,
+  id: string,
+  newSwap: number
+): Promise<void> => {
+  const store = getStore(app.isMobile);
+  const storedButton = store.filter(
+    (item: ExtendedBlockCache) => `button-${id}` === item.id
+  )[0];
+  if (storedButton) {
+    storedButton.swap = newSwap;
+    const newStore = removeDuplicates([...store, storedButton]);
+    localStorage.setItem("buttons", JSON.stringify(newStore));
+    buttonStore = newStore;
+  }
+};
+
 export const buildButtonArray = (
   cache: CachedMetadata,
   file: TFile
@@ -96,6 +129,7 @@ export const buildButtonArray = (
       .map((key) => blocks[key])
       .map((obj: ExtendedBlockCache) => {
         obj["path"] = file.path;
+        obj["swap"] = 0;
         return obj;
       })
       .filter((block) => block.id.includes("button"));

@@ -20,6 +20,7 @@ import {
   template,
   link,
   command,
+  swap,
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 import { Arguments } from "./types";
@@ -46,8 +47,9 @@ export default class ButtonsPlugin extends Plugin {
         addButtonToStore(this.app, activeView.file);
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
-        args = storeArgs ? storeArgs : args;
-        createButton(this.app, el, args, false);
+        args = storeArgs ? storeArgs.args : args;
+        const id = storeArgs && storeArgs.id;
+        createButton(this.app, el, args, false, id);
       }
     });
 
@@ -154,5 +156,8 @@ const clickHandler = async (
         : getButtonPosition(content, args);
       remove(app, args, position);
     }, 75);
+  }
+  if (args.swap) {
+    swap(app, args.swap, id, inline, activeView.file);
   }
 };

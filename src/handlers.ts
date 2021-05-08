@@ -111,6 +111,7 @@ export const appendContent = async (
       contentArray[lineEnd + 1].includes("^button")
     ) {
       insertionPoint = lineEnd + 2;
+      insert = `\n${insert}`;
     } else {
       insertionPoint = lineEnd + 1;
     }

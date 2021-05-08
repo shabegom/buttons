@@ -29,6 +29,7 @@ declare module "obsidian" {
 
 export interface ExtendedBlockCache extends BlockCache {
   path?: string;
+  swap?: number;
 }
 
 export interface Arguments {
