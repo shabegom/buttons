@@ -1,4 +1,6 @@
+import { App } from "obsidian";
 import { Arguments, Position } from "./types";
+import { createContentArray } from "./utils";
 
 export const getButtonPosition = (
   content: string,
@@ -31,4 +33,24 @@ export const getButtonPosition = (
     }
   });
   return finalPosition;
+};
+
+export const getInlineButtonPosition = async (
+  app: App,
+  id: string
+): Promise<Position> => {
+  const content = await createContentArray(app);
+  const position = { lineStart: 0, lineEnd: 0 };
+  content.contentArray
+    .map((line: string) => line.split(" "))
+    .forEach((words, index) => {
+      words.forEach((word) => {
+        if (word.startsWith("`button")) {
+          if (word === `\`button-${id}\``) {
+            position.lineStart = index;
+          }
+        }
+      });
+    });
+  return position;
 };

@@ -21,7 +21,7 @@ import {
   link,
   command,
 } from "./buttonTypes";
-import { getButtonPosition } from "./parser";
+import { getButtonPosition, getInlineButtonPosition } from "./parser";
 import { Arguments } from "./types";
 
 // extend the obsidian module with some additional typings
@@ -47,25 +47,22 @@ export default class ButtonsPlugin extends Plugin {
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs : args;
-        createButton(this.app, el, args);
+        createButton(this.app, el, args, false);
       }
     });
 
     this.registerMarkdownPostProcessor(async (el, ctx) => {
       // Search for <code> blocks inside this element; for each one, look for things of the form `
       const codeblocks = el.querySelectorAll("code");
-      const text = el.querySelectorAll("p").forEach((p) => {
-        console.log(p.innerText);
-      });
       for (let index = 0; index < codeblocks.length; index++) {
         const codeblock = codeblocks.item(index);
 
         const text = codeblock.innerText.trim();
-        if (text.startsWith("=button")) {
-          const id = text.split("=button")[1].trim();
+        if (text.startsWith("button")) {
+          const id = text.split("button-")[1].trim();
           const args = await getButtonById(this.app, id);
           if (args) {
-            ctx.addChild(new InlineButton(el, this.app, args));
+            ctx.addChild(new InlineButton(codeblock, this.app, args, id));
           }
         }
       }
@@ -78,19 +75,26 @@ export default class ButtonsPlugin extends Plugin {
 }
 
 class InlineButton extends MarkdownRenderChild {
-  constructor(public el: HTMLElement, public app: App, public args: Arguments) {
+  constructor(
+    public el: HTMLElement,
+    public app: App,
+    public args: Arguments,
+    public id: string
+  ) {
     super(el);
   }
   async onload() {
-    console.log(this.el);
-    createButton(this.app, this.el, this.args);
+    const button = createButton(this.app, this.el, this.args, true, this.id);
+    this.el.replaceWith(button);
   }
 }
 
 const createButton = (
   app: App,
   el: HTMLElement,
-  args: Arguments
+  args: Arguments,
+  inline: boolean,
+  id?: string
 ): HTMLElement => {
   //create the button element
   const button = el.createEl("button", {
@@ -101,15 +105,22 @@ const createButton = (
   });
   args.id ? button.setAttribute("id", args.id) : "";
   button.on("click", "button", () => {
-    clickHandler(app, args);
+    clickHandler(app, args, inline, id);
   });
   return button;
 };
 
-const clickHandler = async (app: App, args: Arguments) => {
+const clickHandler = async (
+  app: App,
+  args: Arguments,
+  inline: boolean,
+  id: string
+) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   let content = await app.vault.read(activeView.file);
-  let position = getButtonPosition(content, args);
+  let position = inline
+    ? await getInlineButtonPosition(app, id)
+    : getButtonPosition(content, args);
   // handle command buttons
   if (args.replace) {
     replace(app, args);
@@ -125,7 +136,9 @@ const clickHandler = async (app: App, args: Arguments) => {
   if (args.type && args.type.includes("template")) {
     setTimeout(async () => {
       content = await app.vault.read(activeView.file);
-      position = getButtonPosition(content, args);
+      position = inline
+        ? await getInlineButtonPosition(app, id)
+        : getButtonPosition(content, args);
       template(app, args, position);
     }, 50);
   }
@@ -136,7 +149,9 @@ const clickHandler = async (app: App, args: Arguments) => {
   if (args.remove) {
     setTimeout(async () => {
       content = await app.vault.read(activeView.file);
-      position = getButtonPosition(content, args);
+      position = inline
+        ? await getInlineButtonPosition(app, id)
+        : getButtonPosition(content, args);
       remove(app, args, position);
     }, 75);
   }
