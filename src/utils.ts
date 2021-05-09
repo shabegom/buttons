@@ -26,7 +26,7 @@ export const createContentArray = async (
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;
-    const content = await app.vault.cachedRead(file);
+    const content = await app.vault.read(file);
     return { contentArray: content.split("\n"), file };
   }
   new Notice("Could not get Active View", 1000);

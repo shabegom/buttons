@@ -21,6 +21,7 @@ import {
   link,
   command,
   swap,
+  templater,
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 import { Arguments } from "./types";
@@ -124,6 +125,13 @@ const clickHandler = async (
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
   // handle command buttons
+  if (args.templater) {
+    app.commands.executeCommandById(
+      "templater-obsidian:replace-in-file-templater"
+    );
+    args = await templater(app, position);
+    console.log(args);
+  }
   if (args.replace) {
     replace(app, args);
   }
