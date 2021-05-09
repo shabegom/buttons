@@ -4,8 +4,14 @@ import {
   EventRef,
   MarkdownView,
   MarkdownRenderChild,
+  Notice,
+  Modal,
+  DropdownComponent,
+  TextComponent,
+  ButtonComponent,
+  SuggestModal,
 } from "obsidian";
-import { createArgumentObject, insertButton } from "./utils";
+import { createArgumentObject } from "./utils";
 import {
   initializeButtonStore,
   addButtonToStore,
@@ -39,7 +45,7 @@ export default class ButtonsPlugin extends Plugin {
     this.addCommand({
       id: "insert-button-template",
       name: "Insert Button",
-      callback: () => insertButton(this.app),
+      callback: () => new ButtonModal(this.app).open(),
     });
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
@@ -92,6 +98,73 @@ class InlineButton extends MarkdownRenderChild {
   }
 }
 
+class ButtonModal extends Modal {
+  constructor(app: App) {
+    super(app);
+  }
+  private actionInterval;
+  private removeInterval;
+
+  onOpen() {
+    const { titleEl, contentEl } = this;
+    titleEl.setText("Button Maker");
+    const name = contentEl.createEl("div");
+    name.createEl("p").setText("Name of Button");
+    const btnName = new TextComponent(name).setPlaceholder("My Awesome Button");
+    const type = contentEl.createEl("div");
+    type.createEl("p").setText("What type of Button would you like to make?");
+    const btnType = new DropdownComponent(type)
+      .addOption("command", "Command - Run a Command Palette Command")
+      .addOption("link", "Link - Open a Link or URI")
+      .addOption("append template", "Append Template - Append a template note")
+      .addOption(
+        "prepend template",
+        "Prepend Template - Prepend a template note"
+      )
+      .addOption(
+        "note template",
+        "New Note from Template - Create a new note based on a Template"
+      )
+      .addOption("calculate", "Calculate - Do some math");
+    const action = contentEl.createEl("div");
+    const actionMessage = action.createEl("p");
+    const commandSelector = new TextComponent(action);
+    let typeValue;
+    this.actionInterval = setInterval(() => {
+      typeValue = btnType.getValue();
+      if (typeValue === "command") {
+        actionMessage.setText("Which command do you want to run?");
+        commandSelector.setPlaceholder("Toggle Pin");
+      }
+      if (typeValue === "link") {
+        actionMessage.setText("Which link do you want to open?");
+        commandSelector.setPlaceholder("https://obsidian.md");
+      }
+      if (typeValue.includes("template")) {
+        actionMessage.setText("Which template?");
+        commandSelector.setPlaceholder("My Sweet Template");
+      }
+      if (typeValue === "calculate") {
+        actionMessage.setText(
+          "What is the calculation? You can reference line numbers: $10 = line ten in the note"
+        );
+        commandSelector.setPlaceholder("2+$2/5");
+      }
+    }, 100);
+    const buttons = contentEl.createEl("div");
+    const insertButton = new ButtonComponent(buttons).setButtonText("Submit");
+    insertButton.onClick(() => {
+      console.log(btnName.getValue(), btnType.getValue());
+    });
+  }
+
+  onClose() {
+    let { contentEl } = this;
+    contentEl.empty();
+    clearInterval(this.actionInterval);
+  }
+}
+
 const createButton = (
   app: App,
   el: HTMLElement,
@@ -126,11 +199,10 @@ const clickHandler = async (
     : getButtonPosition(content, args);
   // handle command buttons
   if (args.templater) {
-    app.commands.executeCommandById(
-      "templater-obsidian:replace-in-file-templater"
-    );
     args = await templater(app, position);
-    console.log(args);
+    if (inline) {
+      new Notice("templater args don't work with inline buttons yet", 2000);
+    }
   }
   if (args.replace) {
     replace(app, args);
@@ -166,6 +238,10 @@ const clickHandler = async (
     }, 75);
   }
   if (args.swap) {
-    swap(app, args.swap, id, inline, activeView.file);
+    if (!inline) {
+      new Notice("swap args only work in inline buttons for now", 2000);
+    } else {
+      swap(app, args.swap, id, inline, activeView.file);
+    }
   }
 };

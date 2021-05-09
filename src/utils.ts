@@ -1,5 +1,5 @@
 import { MarkdownView, App, Notice, TFile } from "obsidian";
-import { Arguments } from "./types";
+import { Arguments, Position } from "./types";
 
 export const insertButton = (app: App): void => {
   const button = `\`\`\`button
@@ -47,3 +47,28 @@ export const handleValueArray = (
     }
   }
 };
+
+export function getNewArgs(
+  app: App,
+  position: Position,
+  originalButton: string
+): Promise<{ args: Arguments; content: string }> {
+  const promise = new Promise((resolve) => {
+    setTimeout(async () => {
+      const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+      const length = position.lineEnd - position.lineStart;
+      const newContent = await app.vault
+        .read(activeView.file)
+        .then((content: string) => content.split("\n"));
+      const newButton = newContent
+        .splice(position.lineStart, position.lineEnd)
+        .join("\n")
+        .replace("```button", "")
+        .replace("```", "");
+      newContent.splice(position.lineStart, length, originalButton);
+      const content = newContent.join("\n");
+      resolve({ args: createArgumentObject(newButton), content });
+    }, 250);
+  });
+  return promise as Promise<{ args: Arguments; content: string }>;
+}

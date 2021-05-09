@@ -14,11 +14,7 @@ import {
   getInlineButtonPosition,
   findNumber,
 } from "./parser";
-import {
-  handleValueArray,
-  createContentArray,
-  createArgumentObject,
-} from "./utils";
+import { handleValueArray, createContentArray, getNewArgs } from "./utils";
 import {
   getButtonSwapById,
   setButtonSwapById,
@@ -199,42 +195,15 @@ export const templater = async (
   position: Position
 ): Promise<Arguments> => {
   const originalContent = await createContentArray(app);
-  const length = position.lineEnd - position.lineStart;
   const originalButton = originalContent.contentArray
     .splice(position.lineStart, position.lineEnd)
     .join("\n");
-  let complete = app.commands.executeCommandById(
+  app.commands.executeCommandById(
     "templater-obsidian:replace-in-file-templater"
   );
-  if (complete) {
-    const { content, args } = await getNewArgs(app, position, originalButton);
-    setTimeout(async () => {
-      await app.vault.modify(originalContent.file, content);
-    }, 1000);
-    return args;
-  }
+  const { content, args } = await getNewArgs(app, position, originalButton);
+  setTimeout(async () => {
+    await app.vault.modify(originalContent.file, content);
+  }, 500);
+  return args;
 };
-
-function getNewArgs(
-  app: App,
-  position: Position,
-  originalButton: string
-): Promise<{ args: Arguments; content: string }> {
-  const promise = new Promise((resolve) => {
-    setTimeout(async () => {
-      const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-      const newContent = await app.vault
-        .read(activeView.file)
-        .then((content: string) => content.split("\n"));
-      const newButton = newContent
-        .splice(position.lineStart, position.lineEnd)
-        .join("\n")
-        .replace("```button", "")
-        .replace("```", "");
-      newContent.splice(position.lineStart, length, originalButton);
-      const content = newContent.join("\n");
-      resolve({ args: createArgumentObject(newButton), content });
-    }, 500);
-  });
-  return promise as Promise<{ args: Arguments; content: string }>;
-}
