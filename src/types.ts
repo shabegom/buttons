@@ -23,6 +23,7 @@ declare module "obsidian" {
     commands: {
       executeCommandById: (id: string) => unknown;
       listCommands: () => [{ id: string; name: string }];
+      commands: Record<string, { name: string; id: string }>;
     };
   }
 }

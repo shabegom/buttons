@@ -72,3 +72,7 @@ export function getNewArgs(
   });
   return promise as Promise<{ args: Arguments; content: string }>;
 }
+
+export const wrapAround = (value: number, size: number): number => {
+  return ((value % size) + size) % size;
+};
