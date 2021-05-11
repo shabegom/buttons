@@ -1,15 +1,43 @@
 import { MarkdownView, App, Notice, TFile } from "obsidian";
 import { Arguments, Position } from "./types";
+import { customAlphabet } from "nanoid";
 
-export const insertButton = (app: App): void => {
-  const button = `\`\`\`button
-name
-type
-action
-\`\`\``;
+const nanoid = (num: number) => {
+  const id = customAlphabet("123456789abcdefghiklmnopqrstuvzxyz", num);
+  return id();
+};
+
+interface OutputObject {
+  name: string;
+  type: string;
+  action: string;
+  swap: string;
+  remove: string;
+  replace: string;
+  id: string;
+  templater: boolean;
+  class: string;
+  color: string;
+}
+
+export const insertButton = (app: App, outputObject: OutputObject): void => {
+  const buttonArr = [];
+  buttonArr.push("```button");
+  outputObject.type && buttonArr.push(`type ${outputObject.type}`);
+  outputObject.action && buttonArr.push(`action ${outputObject.action}`);
+  outputObject.id && buttonArr.push(`id ${outputObject.id}`);
+  outputObject.swap && buttonArr.push(`swap ${outputObject.swap}`);
+  outputObject.remove && buttonArr.push(`remove ${outputObject.remove}`);
+  outputObject.replace && buttonArr.push(`replace ${outputObject.replace}`);
+  outputObject.templater === true &&
+    buttonArr.push(`templater ${outputObject.templater}`);
+  outputObject.color && buttonArr.push(`color ${outputObject.color}`);
+  outputObject.class && buttonArr.push(`class ${outputObject.class}`);
+  buttonArr.push("```");
+  buttonArr.push(`^button-${nanoid(4)}`);
   const page = app.workspace.getActiveViewOfType(MarkdownView);
   const editor = page.editor;
-  editor.replaceSelection(button);
+  editor.replaceSelection(buttonArr.join("\n"));
 };
 
 export const createArgumentObject = (source: string): Arguments =>

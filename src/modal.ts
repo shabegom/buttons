@@ -1,6 +1,7 @@
 import { Modal, App, Setting, MarkdownView, Editor } from "obsidian";
 import { createButton } from "./button";
 import { CommandSuggest, TemplateSuggest, ButtonSuggest } from "./suggest";
+import { insertButton } from "./utils";
 
 export class ButtonModal extends Modal {
   activeView: MarkdownView;
@@ -21,21 +22,59 @@ export class ButtonModal extends Modal {
 
   constructor(app: App) {
     super(app);
-    this.activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (this.activeView) {
-      this.activeEditor = this.activeView.editor;
-      this.activeCursor = this.activeEditor.getCursor();
-    }
     this.commandSuggest = new CommandSuggest(this.app, this.commandSuggestEl);
     this.commandSuggestEl.placeholder = "Toggle Pin";
+    this.commandSuggestEl.addEventListener("change", (e: Event) => {
+      this.outputObject.action = (<HTMLInputElement>e.target).value;
+    });
+    this.commandSuggestEl.addEventListener("blur", (e: Event) => {
+      this.outputObject.action = (<HTMLInputElement>e.target).value;
+    });
     this.fileSuggest = new TemplateSuggest(this.app, this.fileSuggestEl);
     this.fileSuggestEl.placeholder = "My Template";
+    this.fileSuggestEl.addEventListener("change", (e) => {
+      this.outputObject.action = (<HTMLInputElement>e.target).value;
+    });
+    this.fileSuggestEl.addEventListener("blur", (e) => {
+      this.outputObject.action = (<HTMLInputElement>e.target).value;
+    });
     this.removeSuggest = new ButtonSuggest(this.app, this.removeSuggestEl);
     this.removeSuggestEl.value = "true";
+    this.removeSuggestEl.addEventListener("change", (e) => {
+      this.outputObject.remove = (<HTMLInputElement>e.target).value;
+    });
+    this.removeSuggestEl.addEventListener("blur", (e) => {
+      this.outputObject.remove = (<HTMLInputElement>e.target).value;
+    });
     this.swapSuggest = new ButtonSuggest(this.app, this.swapSuggestEl);
+    this.swapSuggestEl.addEventListener("change", (e) => {
+      this.outputObject.swap = (<HTMLInputElement>e.target).value;
+    });
+    this.swapSuggestEl.addEventListener("blur", (e) => {
+      this.outputObject.swap = (<HTMLInputElement>e.target).value;
+    });
     this.idSuggest = new ButtonSuggest(this.app, this.idSuggestEl);
+    this.idSuggestEl.addEventListener("change", (e) => {
+      this.outputObject.id = (<HTMLInputElement>e.target).value;
+    });
+    this.idSuggestEl.addEventListener("blur", (e) => {
+      this.outputObject.id = (<HTMLInputElement>e.target).value;
+    });
     this.swapSuggestEl.placeholder = "[idOne, idTwo]";
   }
+
+  private outputObject = {
+    name: "",
+    type: "",
+    action: "",
+    swap: "",
+    remove: "",
+    replace: "",
+    id: "",
+    templater: false,
+    class: "",
+    color: "",
+  };
 
   onOpen() {
     const { titleEl, contentEl } = this;
@@ -48,6 +87,7 @@ export class ButtonModal extends Modal {
           textEl.setPlaceholder("My Awesome Button");
           textEl.onChange((value) => {
             this.buttonPreviewEl.setText(value);
+            this.outputObject.name = value;
           });
 
           window.setTimeout(() => textEl.inputEl.focus(), 10);
@@ -81,6 +121,7 @@ export class ButtonModal extends Modal {
           );
           const action = formEl.createEl("div");
           drop.onChange((value) => {
+            this.outputObject.type = value;
             if (value === "link") {
               action.empty();
               new Setting(action)
@@ -88,6 +129,9 @@ export class ButtonModal extends Modal {
                 .setDesc("Enter a link to open")
                 .addText((textEl) => {
                   textEl.setPlaceholder("https://obsidian.md");
+                  textEl.onChange(
+                    (value) => (this.outputObject.action = value)
+                  );
                 });
             }
             if (value === "command") {
@@ -107,6 +151,38 @@ export class ButtonModal extends Modal {
                 .addText((textEl) => {
                   textEl.inputEl.replaceWith(this.fileSuggestEl);
                 });
+              if (value == "note template") {
+                new Setting(action)
+                  .setName("Note Name")
+                  .setDesc("What should the new note be named?")
+                  .addText((textEl) => {
+                    textEl.setPlaceholder("My New Note");
+                    new Setting(action)
+                      .setName("Split")
+                      .setDesc("Should the new note open in a split pane?")
+                      .addToggle((toggleEl) => {
+                        this.outputObject.type = `note(${textEl.getValue}) template`;
+                        textEl.onChange((textVal) => {
+                          const toggleVal = toggleEl.getValue();
+                          if (toggleVal) {
+                            this.outputObject.type = `note(${textVal}, split) template`;
+                          }
+                          if (!toggleVal) {
+                            this.outputObject.type = `note(${textVal}) template`;
+                          }
+                        });
+                        toggleEl.onChange((toggleVal) => {
+                          const textVal = textEl.getValue();
+                          if (toggleVal) {
+                            this.outputObject.type = `note(${textVal}, split) template`;
+                          }
+                          if (!toggleVal) {
+                            this.outputObject.type = `note(${textVal}) template`;
+                          }
+                        });
+                      });
+                  });
+              }
             }
             if (value === "calculate") {
               action.empty();
@@ -117,9 +193,13 @@ export class ButtonModal extends Modal {
                 )
                 .addText((textEl) => {
                   textEl.setPlaceholder("2+$10");
+                  textEl.onChange(
+                    (value) => (this.outputObject.action = value)
+                  );
                 });
             }
             if (value === "swap") {
+              this.outputObject.type = "";
               action.empty();
               new Setting(action)
                 .setName("Swap")
@@ -168,6 +248,9 @@ export class ButtonModal extends Modal {
                 )
                 .addText((textEl) => {
                   textEl.setValue("[]");
+                  textEl.onChange(
+                    (value) => (this.outputObject.replace = value)
+                  );
                 });
             }
             if (!value) {
@@ -191,9 +274,6 @@ export class ButtonModal extends Modal {
                 )
                 .addText((textEl) => {
                   textEl.inputEl.replaceWith(this.idSuggestEl);
-                  textEl.onChange((value) => {
-                    this.buttonPreviewEl.setAttribute("id", value);
-                  });
                 });
             }
             if (!value) {
@@ -209,6 +289,9 @@ export class ButtonModal extends Modal {
         )
         .addToggle((toggleEl) => {
           toggleEl.setTooltip("Do not use for inline Button");
+          toggleEl.onChange((value) => {
+            this.outputObject.templater = value;
+          });
         });
       new Setting(formEl)
         .setName("Custom Class")
@@ -216,6 +299,7 @@ export class ButtonModal extends Modal {
         .addText((textEl) => {
           textEl.onChange((value) => {
             this.buttonPreviewEl.setAttribute("class", value);
+            this.outputObject.class = value;
           });
         });
       new Setting(formEl)
@@ -255,22 +339,27 @@ export class ButtonModal extends Modal {
               this.buttonPreviewEl.setAttribute("class", `${buttonClass}`);
               this.buttonPreviewEl.removeAttribute("style");
             }
+            this.outputObject.color = value;
           });
         });
       formEl.createDiv("modal-button-container", (buttonContainerEl) => {
         buttonContainerEl
-          .createEl("button", { attr: { type: "button" }, text: "Cancel" })
+          .createEl("button", {
+            attr: { type: "button" },
+            cls: "default-button",
+            text: "Cancel",
+          })
           .addEventListener("click", () => this.close());
         buttonContainerEl.createEl("button", {
           attr: { type: "submit" },
-          cls: "mod-cta",
+          cls: "default-button mod-cta",
           text: "Insert Button",
         });
       });
 
       formEl.addEventListener("submit", (e: Event) => {
         e.preventDefault();
-        console.log(formEl.target.valueOf());
+        insertButton(this.app, this.outputObject);
         this.close();
       });
     });
