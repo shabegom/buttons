@@ -23,6 +23,7 @@ interface OutputObject {
 export const insertButton = (app: App, outputObject: OutputObject): void => {
   const buttonArr = [];
   buttonArr.push("```button");
+  outputObject.name && buttonArr.push(`name ${outputObject.name}`);
   outputObject.type && buttonArr.push(`type ${outputObject.type}`);
   outputObject.action && buttonArr.push(`action ${outputObject.action}`);
   outputObject.id && buttonArr.push(`id ${outputObject.id}`);
@@ -38,6 +39,12 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   const page = app.workspace.getActiveViewOfType(MarkdownView);
   const editor = page.editor;
   editor.replaceSelection(buttonArr.join("\n"));
+};
+
+export const insertInlineButton = (app: App, id: string): void => {
+  const page = app.workspace.getActiveViewOfType(MarkdownView);
+  const editor = page.editor;
+  editor.replaceSelection(`\`button-${id}\``);
 };
 
 export const createArgumentObject = (source: string): Arguments =>

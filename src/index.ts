@@ -14,7 +14,7 @@ import {
 } from "./buttonStore";
 import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
-import { ButtonModal } from "./modal";
+import { ButtonModal, InlineButtonModal } from "./modal";
 import { createButton } from "./button";
 
 // extend the obsidian module with some additional typings
@@ -31,6 +31,12 @@ export default class ButtonsPlugin extends Plugin {
       id: "button-maker",
       name: "Button Maker",
       callback: () => new ButtonModal(this.app).open(),
+    });
+
+    this.addCommand({
+      id: "inline-button",
+      name: "Insert Inline Button",
+      callback: () => new InlineButtonModal(this.app).open(),
     });
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments

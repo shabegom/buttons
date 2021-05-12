@@ -1,7 +1,7 @@
 import { Modal, App, Setting, MarkdownView, Editor } from "obsidian";
 import { createButton } from "./button";
 import { CommandSuggest, TemplateSuggest, ButtonSuggest } from "./suggest";
-import { insertButton } from "./utils";
+import { insertButton, insertInlineButton } from "./utils";
 
 export class ButtonModal extends Modal {
   activeView: MarkdownView;
@@ -370,6 +370,35 @@ export class ButtonModal extends Modal {
       { name: "My Awesome Button" },
       false
     );
+  }
+
+  onClose() {
+    let { contentEl } = this;
+    contentEl.empty();
+  }
+}
+
+export class InlineButtonModal extends Modal {
+  buttonSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
+  buttonSuggest;
+
+  constructor(app: App) {
+    super(app);
+    this.buttonSuggest = new ButtonSuggest(this.app, this.buttonSuggestEl);
+    this.buttonSuggestEl.setAttribute("style", "width: 100%; height: 40px");
+  }
+
+  onOpen() {
+    let { titleEl, contentEl } = this;
+    titleEl.setText("Insert Inline Button");
+    contentEl.createEl("form", {}, (formEl) => {
+      formEl.appendChild(this.buttonSuggestEl);
+      formEl.addEventListener("submit", (e: Event) => {
+        e.preventDefault();
+        insertInlineButton(this.app, this.buttonSuggestEl.value);
+        this.close();
+      });
+    });
   }
 
   onClose() {
