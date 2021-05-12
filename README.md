@@ -7,6 +7,8 @@ Run commands and open links by clicking on ✨ Buttons ✨
 **last updated:** May 11, 2021  
 
 **0.4.0**  
+[Watch the release video on Youtube](https://youtu.be/2qltHuOjD54)  
+[![0.4.0](https://raw.githubusercontent.com/shabegom/buttons/0.4.0/img/040.png)](https://youtu.be/2qltHuOjD54)
 
 - Inline Buttons! You can add buttons inline using the button block-id (^button-id) using this syntax \`button-id\`
 - Insert Inline Button: Use **Insert Inline Button** from the command palette to quickly insert a new inline button
