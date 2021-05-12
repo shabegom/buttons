@@ -1,5 +1,6 @@
 import { MarkdownView, App, Notice, TFile } from "obsidian";
 import { Arguments, Position } from "./types";
+import { addButtonToStore } from "./buttonStore";
 
 function nanoid(num: number) {
   let result = "";
@@ -22,6 +23,7 @@ interface OutputObject {
   templater: boolean;
   class: string;
   color: string;
+  blockId: string;
 }
 
 export const insertButton = (app: App, outputObject: OutputObject): void => {
@@ -39,10 +41,13 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   outputObject.color && buttonArr.push(`color ${outputObject.color}`);
   outputObject.class && buttonArr.push(`class ${outputObject.class}`);
   buttonArr.push("```");
-  buttonArr.push(`^button-${nanoid(4)}`);
+  outputObject.blockId
+    ? buttonArr.push(`^button-${outputObject.blockId}`)
+    : buttonArr.push(`^button-${nanoid(4)}`);
   const page = app.workspace.getActiveViewOfType(MarkdownView);
   const editor = page.editor;
   editor.replaceSelection(buttonArr.join("\n"));
+  addButtonToStore(app, page.file);
 };
 
 export const insertInlineButton = (app: App, id: string): void => {
