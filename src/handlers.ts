@@ -123,6 +123,28 @@ export const appendContent = async (
   }
 };
 
+export const addContentAtLine = async (
+  app: App,
+  insert: string,
+  type: string
+): Promise<void> => {
+  const lineNumber = type.match(/(\d+)/g);
+  if (lineNumber[0]) {
+    let insertionPoint = parseInt(lineNumber[0]) - 1;
+    const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+    if (activeView) {
+      const file = activeView.file;
+      let content = await app.vault.read(file);
+      const contentArray = content.split("\n");
+      contentArray.splice(insertionPoint, 0, `${insert}`);
+      content = contentArray.join("\n");
+      await app.vault.modify(file, content);
+    }
+  } else {
+    new Notice("There was an issue adding content, please try again", 2000);
+  }
+};
+
 export const createNote = async (
   app: App,
   content: string,

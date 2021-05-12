@@ -119,6 +119,10 @@ export class ButtonModal extends Modal {
           "Append Template - append a template in the current note"
         );
         drop.addOption(
+          "line template",
+          "Add Template at Line - add a template at a line number in the current note"
+        );
+        drop.addOption(
           "note template",
           "New Note from Template - create a new note from a template"
         );
@@ -156,6 +160,17 @@ export class ButtonModal extends Modal {
               .addText((textEl) => {
                 textEl.inputEl.replaceWith(this.fileSuggestEl);
               });
+            if (value == "line template") {
+              new Setting(action)
+                .setName("Line Number")
+                .setDesc("At which line should the template be inserted?")
+                .addText((textEl) => {
+                  textEl.setPlaceholder("69");
+                  textEl.onChange((value) => {
+                    this.outputObject.type = `line(${value}) template`;
+                  });
+                });
+            }
             if (value == "note template") {
               new Setting(action)
                 .setName("Note Name")

@@ -6,6 +6,7 @@ import {
   appendContent,
   createNote,
   prependContent,
+  addContentAtLine,
   removeButton,
   removeSection,
 } from "./handlers";
@@ -110,6 +111,16 @@ export const template = async (
       }
       if (args.type.includes("note")) {
         createNote(app, content, args.type);
+      }
+      if (args.type.includes("line")) {
+        addContentAtLine(app, content, args.type);
+        setTimeout(
+          () =>
+            app.commands.executeCommandById(
+              "templater-obsidian:replace-in-file-templater"
+            ),
+          100
+        );
       }
     } else {
       new Notice(
