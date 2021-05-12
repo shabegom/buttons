@@ -234,7 +234,6 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
     const abstractFiles = this.app.vault.getAllLoadedFiles();
     const files: TFile[] = [];
     const lowerCaseInputStr = inputStr.toLowerCase();
-    console.log(this.folder);
 
     abstractFiles.forEach((file: TAbstractFile) => {
       if (
