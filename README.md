@@ -6,6 +6,9 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 **last updated:** May 12, 2021  
 
+**0.4.3**
+- New Line Template Button: Add a template to a specified line in the current note
+
 **0.4.2**
 - Button Maker now includes field to add button-block-id
 - Button Maker is now scrollable
@@ -43,6 +46,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
 - **Calculate:** Click the Button to run a math calculation. Calculate Buttons can reference lines from the note
 - **Prepend Template:** Click the Button to prepend a template into the current note
 - **Append Template:** Click the Button to append a template into the current note
+- **Add Template at Line:** Click the Button to add a template into the current note at the specified line
 - **New Note From Template:** Create a new note and populate it with a template
 - **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click
 
@@ -52,6 +56,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
 - **Calculate:** Write the math equation
 - **Prepend Template:** Choose the Template to prepend
 - **Append Template:** Choose the Template to append
+- **Add Template at Line:** Coose the template and write the line you would like it inserted at
 - **New Note From Template:** Choose the Template, Write the name of the new note, Choose wether the new note should open in a split pane
 - **Swap:** Write the button-block-ids of the Buttons the Swap Button will be on each click `[id1, id2]` (for more information on Swap Buttons, see below)
 
@@ -235,6 +240,19 @@ Event better, setup those buttons and then add them all on one line as Inline Bu
 
 \`button-mon\` \`button-tues\` \`button-wed\`  
 
+### Add Template at Line
+
+Say you want the weather to appear at a specific place in your note that isn't directly beside the button:
+
+\`\`\`button  
+name Current Weather  
+type line(1) template  
+action Weather Template Note  
+replace [1,5]  
+\`\`\`  
+^button-weatherLine
+
+
 #### New Note From Template
 
 Create a new note for an upcoming meeting based on a Meeting Note Template:  
@@ -314,6 +332,13 @@ Then insert that button inline `button-swap`
 Note: swap count is reset if you close the note.
 
 ## Releases
+
+### 0.4.3
+- New Line Template Button: insert a template into the current note at a specified line
+
+### 0.4.2
+- Scrollable Button Maker
+- Add custom button-block-id inside the Button Maker
 
 ### 0.4.0
 - Inline Buttons! You can add buttons inline using the button block-id (^button-id) using this syntax \`button-id\`
