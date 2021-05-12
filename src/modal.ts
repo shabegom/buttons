@@ -74,11 +74,13 @@ export class ButtonModal extends Modal {
     templater: false,
     class: "",
     color: "",
+    blockId: "",
   };
 
   onOpen() {
     const { titleEl, contentEl } = this;
     titleEl.setText("Button Maker");
+    contentEl.addClass("button-maker");
     contentEl.createEl("form", {}, (formEl) => {
       new Setting(formEl)
         .setName("Button Name")
@@ -92,125 +94,137 @@ export class ButtonModal extends Modal {
 
           window.setTimeout(() => textEl.inputEl.focus(), 10);
         });
-      new Setting(formEl)
-        .setName("Button Type")
-        .setDesc("What type of button?")
-        .addDropdown((drop) => {
-          drop.addOption("pre", "Select a Button Type");
-          drop.addOption("command", "Command - run a command prompt command");
-          drop.addOption("link", "Link - open a url or uri");
-          drop.addOption(
-            "calculate",
-            "Calculate - run a mathematical calculation"
-          );
-          drop.addOption(
-            "prepend template",
-            "Prepend Template - prepend a template in the current note"
-          );
-          drop.addOption(
-            "append template",
-            "Append Template - append a template in the current note"
-          );
-          drop.addOption(
-            "note template",
-            "New Note from Template - create a new note from a template"
-          );
-          drop.addOption(
-            "swap",
-            "Swap - Create a multi-purpose Inline Button from other Buttons"
-          );
-          const action = formEl.createEl("div");
-          drop.onChange((value) => {
-            this.outputObject.type = value;
-            if (value === "link") {
-              action.empty();
+      const typeContainer = createEl("div");
+      const typeTitle = createEl("span", { cls: "setting-item-title" });
+      typeTitle.setText("Button Type");
+      const typeDesc = createEl("div", { cls: "setting-item-description" });
+      typeDesc.setText("What type of button are you making?");
+      formEl.appendChild(typeContainer);
+      typeContainer.appendChild(typeTitle);
+      typeContainer.appendChild(typeDesc);
+      new Setting(typeDesc).addDropdown((drop) => {
+        drop.addOption("pre", "Select a Button Type");
+        drop.addOption("command", "Command - run a command prompt command");
+        drop.addOption("link", "Link - open a url or uri");
+        drop.addOption(
+          "calculate",
+          "Calculate - run a mathematical calculation"
+        );
+        drop.addOption(
+          "prepend template",
+          "Prepend Template - prepend a template in the current note"
+        );
+        drop.addOption(
+          "append template",
+          "Append Template - append a template in the current note"
+        );
+        drop.addOption(
+          "note template",
+          "New Note from Template - create a new note from a template"
+        );
+        drop.addOption(
+          "swap",
+          "Swap - Create a multi-purpose Inline Button from other Buttons"
+        );
+        const action = formEl.createEl("div");
+        drop.onChange((value) => {
+          this.outputObject.type = value;
+          if (value === "link") {
+            action.empty();
+            new Setting(action)
+              .setName("Link")
+              .setDesc("Enter a link to open")
+              .addText((textEl) => {
+                textEl.setPlaceholder("https://obsidian.md");
+                textEl.onChange((value) => (this.outputObject.action = value));
+              });
+          }
+          if (value === "command") {
+            action.empty();
+            new Setting(action)
+              .setName("Command")
+              .setDesc("Enter a command to run")
+              .addText((textEl) => {
+                textEl.inputEl.replaceWith(this.commandSuggestEl);
+              });
+          }
+          if (value.includes("template")) {
+            action.empty();
+            new Setting(action)
+              .setName("Template")
+              .setDesc("Select a template note")
+              .addText((textEl) => {
+                textEl.inputEl.replaceWith(this.fileSuggestEl);
+              });
+            if (value == "note template") {
               new Setting(action)
-                .setName("Link")
-                .setDesc("Enter a link to open")
+                .setName("Note Name")
+                .setDesc("What should the new note be named?")
                 .addText((textEl) => {
-                  textEl.setPlaceholder("https://obsidian.md");
-                  textEl.onChange(
-                    (value) => (this.outputObject.action = value)
-                  );
-                });
-            }
-            if (value === "command") {
-              action.empty();
-              new Setting(action)
-                .setName("Command")
-                .setDesc("Enter a command to run")
-                .addText((textEl) => {
-                  textEl.inputEl.replaceWith(this.commandSuggestEl);
-                });
-            }
-            if (value.includes("template")) {
-              action.empty();
-              new Setting(action)
-                .setName("Template")
-                .setDesc("Select a template note")
-                .addText((textEl) => {
-                  textEl.inputEl.replaceWith(this.fileSuggestEl);
-                });
-              if (value == "note template") {
-                new Setting(action)
-                  .setName("Note Name")
-                  .setDesc("What should the new note be named?")
-                  .addText((textEl) => {
-                    textEl.setPlaceholder("My New Note");
-                    new Setting(action)
-                      .setName("Split")
-                      .setDesc("Should the new note open in a split pane?")
-                      .addToggle((toggleEl) => {
-                        this.outputObject.type = `note(${textEl.getValue}) template`;
-                        textEl.onChange((textVal) => {
-                          const toggleVal = toggleEl.getValue();
-                          if (toggleVal) {
-                            this.outputObject.type = `note(${textVal}, split) template`;
-                          }
-                          if (!toggleVal) {
-                            this.outputObject.type = `note(${textVal}) template`;
-                          }
-                        });
-                        toggleEl.onChange((toggleVal) => {
-                          const textVal = textEl.getValue();
-                          if (toggleVal) {
-                            this.outputObject.type = `note(${textVal}, split) template`;
-                          }
-                          if (!toggleVal) {
-                            this.outputObject.type = `note(${textVal}) template`;
-                          }
-                        });
+                  textEl.setPlaceholder("My New Note");
+                  new Setting(action)
+                    .setName("Split")
+                    .setDesc("Should the new note open in a split pane?")
+                    .addToggle((toggleEl) => {
+                      this.outputObject.type = `note(${textEl.getValue}) template`;
+                      textEl.onChange((textVal) => {
+                        const toggleVal = toggleEl.getValue();
+                        if (toggleVal) {
+                          this.outputObject.type = `note(${textVal}, split) template`;
+                        }
+                        if (!toggleVal) {
+                          this.outputObject.type = `note(${textVal}) template`;
+                        }
                       });
-                  });
-              }
-            }
-            if (value === "calculate") {
-              action.empty();
-              new Setting(action)
-                .setName("Calculate")
-                .setDesc(
-                  "Enter a calculation, you can reference a line number with $LineNumber"
-                )
-                .addText((textEl) => {
-                  textEl.setPlaceholder("2+$10");
-                  textEl.onChange(
-                    (value) => (this.outputObject.action = value)
-                  );
+                      toggleEl.onChange((toggleVal) => {
+                        const textVal = textEl.getValue();
+                        if (toggleVal) {
+                          this.outputObject.type = `note(${textVal}, split) template`;
+                        }
+                        if (!toggleVal) {
+                          this.outputObject.type = `note(${textVal}) template`;
+                        }
+                      });
+                    });
                 });
             }
-            if (value === "swap") {
-              this.outputObject.type = "";
-              action.empty();
-              new Setting(action)
-                .setName("Swap")
-                .setDesc(
-                  "choose buttons to be included in the Inline Swap Button"
-                )
-                .addText((textEl) => {
-                  textEl.inputEl.replaceWith(this.swapSuggestEl);
-                });
-            }
+          }
+          if (value === "calculate") {
+            action.empty();
+            new Setting(action)
+              .setName("Calculate")
+              .setDesc(
+                "Enter a calculation, you can reference a line number with $LineNumber"
+              )
+              .addText((textEl) => {
+                textEl.setPlaceholder("2+$10");
+                textEl.onChange((value) => (this.outputObject.action = value));
+              });
+          }
+          if (value === "swap") {
+            this.outputObject.type = "";
+            action.empty();
+            new Setting(action)
+              .setName("Swap")
+              .setDesc(
+                "choose buttons to be included in the Inline Swap Button"
+              )
+              .addText((textEl) => {
+                textEl.inputEl.replaceWith(this.swapSuggestEl);
+              });
+          }
+        });
+      });
+      new Setting(formEl)
+        .setName("Button Block ID")
+        .setDesc("Provide a custom button-block-id")
+        .addText((textEl) => {
+          textEl.setPlaceholder("buttonId");
+          textEl.onChange((value) => {
+            this.outputObject.blockId = value;
           });
+
+          window.setTimeout(() => textEl.inputEl.focus(), 10);
         });
       new Setting(formEl)
         .setName("Remove")
@@ -230,6 +244,7 @@ export class ButtonModal extends Modal {
                 });
             }
             if (!value) {
+              this.outputObject.remove = "";
               remove.empty();
             }
           });
@@ -277,6 +292,7 @@ export class ButtonModal extends Modal {
                 });
             }
             if (!value) {
+              this.outputObject.replace = "";
               id.empty();
             }
           });
@@ -300,6 +316,9 @@ export class ButtonModal extends Modal {
           textEl.onChange((value) => {
             this.buttonPreviewEl.setAttribute("class", value);
             this.outputObject.class = value;
+            if (value === "") {
+              this.buttonPreviewEl.setAttribute("class", "button-default");
+            }
           });
         });
       new Setting(formEl)
@@ -346,13 +365,13 @@ export class ButtonModal extends Modal {
         buttonContainerEl
           .createEl("button", {
             attr: { type: "button" },
-            cls: "default-button",
+            cls: "button-default",
             text: "Cancel",
           })
           .addEventListener("click", () => this.close());
         buttonContainerEl.createEl("button", {
           attr: { type: "submit" },
-          cls: "default-button mod-cta",
+          cls: "button-default mod-cta",
           text: "Insert Button",
         });
       });

@@ -130,3 +130,13 @@ settings:
 .purple:hover {
   background: #725585;
 }
+
+.button-maker {
+  max-width: 35rem;
+  width: 35rem;
+  overflow-y: auto;
+  max-height: 50rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  overflow-x: hidden;
+}

@@ -4,7 +4,11 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** May 11, 2021  
+**last updated:** May 12, 2021  
+
+**0.4.2**
+- Button Maker now includes field to add button-block-id
+- Button Maker is now scrollable
 
 **0.4.0**  
 [Watch the release video on Youtube](https://youtu.be/2qltHuOjD54)  
@@ -103,21 +107,21 @@ The Templater arg allows you to supply a Templater command inside the Button. Th
 
 A button with this command:  
 
-\`\`\`button
-name Make an Hourly Note
-type note(<% tp.date.now("HH:MM") %>) template
-action Log Template Note
-templater true
-\`\`\`
+\`\`\`button  
+name Make an Hourly Note  
+type note(<% tp.date.now("HH:MM") %>) template  
+action Log Template Note  
+templater true  
+\`\`\`  
 
 Will convert when clicked to:
 
-\`\`\`button
-name Make an Hourly Note
-type note(16:20) template
-action Log Template Note
-templater true
-\`\`\`
+\`\`\`button  
+name Make an Hourly Note  
+type note(16:20) template  
+action Log Template Note  
+templater true  
+\`\`\`  
 
 And then `09` will change back to `<% tp.date.now("HH:MM") %>`
 
@@ -301,11 +305,13 @@ swap [add,meeting,forum]
 \`\`\`  
 ^button-swap  
 
-Then inset that button inline `button-swap`  
+Then insert that button inline `button-swap`  
 
 1. On the first click of Crazy Swap Button we will add 2+2
 2. On the second click of Crazy Swap Button we will create a new Meeting note
 3. On the third click of the Crazy Swap Button we will go to the Obsidian forum
+
+Note: swap count is reset if you close the note.
 
 ## Releases
 
