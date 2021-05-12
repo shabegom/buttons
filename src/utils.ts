@@ -1,15 +1,50 @@
 import { MarkdownView, App, Notice, TFile } from "obsidian";
-import { Arguments } from "./types";
+import { Arguments, Position } from "./types";
+import { customAlphabet } from "nanoid";
 
-export const insertButton = (app: App): void => {
-  const button = `\`\`\`button
-name
-type
-action
-\`\`\``;
+const nanoid = (num: number) => {
+  const id = customAlphabet("123456789abcdefghiklmnopqrstuvzxyz", num);
+  return id();
+};
+
+interface OutputObject {
+  name: string;
+  type: string;
+  action: string;
+  swap: string;
+  remove: string;
+  replace: string;
+  id: string;
+  templater: boolean;
+  class: string;
+  color: string;
+}
+
+export const insertButton = (app: App, outputObject: OutputObject): void => {
+  const buttonArr = [];
+  buttonArr.push("```button");
+  outputObject.name && buttonArr.push(`name ${outputObject.name}`);
+  outputObject.type && buttonArr.push(`type ${outputObject.type}`);
+  outputObject.action && buttonArr.push(`action ${outputObject.action}`);
+  outputObject.id && buttonArr.push(`id ${outputObject.id}`);
+  outputObject.swap && buttonArr.push(`swap ${outputObject.swap}`);
+  outputObject.remove && buttonArr.push(`remove ${outputObject.remove}`);
+  outputObject.replace && buttonArr.push(`replace ${outputObject.replace}`);
+  outputObject.templater === true &&
+    buttonArr.push(`templater ${outputObject.templater}`);
+  outputObject.color && buttonArr.push(`color ${outputObject.color}`);
+  outputObject.class && buttonArr.push(`class ${outputObject.class}`);
+  buttonArr.push("```");
+  buttonArr.push(`^button-${nanoid(4)}`);
   const page = app.workspace.getActiveViewOfType(MarkdownView);
   const editor = page.editor;
-  editor.replaceSelection(button);
+  editor.replaceSelection(buttonArr.join("\n"));
+};
+
+export const insertInlineButton = (app: App, id: string): void => {
+  const page = app.workspace.getActiveViewOfType(MarkdownView);
+  const editor = page.editor;
+  editor.replaceSelection(`\`button-${id}\``);
 };
 
 export const createArgumentObject = (source: string): Arguments =>
@@ -26,7 +61,7 @@ export const createContentArray = async (
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;
-    const content = await app.vault.cachedRead(file);
+    const content = await app.vault.read(file);
     return { contentArray: content.split("\n"), file };
   }
   new Notice("Could not get Active View", 1000);
@@ -46,4 +81,33 @@ export const handleValueArray = (
       }
     }
   }
+};
+
+export function getNewArgs(
+  app: App,
+  position: Position,
+  originalButton: string
+): Promise<{ args: Arguments; content: string }> {
+  const promise = new Promise((resolve) => {
+    setTimeout(async () => {
+      const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+      const length = position.lineEnd - position.lineStart;
+      const newContent = await app.vault
+        .read(activeView.file)
+        .then((content: string) => content.split("\n"));
+      const newButton = newContent
+        .splice(position.lineStart, position.lineEnd)
+        .join("\n")
+        .replace("```button", "")
+        .replace("```", "");
+      newContent.splice(position.lineStart, length, originalButton);
+      const content = newContent.join("\n");
+      resolve({ args: createArgumentObject(newButton), content });
+    }, 250);
+  });
+  return promise as Promise<{ args: Arguments; content: string }>;
+}
+
+export const wrapAround = (value: number, size: number): number => {
+  return ((value % size) + size) % size;
 };

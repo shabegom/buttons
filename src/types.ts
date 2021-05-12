@@ -23,12 +23,14 @@ declare module "obsidian" {
     commands: {
       executeCommandById: (id: string) => unknown;
       listCommands: () => [{ id: string; name: string }];
+      commands: Record<string, { name: string; id: string }>;
     };
   }
 }
 
 export interface ExtendedBlockCache extends BlockCache {
   path?: string;
+  swap?: number;
 }
 
 export interface Arguments {

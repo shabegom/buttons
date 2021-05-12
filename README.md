@@ -4,262 +4,316 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** May 6, 2021  
-**0.3.8**  
-- I think I've fixed most of the bugs introduced in 0.3.0, thanks for your patience!  
-**0.3.0**  
-- You can add a block-id below a button block. The button block-id can be used to inherit arguments from a button or to remove multiple buttons
-- `remove` can now be an array of button block-ids to remove (it can still be true to remove the clicked button)
-- `replace` now takes an array like [startLine,endLine] to define the start and end line to be replaced.
-- `append`, `prepend`, `remove`, `replace` have been updated to use the button position. `name` is no longer required.
+**last updated:** May 11, 2021  
 
-Eleanor said I need to put the youtube video here: https://youtu.be/2GSkhIdsmtQ
+**0.4.0**  
+![img/040.png]
+- Inline Buttons! You can add buttons inline using the button block-id (^button-id) using this syntax \`button-id\`
+- Insert Inline Button: Use **Insert Inline Button** from the command palette to quickly insert a new inline button
+- Button Maker: Open the Button Maker from the command palette to quickly and easily create a new button
+- New Button Arg - `swap`: use the `swap [id1, id2, id3]` arg along with an inline button to create a button that performs multiple actions on each click
+- New Button Arg - `templater`: the templater arg allows you to put a templater command inside a button. When the button is clicked the templater command is converted to it's value and then is converted back to the templater command: `note(<% tp.date.now("MM-DD") %>) template`  
 
-**known issues with current release**
-- If you're not on insiders, or on mobile, your button needs to have a name. I mean, why wouldn't you have a name?
+**Known Issues with 0.4.0**
+- The new `templater` arg doesn't work well with `append` or `prepend` template types
+- The new `templater` arg cannot be used with Inline Buttons
+- The new `swap` arg can only be used with Inline Buttons
+
 
 ---
 
-## Manual Install
+## Install
+You can find Buttons in the list of community plugins!
 
-Grab the [latest release](https://github.com/shabegom/buttons/releases) and add it to: <vault>/.obsidian/plugins/
 
 ## Usage
-You create a button using a `button` codeblock
+The quickest way to get started with Buttons is to use the Button Maker. You can open the Button Maker from the Command Palette. Here is an overview of the Button Maker options
 
-\`\`\`button  
-name **required**  
-type **required**  
-action **required**  
-color optional  
-class optional  
-id optional  
-replace optional  
-remove optional  
+**Name:** The name of your button  
+
+**Button Type:** Choose which type of button to create your options are:
+- **Command:** Click the Button to run a Command from the Command Palette
+- **Link:** Click the Button to open a URL or URI
+- **Calculate:** Click the Button to run a math calculation. Calculate Buttons can reference lines from the note
+- **Prepend Template:** Click the Button to prepend a template into the current note
+- **Append Template:** Click the Button to append a template into the current note
+- **New Note From Template:** Create a new note and populate it with a template
+- **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click
+
+**Action:** Depending on what **Button Type** you choose, you will choose an Action to perform:
+- **Command:** Choose the Command Palette Command to run
+- **Link:** Write the URL or URI
+- **Calculate:** Write the math equation
+- **Prepend Template:** Choose the Template to prepend
+- **Append Template:** Choose the Template to append
+- **New Note From Template:** Choose the Template, Write the name of the new note, Choose wether the new note should open in a split pane
+- **Swap:** Write the button-block-ids of the Buttons the Swap Button will be on each click `[id1, id2]` (for more information on Swap Buttons, see below)
+
+**Remove:** You can remove the Button after you click it. You can also remove other Buttons in the note by supplying an array of button-block-ids `[id1, id2]`
+
+**Replace:** You can remove lines from the existing note which can then be replaced using the **Append Template** or **Prepend Template** Button types. Write an array with the starting and ending line numbers: `[startingLine, endingLine]`
+
+**Inherit:** By adding a button-block-id of another Button the Button you are making can inherit arguments.
+
+**Templater:** If the templater arg is `true` you can include a Templater command inside your button. The command will be converted to it's value when the button is clicked and converted back to the command after. This cannot be used with Inline Buttons
+
+**Custom Class:** Supply a custom CSS class to style your Button
+
+**Color:** Choose a Button color
+
+### Button Block ID
+
+The button-block-id is a block-id placed direcly below a Button codeblock and starts with `button`: `^button-id`. Button-block-ids can be used to:
+- Create inline buttons (see below for details on inline buttons) `button-button1`
+- Choose which Buttons to use in an Inline Swap Button: `swap [button1, button2]`
+- Inherit arguments from another Button: `id button1`
+- Remove multiple Buttons with a `remove [button1, button2]` argumemt
+
+### Inline Buttons
+
+Inline Buttons can be created inline with other text, or other Buttons. An Inline Button is essentially a copy of an existing Button codeblock placed inline. To create an inline button:
+1. Create a regular Button using the Button Maker or hand-written Button codeblock
+2. Ensure your Button has a unique button-block-id
+3. Go to the note you want an inline Button and run the Insert Inline Button Command, or write the button-block-id between backticks: `button-id`
+
+Inline Buttons must start with `button`, whereas other usages of the button-block-id only require the id
+
+### Swap Button
+
+A Swap Button is a special type of Inline Button. When you click a Swap Button it cycles through multiple other Buttons. Use a Swap Button to run a succession of actions with one Button. To Create a Swap Button:
+1. Create Buttons that perform the actions you want the Swap Button to do. Ensure each button has a unique button-block-id
+2. Create A Swap Button and supply the button-block-id of the other buttons: `swap [id1, id2, id3]`. Ensure the Swap Button has a unique button-block-id
+3. Insert the Swap Button as an Inline Button using the Insert Inline Button Command. 
+
+Swap Buttons can currently only be used as Inline Buttons
+
+### Inherit Button Args
+
+If you are putting the same, or similar Buttons across many notes, you can create one parent Button and have other Buttons inherit from the parent.
+1. Create a Parent Button with the arguments you'd like to be inherited. Ensure the Parent Button has a unique button-block-id
+2. Create Child Buttons and supply the Parent Button button-block-id `id parentButton`
+
+Child Buttons can also have their own arguments. Any argument supplied on the Child ssupersedes arguments from the Parent Button.
+
+### Templater Button
+
+The Templater arg allows you to supply a Templater command inside the Button. The command is converted to its value when the Button is clicked and then converted back to the Templater Command for the next click. This is best used with the New Note Button type:
+
+A button with this command:  
+
+\`\`\`button
+name Make an Hourly Note
+type note(<% tp.date.now("HH:MM") %>) template
+action Log Template Note
+templater true
 \`\`\`
-^button-myId
 
-| argument | description                                | options                                      | example    |
------------|--------------------------------------------|----------------------------------------------|------------|
-| name    | **required**: the name of the button                                                                                                          | any string                                              | My Button                    |
-| type    | **required** run a command or open a url                                                                                                      | command, link, template, calculate                      | command                      |
-| action  | **required** depending on button type this will be a command, link, template, or equation                                                     | Toggle Pin or https://obsidian.md or My Template or 1+2 | Toggle Pin                   |
-| color   | optional: arg to change color of the button                                                                                                   | blue, green, red, purple. yellow                        | blue                         |
-| class   | optional: add a class to the button for more customized styling. **Adding a custom class will remove default classes**                        | a string representing your custom class                 | button-default, button-shine |
-| id      | optional: add a block id of an existing button to inherit the arguments of that button                                                                                           | a string representing your the block id                    | myId                         |
-| remove  | optional: if `true` removes button after command runs. If array of button ids is supplied, will remove those buttons from note.                                                                                         | true or an array of button ids                                                    | true, [first, second]                         |
-| replace | optional: specify a [start,end] array with the line numbers to be replaced | an array with the first item being the line to start replacing and the second item being the line to end            | [1,5]      |
-| ^button-myId | optional: give the button a block ID to reference it in other buttons | a unique id that starts with `button` | ^button-uniqueId |
+Will convert when clicked to:
+
+\`\`\`button
+name Make an Hourly Note
+type note(16:20) template
+action Log Template Note
+templater true
+\`\`\`
+
+And then `09` will change back to `<% tp.date.now("HH:MM") %>`
+
+### Button Styling
+
+#### Style Settings
+
+Install the Style Settings plugin for an easy way to change the default Button styling.
+
+#### Custom Class
+
+If you want a truly custom style, or want Buttons with mutliple different styles, you can add a `class` argument in a Button and use a css snippet to style.
+
+### Remove Button after command execution
+
+If you have a Button that only needs to run once and then can be removed from a note (handy for inserting prompts into a Daily Note) you can add a `remove true` argument to your Button.
+
+If you have multiple Buttons in a note and want to remove them all when a Button is clicked, you can supply an array of button-block-ids to the `remove` argument: `remove [id1, id2, id3]`
+
+### Replace content in section
+
+When using an Append or Prepend Template Button, you may want to remove lines from the existing note which will be replaced by the Template. To do this, write a `replace` argument and supply the first line and last line in an array: `replace [1, 5]` will remove lines 1 through 5.
 
 ## Examples
 
 ### Command Button
 
-Command buttons can run commands you would find in the Command Palette. `type` will be _command_ and `action` is the exact wording of the command found in the palette.
+Open the previous day's daily note using the Periodic Notes Plugin:  
 
 \`\`\`button  
-name My Awesome Button  
+name Open Previous Daily Note  
 type command  
-action Toggle Pin  
+action Periodic Notes: Open previous daily note  
+\`\`\`  
+^button-previous  
+
+Turn spellcheck on/off:  
+
+\`\`\`button  
+name Toggle spellcheck  
+type comand  
+action Toggle spellcheck  
 color blue  
-\`\`\`
+\`\`\`  
+^button-spellcheck  
 
 ### Link Button
 
-A Link Button will open the specified link in your web browser. `type` will be _link_ and `action` is the link you want to open (https:// is required)
+Open the Obsidian Forum:  
 
 \`\`\`button  
-name My Link Button  
+name To the Forum Batman!  
 type link  
-action https://booked.email  
-\`\`\`
+command: https://forum.obsidian.md/  
+\`\`\`  
+^button-forum  
+
 
 ### Template Button
 
-A Template button will append or prepend the specified template into your note. `type` will be _apped template_,  _prepend template_, or _note(Path/Note Name) template_ and `action` is the name of the template you want to insert.  
+#### Append Template
 
-#### Requirements
-- the Templates or Templater plugin needs to be enabled and a Template folder specified
-- the template you want to insert must be in the specified Template folder
+Append a Log Template Note:  
 
 \`\`\`button  
-name My Template Button  
-type prepend template   
-action My Template  
-\`\`\`
+name Log  
+type append template  
+action Hourly Log Template Note  
+\`\`\`  
+^button-log  
+
+#### Prepend Template
+
+Replace a Weather Template Note with the updated Weather:  
 
 \`\`\`button  
-name My Template Button  
-type append template   
-action My Template  
-\`\`\`
+name Current Weather  
+type prepend template  
+action Weather Template Note  
+replace [1,5]  
+\`\`\`  
+^button-weather  
+
+Prepend a weekly todo list and remove other buttons  
 
 \`\`\`button  
-name My Template Button  
-type note(Path/Note Name) template   
-action My Template  
-\`\`\`
-
-If you want your note to open in a split write `note(Note Name, split) template` as the type
-
-\`\`\`button  
-name My Template Button  
-type note(Path/Note Name, split) template   
-action My Template  
-\`\`\`
-
-The _note()_ type will open the newly created note after creation.  
-I'm looking into including variables in the note name to avoid creating many notes. You could achieve this right now by creating a template for the button:  
+name Monday List  
+type prepend template  
+action Monday Template Note  
+remove [mon,tues,wed]  
+\`\`\`  
+^button-mon  
 
 \`\`\`button  
-name My Template Button  
-type note(Path/{{date}}) template   
-action My Template  
-remove true
-\`\`\`
-
-and then having another template button that creates the _note() template_ button. Buttons on buttons.
+name Tuesday List  
+type prepend template  
+action Tuesday Template Note  
+remove [mon,tues,wed]  
+\`\`\`  
+^button-tues  
 
 \`\`\`button  
-name My Template Button  
-type append template   
-action My Note Creation Button
-\`\`\`
+name Wednesday List  
+type prepend template  
+action Wednesday Template Note  
+remove [mon,tues,wed]  
+\`\`\`  
+^button-wed   
+
+Event better, setup those buttons and then add them all on one line as Inline Buttons:
+
+\`button-mon\` \`button-tues\` \`button-wed\`  
+
+#### New Note From Template
+
+Create a new note for an upcoming meeting based on a Meeting Note Template:  
+
+\`\`\`button  
+name New Meeting  
+type note(Meeting, split) note  
+action Meeting Note Template  
+\`\`\`  
+^button-meeting  
+
+Dynamically add the hour and minute to the note title:    
+
+\`\`\`button  
+name New Meeting  
+type note(Meeting-<%tp.date.now("HH-MM") %>, split) note  
+action Meeting Note Template  
+templater true
+\`\`\`  
+^button-meeting2
+
 
 ### Calculate Button
-A Calculate button will run a math equation and output the results below the button. The equation can be put within the button itself, or be referenced via line number. To reference a line-number, you use a dollar sign and the line number: $2
+
+Do some simple math:  
 
 \`\`\`button  
-name Add 1+2  
+name Add Em Up  
 type calculate  
-action 1+2  
+action 2+2
 \`\`\`  
-Result: 3  
+^button-add  
 
-_Imagine the following is on line 94 and 95 in your obsidian note_  
-apples: 5  
-oranges: 3  
+Reference numbers outside of the Button:
+
+Bananas Have: 5  
+Bananas Lost: 5  
 
 \`\`\`button  
-name Subtract Apples from Oranges   
+name How Many Bananas Today?   
 type calculate  
-action $94-$95  
+action $267-$266  
+color yellow  
 \`\`\`  
-Result: 2  
+^button-bananas  
+
+Natural Language Math:  
+
+5 dogs plus 2 cats divided by 2 people
+
+\`\`\`button  
+name Who Get The Pets?  
+type calculate  
+action $278
+class sad-button  
+\`\`\`  
+^button-breakup  
 
 The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so should support any symbol supported by that library.  
 
-### Button Block ID
-If you supply a block ID below the button, you can use the ID in other buttons to inherit the arguments. You can also use the ID to remove buttons from the note.
+### Swap Buttons
+
+Let's create a Swap Button using the button-block-id of previous Buttons:
 
 \`\`\`button  
-name My Blue Button
-color blue
+name Crazy Swap Button
+swap [add,meeting,forum]  
 \`\`\`  
-^button-blue
+^button-swap  
 
-This button will be blue with the name My Blue Button
-\`\`\`button  
-id blue
-\`\`\`  
+Then inset that button inline `button-swap`  
 
-### Custom Class
-
-You can add an optional `class` argument to target the button with any css styling tweaks you'd want to add
-
-\`\`\`button  
-name My Round Link Button  
-type link  
-action https://booked.email  
-class roundButton
-id myId
-\`\`\`
-
-then in your css tweaks:
-
-```
-.roundButton {
- border-radius: 100% !important;
-}
-
-#myId {
- color: rebeccapurple;
-}
-```
-
-You can also add the default classes to the class argument: `button-default`. 
-
-\`\`\`button  
-name My Default Button Without Shine
-type link  
-action https://booked.email  
-class button-default myCustomClass
-\`\`\`
-
-You can add multiple classes to the `class` argument including colors:
-
-\`\`\`button  
-name My Multi-Class Button
-type link  
-action https://booked.email  
-class button-default button-shine purple myCustomClass
-\`\`\`
-
-You can edit the default button styles with the Style Settings plugin
-
-### Remove Button after command execution
-
-- if you add `remove true` as the las argument, the button will be removed from the file after the button click.  
-- if you supply an array of button IDs `remove` will remove those buttons from the note.
-
-\`\`\`button  
-name My Removable Button  
-type command  
-action Some Command that adds content  
-remove true  
-\`\`\`  
-
----
-
-\`\`\`button  
-name First Button
-\`\`\`  
-^button-first
-
-\`\`\`button  
-name Second Button
-\`\`\`  
-^button-second
-
-This button will remove both First Button and Second Button
-\`\`\`button  
-name My Removable Button  
-type command  
-action Some Command that adds content  
-remove [first, second]
-\`\`\`  
-
-
-### Replace content in section
-The `replace` should be an array with two values. The first value indicates the line to start replacing and the second value indicates the line to end replacing. For example `[1,5]` will remove any existing content from lines 1 through 5 in the note. If the Button is below line 5, you would us a `prepend template` type. If you button is above the range indicated to replace you would use the `append template` type. You can also use replace to remove arbitrary lines from a note if use without `prepend` or `append` types.
-
-
-\`\`\`button  
-name My Prepend Replace Button  
-type prepend template  
-action A Template  
-replace [1,5]
-\`\`\`  
-
-\`\`\`button  
-name My Append Replace Button  
-type append template  
-action A Template  
-replace [7,25]
-\`\`\`  
-
+1. On the first click of Crazy Swap Button we will add 2+2
+2. On the second click of Crazy Swap Button we will create a new Meeting note
+3. On the third click of the Crazy Swap Button we will go to the Obsidian forum
 
 ## Releases
+
+### 0.4.0
+- Inline Buttons! You can add buttons inline using the button block-id (^button-id) using this syntax \`button-id\`
+- Insert Inline Button: Use **Insert Inline Button** from the command palette to quickly insert a new inline button
+- Button Maker: Open the Button Maker from the command palette to quickly and easily create a new button
+- New Button Arg - `swap`: use the `swap [id1, id2, id3]` arg along with an inline button to create a button that performs multiple actions on each click
+- New Button Arg - `templater`: the templater arg allows you to put a templater command inside a button. When the button is clicked the templater command is converted to it's value and then is converted back to the templater command: `note(<% tp.date.now("MM-DD") %>) template`
+
 
 ### 0.3.2
 - Fix the uncaught Type Error if there are no button block-ids in the vault
