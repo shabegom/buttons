@@ -41,6 +41,7 @@ export const getButtonFromStore = async (
   args: Arguments
 ): Promise<{ args: Arguments; id: string }> | undefined => {
   const store = getStore(app.isMobile);
+  args.id;
   if (args.id) {
     const storedButton =
       store &&

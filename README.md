@@ -4,7 +4,11 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** May 12, 2021  
+**last updated:** May 14, 2021  
+
+**0.4.4**
+- Bugfix: blue and purple colors should now work
+- Bugfix: reduced the height of the Button Maker for smaller displays
 
 **0.4.3**
 - New Line Template Button: Add a template to a specified line in the current note
