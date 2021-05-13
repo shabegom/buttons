@@ -347,6 +347,7 @@ export class ButtonModal extends Modal {
           drop.addOption("yellow", "Yellow");
           drop.addOption("purple", "Purple");
           drop.onChange((value) => {
+            this.outputObject.color = value;
             const buttonClass = this.buttonPreviewEl
               .getAttribute("class")
               .replace(" blue", "")
@@ -373,7 +374,6 @@ export class ButtonModal extends Modal {
               this.buttonPreviewEl.setAttribute("class", `${buttonClass}`);
               this.buttonPreviewEl.removeAttribute("style");
             }
-            this.outputObject.color = value;
           });
         });
       formEl.createDiv("modal-button-container", (buttonContainerEl) => {

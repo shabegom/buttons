@@ -11,21 +11,50 @@ import {
   addButtonToStore,
   getButtonFromStore,
   getButtonById,
+  getStore,
 } from "./buttonStore";
 import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { createButton } from "./button";
 
-// extend the obsidian module with some additional typings
-
 export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
   private closedFile: EventRef;
+  private buttonEdit: EventRef;
+
+  private async addButtonInEdit(app: App) {
+    const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+    if (activeView) {
+      const store = getStore(app.isMobile);
+      const buttonsInFile = store.filter(
+        (button) => button.path === activeView.file.path
+      );
+      this.registerCodeMirror((cm: CodeMirror.Editor) => {
+        buttonsInFile.forEach(async (button) => {
+          const widgetEl = document.createElement("div");
+          const storeButton = await getButtonFromStore(app, {
+            id: button.id.split("-")[1],
+          });
+          if (!app.isMobile && storeButton.args.editview === "true") {
+            cm.addLineWidget(
+              button.position.end.line + 1,
+              createButton(app, widgetEl, storeButton.args, false, button.id)
+            );
+          }
+        });
+      });
+    }
+  }
   async onload(): Promise<void> {
     initializeButtonStore(this.app);
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
     this.closedFile = openFileListener(this.app, initializeButtonStore);
+
+    this.buttonEdit = openFileListener(
+      this.app,
+      this.addButtonInEdit.bind(this)
+    );
 
     this.addCommand({
       id: "button-maker",
@@ -70,7 +99,8 @@ export default class ButtonsPlugin extends Plugin {
   }
   onunload(): void {
     this.app.metadataCache.offref(this.buttonEvents);
-    this.app.metadataCache.offref(this.closedFile);
+    this.app.workspace.offref(this.closedFile);
+    this.app.workspace.offref(this.buttonEdit);
   }
 }
 
