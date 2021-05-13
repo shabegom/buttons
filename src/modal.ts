@@ -238,8 +238,6 @@ export class ButtonModal extends Modal {
           textEl.onChange((value) => {
             this.outputObject.blockId = value;
           });
-
-          window.setTimeout(() => textEl.inputEl.focus(), 10);
         });
       new Setting(formEl)
         .setName("Remove")

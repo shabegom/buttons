@@ -1,6 +1,9 @@
 import { BlockCache } from "obsidian";
 
 declare module "obsidian" {
+  interface TAbstractFile {
+    unsafeCachedData: string;
+  }
   interface App {
     plugins: {
       plugins: {

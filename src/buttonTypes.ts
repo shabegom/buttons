@@ -15,7 +15,7 @@ import {
   getInlineButtonPosition,
   findNumber,
 } from "./parser";
-import { handleValueArray, createContentArray, getNewArgs } from "./utils";
+import { handleValueArray, getNewArgs } from "./utils";
 import {
   getButtonSwapById,
   setButtonSwapById,
@@ -205,16 +205,34 @@ export const templater = async (
   app: App,
   position: Position
 ): Promise<Arguments> => {
-  const originalContent = await createContentArray(app);
-  const originalButton = originalContent.contentArray
-    .splice(position.lineStart, position.lineEnd)
-    .join("\n");
-  app.commands.executeCommandById(
-    "templater-obsidian:replace-in-file-templater"
-  );
-  const { content, args } = await getNewArgs(app, position, originalButton);
-  setTimeout(async () => {
-    await app.vault.modify(originalContent.file, content);
-  }, 500);
-  return args;
+  app.commands.executeCommandById("editor:save-file");
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  if (activeView) {
+    const file = activeView.file;
+    const content = await app.vault.cachedRead(file);
+    app.commands.executeCommandById(
+      "templater-obsidian:replace-in-file-templater"
+    );
+    const { args } = await getNewArgs(app, position);
+    let cachedData: string[] = [];
+    const cacheChange = app.vault.on("modify", (file) => {
+      cachedData.push(file.unsafeCachedData);
+    });
+    setTimeout(async () => {
+      const button = content
+        .split("\n")
+        .splice(position.lineStart, position.lineEnd - position.lineStart + 2)
+        .join("\n");
+      const cachedContent = cachedData[cachedData.length - 1].split("\n");
+      cachedContent.splice(
+        position.lineStart,
+        position.lineEnd - position.lineStart + 2,
+        button
+      );
+      const finalContent = cachedContent.join("\n");
+      await app.vault.modify(file, finalContent);
+      app.metadataCache.offref(cacheChange);
+    }, 200);
+    return args;
+  }
 };
