@@ -5,15 +5,18 @@ import {
   MarkdownView,
   MarkdownRenderChild,
 } from "obsidian";
+
 import { createArgumentObject } from "./utils";
+import { getButtonFromStore, getButtonById, store } from "./buttonStore";
 import {
-  initializeButtonStore,
-  addButtonToStore,
-  getButtonFromStore,
-  getButtonById,
-  getStore,
-} from "./buttonStore";
-import { buttonEventListener, openFileListener } from "./events";
+  buttonEventListener,
+  openFileListener,
+  createFileListener,
+  deleteFileListener,
+  renameFileListener,
+  layoutReadyListener,
+  activeLeafListener,
+} from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { createButton } from "./button";
@@ -22,12 +25,18 @@ export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
   private closedFile: EventRef;
   private buttonEdit: EventRef;
+  private openFile: EventRef;
+  private createFile: EventRef;
+  private deleteFile: EventRef;
+  private renameFile: EventRef;
+  private layoutReady: EventRef;
+  private activeLeaf: EventRef;
 
   private async addButtonInEdit(app: App) {
     const activeView = app.workspace.getActiveViewOfType(MarkdownView);
     if (activeView) {
-      const store = getStore(app.isMobile);
-      const buttonsInFile = store.filter(
+      const { buttons } = store.getState();
+      const buttonsInFile = buttons.filter(
         (button) => button.path === activeView.file.path
       );
       this.registerCodeMirror((cm: CodeMirror.Editor) => {
@@ -38,7 +47,7 @@ export default class ButtonsPlugin extends Plugin {
           });
           if (!app.isMobile && storeButton.args.editview === "true") {
             cm.addLineWidget(
-              button.position.end.line + 1,
+              button.lineEnd + 1,
               createButton(app, widgetEl, storeButton.args, false, button.id)
             );
           }
@@ -46,10 +55,15 @@ export default class ButtonsPlugin extends Plugin {
       });
     }
   }
+
   async onload(): Promise<void> {
-    initializeButtonStore(this.app);
-    this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
-    this.closedFile = openFileListener(this.app, initializeButtonStore);
+    this.buttonEvents = buttonEventListener(this.app);
+
+    this.layoutReady = layoutReadyListener(this.app);
+    this.activeLeaf = activeLeafListener(this.app);
+    this.createFile = createFileListener(this.app);
+    this.deleteFile = deleteFileListener(this.app);
+    this.renameFile = renameFileListener(this.app);
 
     this.buttonEdit = openFileListener(
       this.app,
@@ -67,18 +81,18 @@ export default class ButtonsPlugin extends Plugin {
       name: "Insert Inline Button",
       callback: () => new InlineButtonModal(this.app).open(),
     });
-    this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
-      // create an object out of the arguments
-      const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-      if (activeView) {
-        addButtonToStore(this.app, activeView.file);
+
+    this.registerMarkdownCodeBlockProcessor(
+      "button",
+      async (source, el, ctx) => {
+        // create an object out of the arguments
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs.args : args;
         const id = storeArgs && storeArgs.id;
         createButton(this.app, el, args, false, id);
       }
-    });
+    );
 
     this.registerMarkdownPostProcessor(async (el, ctx) => {
       // Search for <code> blocks inside this element; for each one, look for things of the form `
@@ -100,7 +114,13 @@ export default class ButtonsPlugin extends Plugin {
   onunload(): void {
     this.app.metadataCache.offref(this.buttonEvents);
     this.app.workspace.offref(this.closedFile);
+    this.app.workspace.offref(this.openFile);
     this.app.workspace.offref(this.buttonEdit);
+    this.app.workspace.offref(this.layoutReady);
+    this.app.workspace.offref(this.activeLeaf);
+    this.app.vault.offref(this.createFile);
+    this.app.vault.offref(this.renameFile);
+    this.app.vault.offref(this.deleteFile);
   }
 }
 

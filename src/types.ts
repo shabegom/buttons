@@ -1,4 +1,4 @@
-import { BlockCache } from "obsidian";
+import { TFile, CachedMetadata } from "obsidian";
 
 declare module "obsidian" {
   interface TAbstractFile {
@@ -31,11 +31,6 @@ declare module "obsidian" {
   }
 }
 
-export interface ExtendedBlockCache extends BlockCache {
-  path?: string;
-  swap?: number;
-}
-
 export interface Arguments {
   name?: string;
   type?: string;
@@ -52,4 +47,38 @@ export interface Arguments {
 export interface Position {
   lineStart: number;
   lineEnd: number;
+}
+
+export interface Action {
+  type: string;
+  payload: {
+    files?: TFile[];
+    currentFile?: TFile;
+    fileCache?: CachedMetadata;
+    button?: Button;
+    content?: string;
+  };
+}
+
+export interface State {
+  currentFile: TFile | undefined;
+  fileCache: CachedMetadata | undefined;
+  files: TFile[] | undefined;
+  buttons: Button[];
+}
+
+export interface NewState {
+  currentFile?: TFile;
+  fileCache?: CachedMetadata;
+  files?: TFile[];
+  buttons?: Button[];
+}
+
+interface Button {
+  id: string;
+  lineeStart: number;
+  lineEnd: number;
+  path: string;
+  swap: number;
+  args: Arguments;
 }

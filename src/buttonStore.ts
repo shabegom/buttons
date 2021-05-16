@@ -2,45 +2,94 @@ import { App, TFile, CachedMetadata } from "obsidian";
 import { ExtendedBlockCache, Arguments } from "./types";
 import { createArgumentObject } from "./utils";
 
-let buttonStore: ExtendedBlockCache[];
+interface Action {
+  type: string;
+  payload: {
+    files?: TFile[];
+    currentFile?: TFile;
+    fileCache?: CachedMetadata;
+    button?: Button;
+    content?: string;
+  };
+}
 
-export const getStore = (isMobile: boolean): ExtendedBlockCache[] =>
-  isMobile ? buttonStore : JSON.parse(localStorage.getItem("buttons"));
+interface State {
+  currentFile: TFile | undefined;
+  fileCache: CachedMetadata | undefined;
+  files: TFile[] | undefined;
+  buttons: Button[];
+}
 
-export const initializeButtonStore = (app: App): void => {
-  const files = app.vault.getMarkdownFiles();
-  const blocksArr = files
-    .map((file) => {
-      const cache = app.metadataCache.getFileCache(file);
-      return buildButtonArray(cache, file);
-    })
-    .filter((arr) => arr !== undefined)
-    .flat();
-  localStorage.setItem("buttons", JSON.stringify(blocksArr));
-  buttonStore = blocksArr;
+interface NewState {
+  currentFile?: TFile;
+  fileCache?: CachedMetadata;
+  files?: TFile[];
+  buttons?: Button[];
+}
+
+interface Button {
+  id: string;
+  lineeStart: number;
+  lineEnd: number;
+  path: string;
+  swap: number;
+  args: Arguments;
+}
+
+const initialState: State = {
+  currentFile: undefined,
+  fileCache: undefined,
+  files: undefined,
+  buttons: [],
 };
 
-export const addButtonToStore = (app: App, file: TFile): void => {
-  const cache = app.metadataCache.getFileCache(file);
-  const buttons = buildButtonArray(cache, file);
-  const store = getStore(app.isMobile);
-  const newStore =
-    buttons && store
-      ? removeDuplicates([...buttons, ...store])
-      : store
-      ? removeDuplicates(store)
-      : buttons
-      ? removeDuplicates(buttons)
-      : [];
-  localStorage.setItem("buttons", JSON.stringify(newStore));
-  buttonStore = newStore;
+export const store = {
+  dispatch: (action: Action): void => {
+    store.setState(reducer(store.state, action));
+  },
+  setState: (newState: NewState): void => {
+    store.state = Object.assign({}, { ...store.state, ...newState });
+  },
+  getState: (): State => store.state,
+  state: initialState,
+};
+
+const reducer = (state: State, action: Action) => {
+  switch (action.type) {
+    case "SET_CURRENT_FILE":
+      return action.payload;
+    case "SET_FILES":
+      return action.payload;
+    case "ADD_BUTTONS": {
+      const buttonsSet = new Set([
+        ...state.buttons,
+        ...buildButtonsFromBlockCache(
+          action.payload.fileCache,
+          action.payload.currentFile,
+          action.payload.content
+        ),
+      ]);
+      const buttons = Array.from(buttonsSet);
+      return {
+        buttons,
+      };
+    }
+    case "UPDATE_BUTTON":
+      console.log(action.payload);
+      return state;
+    case "DELETE_BUTTON":
+      console.log(action.payload);
+      return state;
+    default:
+      return state;
+  }
 };
 
 export const getButtonFromStore = async (
   app: App,
   args: Arguments
 ): Promise<{ args: Arguments; id: string }> | undefined => {
-  const store = getStore(app.isMobile);
+  const store = store.getState();
   args.id;
   if (args.id) {
     const storedButton =
@@ -89,14 +138,15 @@ export const getButtonById = async (
   }
 };
 
-export const getButtonSwapById = async (
-  app: App,
-  id: string
-): Promise<number> => {
-  const store = getStore(app.isMobile);
-  const storedButton = store.filter(
-    (item: ExtendedBlockCache) => `button-${id}` === item.id
-  )[0];
+export const getButtonSwapById = async (id: string): Promise<number> => {
+  const { buttons } = store.getState();
+  const storedButton = buttons.reduce((acc, button: Button) => {
+    if (id === button.id) {
+      acc = button;
+    }
+    return acc;
+  });
+  console.log(storedButton);
   if (storedButton) {
     return storedButton.swap;
   }
@@ -113,42 +163,43 @@ export const setButtonSwapById = async (
   )[0];
   if (storedButton) {
     storedButton.swap = newSwap;
-    const newStore = removeDuplicates([...store, storedButton]);
+    const newStore = new Set([...store, storedButton]);
     localStorage.setItem("buttons", JSON.stringify(newStore));
-    buttonStore = newStore;
+    buttonStore = Array.from(newStore);
   }
 };
 
-export const buildButtonArray = (
+export const buildButtonsFromBlockCache = (
   cache: CachedMetadata,
-  file: TFile
-): ExtendedBlockCache[] => {
+  file: TFile,
+  content: string
+) => {
   const blocks = cache && cache.blocks;
   if (blocks) {
     const blockKeys = Array.from(Object.keys(blocks));
     const blockArray: ExtendedBlockCache[] = blockKeys
       .map((key) => blocks[key])
-      .map((obj: ExtendedBlockCache) => {
-        obj["path"] = file.path;
-        obj["swap"] = 0;
-        return obj;
-      })
       .filter((block) => block.id.includes("button"));
-    return blockArray;
+    const buttons = blockArray.reduce((acc, block) => {
+      const args = createArgumentObject(
+        content
+          .split("\n")
+          .splice(
+            block.position.start.line + 1,
+            block.position.end.line - block.position.start.line - 1
+          )
+          .join("\n")
+      );
+      const button = {
+        id: block.id.split("-")[1],
+        lineStart: block.position.start.line,
+        lineEnd: block.position.end.line,
+        path: file.path,
+        swap: 0,
+        args,
+      };
+      return [...acc, button];
+    }, []);
+    return buttons;
   }
 };
-
-function removeDuplicates(arr: ExtendedBlockCache[]) {
-  return arr && arr[0]
-    ? arr.filter(
-        (v, i, a) =>
-          a.findIndex(
-            (t) =>
-              t.id === v.id ||
-              (t.path === v.path &&
-                t.position.start.line === v.position.start.line &&
-                t.position.end.line === v.position.end.line)
-          ) === i
-      )
-    : arr;
-}
