@@ -9,6 +9,7 @@ import {
   command,
   swap,
   templater,
+  text,
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 
@@ -46,7 +47,7 @@ const clickHandler = async (
     : getButtonPosition(content, args);
   // handle command buttons
   if (args.templater) {
-    args = await templater(app, position);
+    args = await templater(app, args, position);
     if (inline) {
       new Notice("templater args don't work with inline buttons yet", 2000);
     }
@@ -73,6 +74,15 @@ const clickHandler = async (
   }
   if (args.type === "calculate") {
     calculate(app, args, position);
+  }
+  if (args.type && args.type.includes("text")) {
+    setTimeout(async () => {
+      content = await app.vault.read(activeView.file);
+      position = inline
+        ? await getInlineButtonPosition(app, id)
+        : getButtonPosition(content, args);
+      text(app, args, position);
+    }, 50);
   }
   // handle removing the button
   if (args.remove) {

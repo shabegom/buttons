@@ -65,6 +65,26 @@ export const remove = (
 export const replace = (app: App, { replace }: Arguments): void => {
   removeSection(app, replace);
 };
+export const text = async (
+  app: App,
+  args: Arguments,
+  position: Position
+): Promise<void> => {
+  // prepend template above the button
+  if (args.type.includes("prepend")) {
+    prependContent(app, args.action, position.lineStart);
+  }
+  // append template below the button
+  if (args.type.includes("append")) {
+    appendContent(app, args.action, position.lineEnd);
+  }
+  if (args.type.includes("note")) {
+    createNote(app, args.action, args.type);
+  }
+  if (args.type.includes("line")) {
+    addContentAtLine(app, args.action, args.type);
+  }
+};
 
 export const template = async (
   app: App,
@@ -171,10 +191,16 @@ export const swap = async (
     const swap = await getButtonSwapById(app, id);
     const newSwap = swap + 1 > argArray.length - 1 ? 0 : swap + 1;
     setButtonSwapById(app, id, newSwap);
-    const args = await getButtonById(app, argArray[swap]);
+    let args = await getButtonById(app, argArray[swap]);
     let position;
     let content;
     if (args) {
+      if (args.templater) {
+        args = await templater(app, args, position);
+        if (inline) {
+          new Notice("templater args don't work with inline buttons yet", 2000);
+        }
+      }
       if (args.replace) {
         replace(app, args);
       }
@@ -198,6 +224,15 @@ export const swap = async (
       if (args.type === "calculate") {
         calculate(app, args, position);
       }
+      if (args.type && args.type.includes("text")) {
+        setTimeout(async () => {
+          content = await app.vault.read(file);
+          position = inline
+            ? await getInlineButtonPosition(app, id)
+            : getButtonPosition(content, args);
+          text(app, args, position);
+        }, 50);
+      }
       // handle removing the button
       if (args.remove) {
         setTimeout(async () => {
@@ -208,12 +243,16 @@ export const swap = async (
           remove(app, args, position);
         }, 75);
       }
+      if (args.replace) {
+        replace(app, args);
+      }
     }
   });
 };
 
 export const templater = async (
   app: App,
+  args: Arguments,
   position: Position
 ): Promise<Arguments> => {
   app.commands.executeCommandById("editor:save-file");
@@ -237,11 +276,31 @@ export const templater = async (
       let finalContent;
       if (cachedData[0]) {
         const cachedContent = cachedData[cachedData.length - 1].split("\n");
-        cachedContent.splice(
-          position.lineStart,
-          position.lineEnd - position.lineStart + 2,
-          button
-        );
+        let addOne = false;
+        if (args.type.includes("prepend")) {
+          addOne = true;
+        } else if (args.type.includes("line")) {
+          const lineNumber = args.type.match(/(\d+)/g);
+          if (lineNumber[0]) {
+            const line = parseInt(lineNumber[0]) - 1;
+            if (line < position.lineStart && !args.replace) {
+              addOne = true;
+            }
+          }
+        }
+        if (addOne) {
+          cachedContent.splice(
+            position.lineStart + 1,
+            position.lineEnd - position.lineStart + 2,
+            button
+          );
+        } else {
+          cachedContent.splice(
+            position.lineStart,
+            position.lineEnd - position.lineStart + 2,
+            button
+          );
+        }
         finalContent = cachedContent.join("\n");
       } else {
         finalContent = content;
