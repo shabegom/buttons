@@ -75,15 +75,26 @@ export const template = async (
   const templaterPlugin = app.plugins.plugins["templater-obsidian"];
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPlugin) {
-    const folder = templatesEnabled
-      ? app.internalPlugins.plugins.templates.instance.options.folder.toLowerCase()
-      : templaterPlugin
-      ? templaterPlugin.settings.template_folder.toLowerCase()
-      : undefined;
+    const folder = (): string => {
+      let folder;
+      if (templatesEnabled) {
+        folder = app.internalPlugins.plugins.templates.instance.options.folder;
+        if (folder) {
+          return folder.toLowerCase();
+        }
+        if (templaterPlugin) {
+          folder = templaterPlugin.settings.template_folder;
+          if (folder) {
+            return folder.toLowerCase();
+          }
+        }
+      }
+      return undefined;
+    };
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter(
-      (file) => file.path.toLowerCase() === `${folder}/${templateFile}.md`
+      (file) => file.path.toLowerCase() === `${folder()}/${templateFile}.md`
     )[0];
     if (file) {
       const content = await app.vault.read(file);
@@ -223,13 +234,18 @@ export const templater = async (
         .split("\n")
         .splice(position.lineStart, position.lineEnd - position.lineStart + 2)
         .join("\n");
-      const cachedContent = cachedData[cachedData.length - 1].split("\n");
-      cachedContent.splice(
-        position.lineStart,
-        position.lineEnd - position.lineStart + 2,
-        button
-      );
-      const finalContent = cachedContent.join("\n");
+      let finalContent;
+      if (cachedData[0]) {
+        const cachedContent = cachedData[cachedData.length - 1].split("\n");
+        cachedContent.splice(
+          position.lineStart,
+          position.lineEnd - position.lineStart + 2,
+          button
+        );
+        finalContent = cachedContent.join("\n");
+      } else {
+        finalContent = content;
+      }
       await app.vault.modify(file, finalContent);
       app.metadataCache.offref(cacheChange);
     }, 200);
