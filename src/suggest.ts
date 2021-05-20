@@ -180,7 +180,7 @@ export abstract class TextInputSuggest<T> implements ISuggestOwner<T> {
     (<any>this.app).keymap.popScope(this.scope);
 
     this.suggest.setSuggestions([]);
-    this.popper.destroy();
+    this.popper && this.popper.destroy();
     this.suggestEl.detach();
   }
 
@@ -224,11 +224,23 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
   private templatesEnabled = this.app.internalPlugins.plugins.templates.enabled;
   private templaterPlugin = this.app.plugins.plugins["templater-obsidian"];
   // only run if templates plugin is enabled
-  private folder = this.templatesEnabled
-    ? this.app.internalPlugins.plugins.templates.instance.options.folder.toLowerCase()
-    : this.templaterPlugin
-    ? this.templaterPlugin.settings.template_folder.toLowerCase()
-    : undefined;
+  private folder = (): string => {
+    let folder;
+    if (this.templatesEnabled) {
+      folder = this.app.internalPlugins.plugins.templates.instance.options
+        .folder;
+      if (folder) {
+        return folder.toLowerCase();
+      }
+      if (this.templaterPlugin) {
+        folder = this.templaterPlugin.settings.template_folder;
+        if (folder) {
+          return folder.toLowerCase();
+        }
+      }
+    }
+    return undefined;
+  };
 
   getSuggestions(inputStr: string): TFile[] {
     const abstractFiles = this.app.vault.getAllLoadedFiles();
@@ -239,7 +251,7 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
       if (
         file instanceof TFile &&
         file.extension === "md" &&
-        file.path.toLowerCase().contains(this.folder) &&
+        file.path.toLowerCase().contains(this.folder()) &&
         file.path.toLowerCase().contains(lowerCaseInputStr)
       ) {
         files.push(file);
