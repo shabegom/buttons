@@ -4,34 +4,12 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** May 14, 2021  
+**last updated:** May 20, 2021  
 
-**0.4.4**
-- Bugfix: blue and purple colors should now work
-- Bugfix: reduced the height of the Button Maker for smaller displays
-
-**0.4.3**
-- New Line Template Button: Add a template to a specified line in the current note
-
-**0.4.2**
-- Button Maker now includes field to add button-block-id
-- Button Maker is now scrollable
-
-**0.4.0**  
-[Watch the release video on Youtube](https://youtu.be/2qltHuOjD54)  
-[![0.4.0](https://raw.githubusercontent.com/shabegom/buttons/0.4.0/img/040.png)](https://youtu.be/2qltHuOjD54)
-
-- Inline Buttons! You can add buttons inline using the button block-id (^button-id) using this syntax \`button-id\`
-- Insert Inline Button: Use **Insert Inline Button** from the command palette to quickly insert a new inline button
-- Button Maker: Open the Button Maker from the command palette to quickly and easily create a new button
-- New Button Arg - `swap`: use the `swap [id1, id2, id3]` arg along with an inline button to create a button that performs multiple actions on each click
-- New Button Arg - `templater`: the templater arg allows you to put a templater command inside a button. When the button is clicked the templater command is converted to it's value and then is converted back to the templater command: `note(<% tp.date.now("MM-DD") %>) template`  
-
-**Known Issues with 0.4.0**
-- The new `templater` arg doesn't work well with `append` or `prepend` template types
-- The new `templater` arg cannot be used with Inline Buttons
-- The new `swap` arg can only be used with Inline Buttons
-
+**0.4.7**  
+- New Button Type: Text Button! Sometimes you don't want to create an entire template note just to insert some text into a note. Sometimes you just want to quickly run a templater command and insert the output into your note. The new Text Button lets you do this!
+- Button Maker Update: The type of template button has moved to its own dropdown so the command dropdown doesn't get so long!
+- Bugfixes: fixed a couple of bugs with the templater argument. It's a tricky one to catch all the edge cases. If it doesn't work for you, please file and Issue!
 
 ---
 
@@ -48,20 +26,24 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
 - **Command:** Click the Button to run a Command from the Command Palette
 - **Link:** Click the Button to open a URL or URI
 - **Calculate:** Click the Button to run a math calculation. Calculate Buttons can reference lines from the note
-- **Prepend Template:** Click the Button to prepend a template into the current note
-- **Append Template:** Click the Button to append a template into the current note
-- **Add Template at Line:** Click the Button to add a template into the current note at the specified line
-- **New Note From Template:** Create a new note and populate it with a template
+- **Template:** Click the Button to prepend, append, insert, or create a new note from a template note
+- **Text:** Clock the Button to prepend, append, insert, or create a new note with specified text
 - **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click
 
 **Action:** Depending on what **Button Type** you choose, you will choose an Action to perform:
 - **Command:** Choose the Command Palette Command to run
 - **Link:** Write the URL or URI
 - **Calculate:** Write the math equation
-- **Prepend Template:** Choose the Template to prepend
-- **Append Template:** Choose the Template to append
-- **Add Template at Line:** Coose the template and write the line you would like it inserted at
-- **New Note From Template:** Choose the Template, Write the name of the new note, Choose wether the new note should open in a split pane
+- **Template:** choose Prepend, Append, New Note, or Line and the template you want to use:
+    - **Prepend Template:** Click the Button to prepend a template into the current note
+    - **Append Template:** Click the Button to append a template into the current note
+    - **Add Template at Line:** Click the Button to add a template into the current note at the specified line
+    - **New Note From Template:** Choose the Template, Write the name of the new note, Choose wether the new note should open in a split pane
+- **Text:** choose Prepend, Append, New Note, or Line and the text you want to use:
+    - **Prepend Template:** Click the Button to prepend text into the current note
+    - **Append Template:** Click the Button to append text into the current note
+    - **Add Template at Line:** Click the Button to add text into the current note at the specified line
+    - **New Note From Template:** Write the name of the new note, Choose wether the new note should open in a split pane
 - **Swap:** Write the button-block-ids of the Buttons the Swap Button will be on each click `[id1, id2]` (for more information on Swap Buttons, see below)
 
 **Remove:** You can remove the Button after you click it. You can also remove other Buttons in the note by supplying an array of button-block-ids `[id1, id2]`
@@ -134,6 +116,18 @@ templater true
 
 And then `09` will change back to `<% tp.date.now("HH:MM") %>`
 
+The Templater arg also works with the Text Button type:
+
+\`\`\`button  
+name Add Current Time  
+type line(1) text  
+action <% tp.date.now("HH:mm:ss") %>  
+replace [1,1]  
+templater true  
+\`\`\`  
+
+This will insert the current time on line one of the note, replacing any existing text on that line and then convert back to the Templater command for future use.
+
 ### Button Styling
 
 #### Style Settings
@@ -189,9 +183,9 @@ command: https://forum.obsidian.md/
 ^button-forum  
 
 
-### Template Button
+### Template & Line Button
 
-#### Append Template
+#### Append
 
 Append a Log Template Note:  
 
@@ -201,6 +195,15 @@ type append template
 action Hourly Log Template Note  
 \`\`\`  
 ^button-log  
+
+Append the current time:
+
+\`\`\`button  
+name Log  
+type append text  
+action <% tp.date.now("HH:mm") %>  
+templater true  
+\`\`\`  
 
 #### Prepend Template
 
@@ -337,6 +340,11 @@ Note: swap count is reset if you close the note.
 
 ## Releases
 
+### 0.4.4
+- Bugfix: blue and purple colors should now work
+- Bugfix: reduced the height of the Button Maker for smaller displays
+
+
 ### 0.4.3
 - New Line Template Button: insert a template into the current note at a specified line
 
@@ -421,3 +429,4 @@ Note: swap count is reset if you close the note.
 
 ### 0.0.1: Initial Release
 - The first release of Buttons!
+
