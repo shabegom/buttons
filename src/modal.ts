@@ -107,24 +107,13 @@ export class ButtonModal extends Modal {
         drop.addOption("command", "Command - run a command prompt command");
         drop.addOption("link", "Link - open a url or uri");
         drop.addOption(
+          "template",
+          "Template - insert or create notes from templates"
+        );
+        drop.addOption("text", "Text - insert or create notes with text");
+        drop.addOption(
           "calculate",
           "Calculate - run a mathematical calculation"
-        );
-        drop.addOption(
-          "prepend template",
-          "Prepend Template - prepend a template in the current note"
-        );
-        drop.addOption(
-          "append template",
-          "Append Template - append a template in the current note"
-        );
-        drop.addOption(
-          "line template",
-          "Add Template at Line - add a template at a line number in the current note"
-        );
-        drop.addOption(
-          "note template",
-          "New Note from Template - create a new note from a template"
         );
         drop.addOption(
           "swap",
@@ -156,53 +145,128 @@ export class ButtonModal extends Modal {
             action.empty();
             new Setting(action)
               .setName("Template")
-              .setDesc("Select a template note")
+              .setDesc("Select a template note and what should happen")
+              .addDropdown((drop) => {
+                drop.addOption("pre", "Do this...");
+                drop.addOption("prepend template", "Prepend");
+                drop.addOption("append template", "Append");
+                drop.addOption("line template", "Line");
+                drop.addOption("note template", "Note");
+                drop.onChange((value) => {
+                  this.outputObject.type = value;
+                  if (value == "line template") {
+                    new Setting(action)
+                      .setName("Line Number")
+                      .setDesc("At which line should the template be inserted?")
+                      .addText((textEl) => {
+                        textEl.setPlaceholder("69");
+                        textEl.onChange((value) => {
+                          this.outputObject.type = `line(${value}) template`;
+                        });
+                      });
+                  }
+                  if (value == "note template") {
+                    new Setting(action)
+                      .setName("Note Name")
+                      .setDesc("What should the new note be named?")
+                      .addText((textEl) => {
+                        textEl.setPlaceholder("My New Note");
+                        new Setting(action)
+                          .setName("Split")
+                          .setDesc("Should the new note open in a split pane?")
+                          .addToggle((toggleEl) => {
+                            this.outputObject.type = `note(${textEl.getValue}) template`;
+                            textEl.onChange((textVal) => {
+                              const toggleVal = toggleEl.getValue();
+                              if (toggleVal) {
+                                this.outputObject.type = `note(${textVal}, split) template`;
+                              }
+                              if (!toggleVal) {
+                                this.outputObject.type = `note(${textVal}) template`;
+                              }
+                            });
+                            toggleEl.onChange((toggleVal) => {
+                              const textVal = textEl.getValue();
+                              if (toggleVal) {
+                                this.outputObject.type = `note(${textVal}, split) template`;
+                              }
+                              if (!toggleVal) {
+                                this.outputObject.type = `note(${textVal}) template`;
+                              }
+                            });
+                          });
+                      });
+                  }
+                });
+              })
               .addText((textEl) => {
                 textEl.inputEl.replaceWith(this.fileSuggestEl);
               });
-            if (value == "line template") {
-              new Setting(action)
-                .setName("Line Number")
-                .setDesc("At which line should the template be inserted?")
-                .addText((textEl) => {
-                  textEl.setPlaceholder("69");
-                  textEl.onChange((value) => {
-                    this.outputObject.type = `line(${value}) template`;
-                  });
-                });
-            }
-            if (value == "note template") {
-              new Setting(action)
-                .setName("Note Name")
-                .setDesc("What should the new note be named?")
-                .addText((textEl) => {
-                  textEl.setPlaceholder("My New Note");
-                  new Setting(action)
-                    .setName("Split")
-                    .setDesc("Should the new note open in a split pane?")
-                    .addToggle((toggleEl) => {
-                      this.outputObject.type = `note(${textEl.getValue}) template`;
-                      textEl.onChange((textVal) => {
-                        const toggleVal = toggleEl.getValue();
-                        if (toggleVal) {
-                          this.outputObject.type = `note(${textVal}, split) template`;
-                        }
-                        if (!toggleVal) {
-                          this.outputObject.type = `note(${textVal}) template`;
-                        }
+          }
+          if (value.includes("text")) {
+            action.empty();
+            new Setting(action)
+              .setName("Text")
+              .setDesc("What text and where should it go?")
+              .addDropdown((drop) => {
+                drop.addOption("pre", "Do this...");
+                drop.addOption("prepend text", "Prepend");
+                drop.addOption("append text", "Append");
+                drop.addOption("line text", "Line");
+                drop.addOption("note text", "Note");
+                drop.onChange((value) => {
+                  this.outputObject.type = value;
+                  if (value == "line text") {
+                    new Setting(action)
+                      .setName("Line Number")
+                      .setDesc("At which line should the template be inserted?")
+                      .addText((textEl) => {
+                        textEl.setPlaceholder("69");
+                        textEl.onChange((value) => {
+                          this.outputObject.type = `line(${value}) text`;
+                        });
                       });
-                      toggleEl.onChange((toggleVal) => {
-                        const textVal = textEl.getValue();
-                        if (toggleVal) {
-                          this.outputObject.type = `note(${textVal}, split) template`;
-                        }
-                        if (!toggleVal) {
-                          this.outputObject.type = `note(${textVal}) template`;
-                        }
+                  }
+                  if (value == "note text") {
+                    new Setting(action)
+                      .setName("Note Name")
+                      .setDesc("What should the new note be named?")
+                      .addText((textEl) => {
+                        textEl.setPlaceholder("My New Note");
+                        new Setting(action)
+                          .setName("Split")
+                          .setDesc("Should the new note open in a split pane?")
+                          .addToggle((toggleEl) => {
+                            this.outputObject.type = `note(${textEl.getValue}) text`;
+                            textEl.onChange((textVal) => {
+                              const toggleVal = toggleEl.getValue();
+                              if (toggleVal) {
+                                this.outputObject.type = `note(${textVal}, split) text`;
+                              }
+                              if (!toggleVal) {
+                                this.outputObject.type = `note(${textVal}) text`;
+                              }
+                            });
+                            toggleEl.onChange((toggleVal) => {
+                              const textVal = textEl.getValue();
+                              if (toggleVal) {
+                                this.outputObject.type = `note(${textVal}, split) text`;
+                              }
+                              if (!toggleVal) {
+                                this.outputObject.type = `note(${textVal}) text`;
+                              }
+                            });
+                          });
                       });
-                    });
+                  }
                 });
-            }
+              })
+              .addText((textEl) => {
+                textEl.setPlaceholder("My Text to Insert");
+                textEl.onChange((value) => {
+                  this.outputObject.action = value;
+                });
+              });
           }
           if (value === "calculate") {
             action.empty();
