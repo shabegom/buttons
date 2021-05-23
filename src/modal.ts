@@ -77,7 +77,7 @@ export class ButtonModal extends Modal {
     blockId: "",
   };
 
-  onOpen() {
+  onOpen(): void {
     const { titleEl, contentEl } = this;
     titleEl.setText("Button Maker");
     contentEl.addClass("button-maker");
@@ -469,7 +469,7 @@ export class ButtonModal extends Modal {
   }
 
   onClose() {
-    let { contentEl } = this;
+    const { contentEl } = this;
     contentEl.empty();
   }
 }
@@ -485,7 +485,7 @@ export class InlineButtonModal extends Modal {
   }
 
   onOpen() {
-    let { titleEl, contentEl } = this;
+    const { titleEl, contentEl } = this;
     titleEl.setText("Insert Inline Button");
     contentEl.createEl("form", {}, (formEl) => {
       formEl.appendChild(this.buttonSuggestEl);
@@ -498,7 +498,7 @@ export class InlineButtonModal extends Modal {
   }
 
   onClose() {
-    let { contentEl } = this;
+    const { contentEl } = this;
     contentEl.empty();
   }
 }

@@ -95,27 +95,35 @@ export const template = async (
   const templaterPlugin = app.plugins.plugins["templater-obsidian"];
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPlugin) {
-    const folder = (): string => {
-      let folder;
+    const folder = (): string[] => {
+      const folders = [];
       if (templatesEnabled) {
-        folder = app.internalPlugins.plugins.templates.instance.options.folder;
+        const folder =
+          app.internalPlugins.plugins.templates.instance.options.folder;
         if (folder) {
-          return folder.toLowerCase();
+          folders.push(folder.toLowerCase());
         }
         if (templaterPlugin) {
-          folder = templaterPlugin.settings.template_folder;
+          const folder = templaterPlugin.settings.template_folder;
           if (folder) {
-            return folder.toLowerCase();
+            folders.push(folder.toLowerCase());
           }
         }
       }
-      return undefined;
+      return folders[0] ? folders : undefined;
     };
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
-    const file: TFile = allFiles.filter(
-      (file) => file.path.toLowerCase() === `${folder()}/${templateFile}.md`
-    )[0];
+    const file: TFile = allFiles.filter((file) => {
+      const folders = folder();
+      let found = false;
+      folders.forEach((folder) => {
+        if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
+          found = true;
+        }
+      });
+      return found;
+    })[0];
     if (file) {
       const content = await app.vault.read(file);
       // prepend template above the button
@@ -196,7 +204,7 @@ export const swap = async (
     let content;
     if (args) {
       if (args.templater) {
-        args = await templater(app, args, position);
+        args = await templater(app, position);
         if (inline) {
           new Notice("templater args don't work with inline buttons yet", 2000);
         }
@@ -252,7 +260,6 @@ export const swap = async (
 
 export const templater = async (
   app: App,
-  args: Arguments,
   position: Position
 ): Promise<Arguments> => {
   app.commands.executeCommandById("editor:save-file");
@@ -264,7 +271,7 @@ export const templater = async (
       "templater-obsidian:replace-in-file-templater"
     );
     const { args } = await getNewArgs(app, position);
-    let cachedData: string[] = [];
+    const cachedData: string[] = [];
     const cacheChange = app.vault.on("modify", (file) => {
       cachedData.push(file.unsafeCachedData);
     });
