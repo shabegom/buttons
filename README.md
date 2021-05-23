@@ -180,7 +180,7 @@ Open the Obsidian Forum:
 \`\`\`button  
 name To the Forum Batman!  
 type link  
-command: https://forum.obsidian.md/  
+action https://forum.obsidian.md/  
 \`\`\`  
 ^button-forum  
 
