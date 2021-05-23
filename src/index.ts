@@ -22,6 +22,7 @@ export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
   private closedFile: EventRef;
   private buttonEdit: EventRef;
+  private createButton;
 
   private async addButtonInEdit(app: App) {
     let widget: CodeMirror.LineWidget;
@@ -43,7 +44,13 @@ export default class ButtonsPlugin extends Plugin {
           if (!app.isMobile && storeButton.args.editview === "true") {
             widget = cm.addLineWidget(
               button.position.end.line + 1,
-              createButton(app, widgetEl, storeButton.args, false, button.id)
+              createButton({
+                app,
+                el: widgetEl,
+                args: storeButton.args,
+                inline: false,
+                id: button.id,
+              })
             );
           }
         });
@@ -54,6 +61,7 @@ export default class ButtonsPlugin extends Plugin {
     initializeButtonStore(this.app);
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
     this.closedFile = openFileListener(this.app, initializeButtonStore);
+    this.createButton = createButton;
 
     this.buttonEdit = openFileListener(
       this.app,
@@ -80,7 +88,7 @@ export default class ButtonsPlugin extends Plugin {
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs.args : args;
         const id = storeArgs && storeArgs.id;
-        createButton(this.app, el, args, false, id);
+        createButton({ app: this.app, el, args, inline: false, id });
       }
     });
 
@@ -118,7 +126,13 @@ class InlineButton extends MarkdownRenderChild {
     super(el);
   }
   async onload() {
-    const button = createButton(this.app, this.el, this.args, true, this.id);
+    const button = createButton({
+      app: this.app,
+      el: this.el,
+      args: this.args,
+      inline: true,
+      id: this.id,
+    });
     this.el.replaceWith(button);
   }
 }
