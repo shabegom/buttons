@@ -201,7 +201,7 @@ export class CommandSuggest extends TextInputSuggest<Command> {
     const inputLowerCase = inputStr.toLowerCase();
 
     for (const command in commands) {
-      let commandObj = commands[command];
+      const commandObj = commands[command];
       if (commandObj.name.toLowerCase().contains(inputLowerCase)) {
         commandNames.push(commandObj);
       }
@@ -224,34 +224,41 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
   private templatesEnabled = this.app.internalPlugins.plugins.templates.enabled;
   private templaterPlugin = this.app.plugins.plugins["templater-obsidian"];
   // only run if templates plugin is enabled
-  private folder = (): string => {
-    let folder;
+  private folder = (): string[] => {
+    const folders = [];
     if (this.templatesEnabled) {
-      folder = this.app.internalPlugins.plugins.templates.instance.options
+      const folder = this.app.internalPlugins.plugins.templates.instance.options
         .folder;
       if (folder) {
-        return folder.toLowerCase();
+        folders.push(folder.toLowerCase());
       }
       if (this.templaterPlugin) {
-        folder = this.templaterPlugin.settings.template_folder;
+        const folder = this.templaterPlugin.settings.template_folder;
         if (folder) {
-          return folder.toLowerCase();
+          folders.push(folder.toLowerCase());
         }
       }
     }
-    return undefined;
+    return folders[0] ? folders : undefined;
   };
 
   getSuggestions(inputStr: string): TFile[] {
     const abstractFiles = this.app.vault.getAllLoadedFiles();
     const files: TFile[] = [];
     const lowerCaseInputStr = inputStr.toLowerCase();
+    const folders = this.folder();
 
     abstractFiles.forEach((file: TAbstractFile) => {
+      let exists = false;
+      folders.forEach((folder) => {
+        if (file.path.toLowerCase().contains(`${folder}/`)) {
+          exists = true;
+        }
+      });
       if (
         file instanceof TFile &&
         file.extension === "md" &&
-        file.path.toLowerCase().contains(this.folder()) &&
+        exists &&
         file.path.toLowerCase().contains(lowerCaseInputStr)
       ) {
         files.push(file);
@@ -273,7 +280,7 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
 }
 
 export class ButtonSuggest extends TextInputSuggest<string> {
-  getSuggestions(inputStr: string): string[] {
+  getSuggestions(): string[] {
     const buttonStore = getStore(this.app.isMobile);
     const buttons: string[] = [];
 

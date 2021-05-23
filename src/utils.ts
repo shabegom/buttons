@@ -103,7 +103,7 @@ export function getNewArgs(
         .cachedRead(activeView.file)
         .then((content: string) => content.split("\n"));
       const newButton = newContent
-        .splice(position.lineStart, position.lineEnd)
+        .splice(position.lineStart, position.lineEnd - position.lineStart)
         .join("\n")
         .replace("```button", "")
         .replace("```", "");

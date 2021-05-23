@@ -47,7 +47,7 @@ const clickHandler = async (
     : getButtonPosition(content, args);
   // handle command buttons
   if (args.templater) {
-    args = await templater(app, args, position);
+    args = await templater(app, position);
     if (inline) {
       new Notice("templater args don't work with inline buttons yet", 2000);
     }

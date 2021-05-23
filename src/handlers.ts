@@ -130,7 +130,7 @@ export const addContentAtLine = async (
 ): Promise<void> => {
   const lineNumber = type.match(/(\d+)/g);
   if (lineNumber[0]) {
-    let insertionPoint = parseInt(lineNumber[0]) - 1;
+    const insertionPoint = parseInt(lineNumber[0]) - 1;
     const activeView = app.workspace.getActiveViewOfType(MarkdownView);
     if (activeView) {
       const file = activeView.file;
