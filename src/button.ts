@@ -13,13 +13,24 @@ import {
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 
-export const createButton = (
-  app: App,
-  el: HTMLElement,
-  args: Arguments,
-  inline: boolean,
-  id?: string
-): HTMLElement => {
+export const createButton = ({
+  app,
+  el,
+  args,
+  inline,
+  id,
+  clickOverride,
+}: {
+  app?: App;
+  el: HTMLElement;
+  args?: Arguments;
+  inline?: boolean;
+  id?: string;
+  clickOverride?: {
+    params: any[];
+    click: (...params: any[]) => void;
+  };
+}): HTMLElement => {
   //create the button element
   const button = el.createEl("button", {
     text: args.name,
@@ -29,7 +40,9 @@ export const createButton = (
   });
   args.id ? button.setAttribute("id", args.id) : "";
   button.on("click", "button", () => {
-    clickHandler(app, args, inline, id);
+    clickOverride
+      ? clickOverride.click(...clickOverride.params)
+      : clickHandler(app, args, inline, id);
   });
   return button;
 };
