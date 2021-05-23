@@ -24,6 +24,10 @@ export default class ButtonsPlugin extends Plugin {
   private buttonEdit: EventRef;
 
   private async addButtonInEdit(app: App) {
+    let widget: CodeMirror.LineWidget;
+    if (widget) {
+      widget.clear();
+    }
     const activeView = app.workspace.getActiveViewOfType(MarkdownView);
     if (activeView) {
       const store = getStore(app.isMobile);
@@ -37,7 +41,7 @@ export default class ButtonsPlugin extends Plugin {
             id: button.id.split("-")[1],
           });
           if (!app.isMobile && storeButton.args.editview === "true") {
-            cm.addLineWidget(
+            widget = cm.addLineWidget(
               button.position.end.line + 1,
               createButton(app, widgetEl, storeButton.args, false, button.id)
             );
