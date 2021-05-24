@@ -250,11 +250,12 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
 
     abstractFiles.forEach((file: TAbstractFile) => {
       let exists = false;
-      folders.forEach((folder) => {
-        if (file.path.toLowerCase().contains(`${folder}/`)) {
-          exists = true;
-        }
-      });
+      folders &&
+        folders.forEach((folder) => {
+          if (file.path.toLowerCase().contains(`${folder}/`)) {
+            exists = true;
+          }
+        });
       if (
         file instanceof TFile &&
         file.extension === "md" &&

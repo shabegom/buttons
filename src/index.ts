@@ -41,7 +41,11 @@ export default class ButtonsPlugin extends Plugin {
           const storeButton = await getButtonFromStore(app, {
             id: button.id.split("-")[1],
           });
-          if (!app.isMobile && storeButton.args.editview === "true") {
+          if (
+            !app.isMobile &&
+            storeButton &&
+            storeButton?.args.editview === "true"
+          ) {
             widget = cm.addLineWidget(
               button.position.end.line + 1,
               createButton({
@@ -79,6 +83,7 @@ export default class ButtonsPlugin extends Plugin {
       name: "Insert Inline Button",
       callback: () => new InlineButtonModal(this.app).open(),
     });
+
     this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
       // create an object out of the arguments
       const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
