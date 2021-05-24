@@ -460,12 +460,11 @@ export class ButtonModal extends Modal {
       });
     });
     contentEl.createEl("p").setText("Button Preview");
-    this.buttonPreviewEl = createButton(
-      this.app,
-      contentEl,
-      { name: "My Awesome Button" },
-      false
-    );
+    this.buttonPreviewEl = createButton({
+      app: this.app,
+      el: contentEl,
+      args: { name: "My Awesome Button" },
+    });
   }
 
   onClose() {

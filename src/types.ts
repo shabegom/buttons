@@ -7,7 +7,10 @@ declare module "obsidian" {
   interface App {
     plugins: {
       plugins: {
-        "templater-obsidian": { settings: { template_folder: string } };
+        "templater-obsidian": {
+          _loaded: boolean;
+          settings: { template_folder: string };
+        };
       };
     };
     isMobile: boolean;

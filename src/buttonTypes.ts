@@ -92,36 +92,27 @@ export const template = async (
   position: Position
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
-  const templaterPlugin = app.plugins.plugins["templater-obsidian"];
+  const templaterPluginEnabled =
+    app.plugins.plugins["templater-obsidian"]?._loaded;
+
   // only run if templates plugin is enabled
-  if (templatesEnabled || templaterPlugin) {
-    const folder = (): string[] => {
-      const folders = [];
-      if (templatesEnabled) {
-        const folder =
-          app.internalPlugins.plugins.templates.instance.options.folder;
-        if (folder) {
-          folders.push(folder.toLowerCase());
-        }
-        if (templaterPlugin) {
-          const folder = templaterPlugin.settings.template_folder;
-          if (folder) {
-            folders.push(folder.toLowerCase());
-          }
-        }
-      }
-      return folders[0] ? folders : undefined;
-    };
+  if (templatesEnabled || templaterPluginEnabled) {
+    const folders: string[] = [
+      app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
+      app.plugins.plugins[
+        "templater-obsidian"
+      ].settings.template_folder?.toLowerCase(),
+    ].filter((folder) => folder);
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter((file) => {
-      const folders = folder();
       let found = false;
-      folders.forEach((folder) => {
-        if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
-          found = true;
-        }
-      });
+      folders[0] &&
+        folders.forEach((folder) => {
+          if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
+            found = true;
+          }
+        });
       return found;
     })[0];
     if (file) {
