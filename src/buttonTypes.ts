@@ -98,8 +98,8 @@ export const template = async (
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPluginEnabled) {
     const folders: string[] = [
-      app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
-      app.plugins.plugins[
+      templatesEnabled && app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
+      templaterPluginEnabled && app.plugins.plugins[
         "templater-obsidian"
       ].settings.template_folder?.toLowerCase(),
     ].filter((folder) => folder);
