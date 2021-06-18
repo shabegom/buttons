@@ -93,15 +93,15 @@ export const template = async (
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   const templaterPluginEnabled =
-    app.plugins.plugins["templater-obsidian"]?._loaded;
+    app.plugins.plugins["templater-obsidian"];
 
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPluginEnabled) {
     const folders: string[] = [
-      app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
-      app.plugins.plugins[
+      templatesEnabled && app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
+      templaterPluginEnabled && app.plugins?.plugins[
         "templater-obsidian"
-      ].settings.template_folder?.toLowerCase(),
+      ]?.settings.template_folder?.toLowerCase(),
     ].filter((folder) => folder);
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
