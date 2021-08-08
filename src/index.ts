@@ -112,6 +112,15 @@ export default class ButtonsPlugin extends Plugin {
         if (text.startsWith("button")) {
           const id = text.split("button-")[1].trim();
           if (!this.indexComplete) {
+          if (this.app.isMobile) {
+            setTimeout(async () => { 
+             const args = await getButtonById(this.app, id);
+          if (args) {
+            ctx.addChild(new InlineButton(codeblock, this.app, args, id))
+          } 
+          this.indexComplete = true;
+            }, 1000);
+          } else {
           this.storeEventsRef = this.storeEvents.on('index-complete', async () => {
           this.indexComplete = true;
           const args = await getButtonById(this.app, id);
@@ -119,6 +128,7 @@ export default class ButtonsPlugin extends Plugin {
             ctx.addChild(new InlineButton(codeblock, this.app, args, id))
           }
         })
+      }
       } else {
         const args = await getButtonById(this.app, id);
         if (args) {
