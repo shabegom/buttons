@@ -1,4 +1,4 @@
-import { App, Notice, MarkdownView,} from "obsidian";
+import { App, Notice, MarkdownView} from "obsidian";
 import { Arguments } from "./types";
 import {
   calculate,
@@ -13,16 +13,9 @@ import {
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 
-export const createButton = ({
-  app,
-  el,
-  args,
-  inline,
-  id,
-  clickOverride,
-}: {
+export interface Button {
   app?: App;
-  el: HTMLElement;
+  el?: HTMLElement;
   args?: Arguments;
   inline?: boolean;
   id?: string;
@@ -30,7 +23,16 @@ export const createButton = ({
     params: any[];
     click: (...params: any[]) => void;
   };
-}): HTMLElement => {
+}
+
+export const createButton = ({
+  app,
+  el,
+  args,
+  inline,
+  id,
+  clickOverride,
+}: Button): HTMLElement => {
   //create the button element
   const button = el.createEl("button", {
     text: args.name,

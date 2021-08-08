@@ -13,16 +13,19 @@ import {
   getButtonById,
   getStore,
 } from "./buttonStore";
-import { buttonEventListener, openFileListener } from "./events";
+import { buttonEventListener, openFileListener, StoreEvents } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
-import { createButton } from "./button";
+import { createButton, Button } from "./button";
 
 export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
   private closedFile: EventRef;
   private buttonEdit: EventRef;
-  private createButton;
+  private createButton: Button;
+  private storeEvents = new StoreEvents();
+  private storeEventRef: EventRef;
+  private indexComplete: boolean
 
   private async addButtonInEdit(app: App) {
     let widget: CodeMirror.LineWidget;
@@ -62,13 +65,14 @@ export default class ButtonsPlugin extends Plugin {
     }
   }
   async onload(): Promise<void> {
-    initializeButtonStore(this.app);
+    initializeButtonStore(this.app, this.storeEvents);
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
-    this.closedFile = openFileListener(this.app, initializeButtonStore);
-    this.createButton = createButton;
+    this.closedFile = openFileListener(this.app, this.storeEvents, initializeButtonStore);
+    this.createButton = createButton as Button;
 
     this.buttonEdit = openFileListener(
       this.app,
+      this.storeEvents,
       this.addButtonInEdit.bind(this)
     );
 
@@ -106,12 +110,20 @@ export default class ButtonsPlugin extends Plugin {
         const text = codeblock.innerText.trim();
         if (text.startsWith("button")) {
           const id = text.split("button-")[1].trim();
-          setTimeout(async () => {
+          if (!this.indexComplete) {
+          this.storeEvents.on('index-complete', async () => {
+          this.indexComplete = true;
           const args = await getButtonById(this.app, id);
           if (args) {
             ctx.addChild(new InlineButton(codeblock, this.app, args, id))
           }
-        }, 100);
+        })
+      } else {
+        const args = await getButtonById(this.app, id);
+        if (args) {
+          ctx.addChild(new InlineButton(codeblock, this.app, args, id))
+        }
+      }
         }
       }
     });

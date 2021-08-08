@@ -1,4 +1,4 @@
-import { App, TFile, CachedMetadata } from "obsidian";
+import { App, TFile, CachedMetadata, Events } from "obsidian";
 import { ExtendedBlockCache, Arguments } from "./types";
 import { createArgumentObject } from "./utils";
 
@@ -7,7 +7,7 @@ let buttonStore: ExtendedBlockCache[];
 export const getStore = (isMobile: boolean): ExtendedBlockCache[] =>
   isMobile ? buttonStore : JSON.parse(localStorage.getItem("buttons"));
 
-export const initializeButtonStore = (app: App): void => {
+export const initializeButtonStore = (app: App, storeEvents: Events): void => {
   const files = app.vault.getMarkdownFiles();
   const blocksArr = files
     .map((file) => {
@@ -18,6 +18,7 @@ export const initializeButtonStore = (app: App): void => {
     .flat();
   localStorage.setItem("buttons", JSON.stringify(blocksArr));
   buttonStore = blocksArr;
+  storeEvents.trigger('index-complete')
 };
 
 export const addButtonToStore = (app: App, file: TFile): void => {

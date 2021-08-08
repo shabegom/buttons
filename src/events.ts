@@ -1,4 +1,4 @@
-import { App, EventRef, TFile } from "obsidian";
+import { App, EventRef, TFile, Events } from "obsidian";
 
 export const buttonEventListener = (
   app: App,
@@ -20,9 +20,16 @@ export const initializeListener = (
 
 export const openFileListener = (
   app: App,
-  callback: (app: App) => void
+  storeEvents: StoreEvents,
+  callback: (app: App, storeEvents: StoreEvents) => void
 ): EventRef => {
   return app.workspace.on("file-open", () => {
-    callback(app);
+    callback(app, storeEvents);
   });
 };
+
+export class StoreEvents extends Events {
+  constructor() {
+    super();
+  }
+}
