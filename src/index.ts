@@ -25,7 +25,7 @@ export default class ButtonsPlugin extends Plugin {
   private buttonEdit: EventRef;
   private createButton: Button;
   private storeEvents = new Events();
-  private indexComplete: boolean
+  private indexCount = 0;
   private storeEventsRef: EventRef
 
   private async addButtonInEdit(app: App) {
@@ -66,10 +66,13 @@ export default class ButtonsPlugin extends Plugin {
     }
   }
   async onload(): Promise<void> {
-    initializeButtonStore(this.app, this.storeEvents);
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
     this.closedFile = openFileListener(this.app, this.storeEvents, initializeButtonStore);
     this.createButton = createButton as Button;
+    this.storeEventsRef = this.storeEvents.on('index-complete', () => { 
+      this.indexCount++;
+    })
+        initializeButtonStore(this.app, this.storeEvents);
 
     this.buttonEdit = openFileListener(
       this.app,
@@ -107,28 +110,18 @@ export default class ButtonsPlugin extends Plugin {
       const codeblocks = el.querySelectorAll("code");
       for (let index = 0; index < codeblocks.length; index++) {
         const codeblock = codeblocks.item(index);
-
         const text = codeblock.innerText.trim();
         if (text.startsWith("button")) {
           const id = text.split("button-")[1].trim();
-          if (!this.indexComplete) {
-          if (this.app.isMobile) {
-            setTimeout(async () => { 
-             const args = await getButtonById(this.app, id);
-          if (args) {
-            ctx.addChild(new InlineButton(codeblock, this.app, args, id))
-          } 
-          this.indexComplete = true;
-            }, 1000);
-          } else {
+          if (this.indexCount < 2) {
           this.storeEventsRef = this.storeEvents.on('index-complete', async () => {
-          this.indexComplete = true;
+          this.indexCount++;
           const args = await getButtonById(this.app, id);
           if (args) {
             ctx.addChild(new InlineButton(codeblock, this.app, args, id))
           }
         })
-      }
+
       } else {
         const args = await getButtonById(this.app, id);
         if (args) {
