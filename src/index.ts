@@ -24,7 +24,6 @@ export default class ButtonsPlugin extends Plugin {
   private buttonEdit: EventRef;
   private createButton: Button;
   private storeEvents = new StoreEvents();
-  private storeEventRef: EventRef;
   private indexComplete: boolean
 
   private async addButtonInEdit(app: App) {
@@ -132,6 +131,7 @@ export default class ButtonsPlugin extends Plugin {
     this.app.metadataCache.offref(this.buttonEvents);
     this.app.workspace.offref(this.closedFile);
     this.app.workspace.offref(this.buttonEdit);
+    this.storeEvents.off('index-complete', () => true)
   }
 }
 
