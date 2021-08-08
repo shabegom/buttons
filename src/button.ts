@@ -1,4 +1,4 @@
-import { App, Notice, MarkdownView } from "obsidian";
+import { App, Notice, MarkdownView,} from "obsidian";
 import { Arguments } from "./types";
 import {
   calculate,

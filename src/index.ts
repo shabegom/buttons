@@ -106,10 +106,12 @@ export default class ButtonsPlugin extends Plugin {
         const text = codeblock.innerText.trim();
         if (text.startsWith("button")) {
           const id = text.split("button-")[1].trim();
+          setTimeout(async () => {
           const args = await getButtonById(this.app, id);
           if (args) {
-            ctx.addChild(new InlineButton(codeblock, this.app, args, id));
+            ctx.addChild(new InlineButton(codeblock, this.app, args, id))
           }
+        }, 100);
         }
       }
     });
