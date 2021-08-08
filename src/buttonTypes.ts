@@ -59,7 +59,7 @@ export const remove = (
   { remove }: Arguments,
   { lineStart, lineEnd }: { lineStart: number; lineEnd: number }
 ): void => {
-  setTimeout(() => removeButton(app, remove, lineStart, lineEnd), 100);
+  setTimeout(() => removeButton(app, remove, lineStart, lineEnd), 1000);
 };
 
 export const replace = (app: App, { replace }: Arguments): void => {
@@ -292,7 +292,7 @@ export const templater = async (
             position.lineEnd - position.lineStart + 2,
             button
           );
-        } else {
+        }  else {
           cachedContent.splice(
             position.lineStart,
             position.lineEnd - position.lineStart + 2,

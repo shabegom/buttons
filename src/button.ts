@@ -105,7 +105,7 @@ const clickHandler = async (
         ? await getInlineButtonPosition(app, id)
         : getButtonPosition(content, args);
       remove(app, args, position);
-    }, 75);
+    }, 1000);
   }
   if (args.swap) {
     if (!inline) {
