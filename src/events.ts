@@ -27,9 +27,3 @@ export const openFileListener = (
     callback(app, storeEvents);
   });
 };
-
-export class StoreEvents extends Events {
-  constructor() {
-    super();
-  }
-}

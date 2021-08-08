@@ -2,6 +2,7 @@ import {
   App,
   Plugin,
   EventRef,
+  Events,
   MarkdownView,
   MarkdownRenderChild,
 } from "obsidian";
@@ -13,7 +14,7 @@ import {
   getButtonById,
   getStore,
 } from "./buttonStore";
-import { buttonEventListener, openFileListener, StoreEvents } from "./events";
+import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { createButton, Button } from "./button";
@@ -23,8 +24,9 @@ export default class ButtonsPlugin extends Plugin {
   private closedFile: EventRef;
   private buttonEdit: EventRef;
   private createButton: Button;
-  private storeEvents = new StoreEvents();
+  private storeEvents = new Events();
   private indexComplete: boolean
+  private storeEventsRef: EventRef
 
   private async addButtonInEdit(app: App) {
     let widget: CodeMirror.LineWidget;
@@ -110,7 +112,7 @@ export default class ButtonsPlugin extends Plugin {
         if (text.startsWith("button")) {
           const id = text.split("button-")[1].trim();
           if (!this.indexComplete) {
-          this.storeEvents.on('index-complete', async () => {
+          this.storeEventsRef = this.storeEvents.on('index-complete', async () => {
           this.indexComplete = true;
           const args = await getButtonById(this.app, id);
           if (args) {
@@ -131,7 +133,7 @@ export default class ButtonsPlugin extends Plugin {
     this.app.metadataCache.offref(this.buttonEvents);
     this.app.workspace.offref(this.closedFile);
     this.app.workspace.offref(this.buttonEdit);
-    this.storeEvents.off('index-complete', () => true)
+    this.storeEvents.offref(this.storeEventsRef);
   }
 }
 
