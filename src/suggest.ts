@@ -286,7 +286,7 @@ export class ButtonSuggest extends TextInputSuggest<string> {
     const buttons: string[] = [];
 
     buttonStore.forEach((button: ExtendedBlockCache) => {
-      const trimmed = button.id.split("-")[1];
+      const trimmed = button.id.replace("button-", "")
       buttons.push(trimmed);
     });
 
