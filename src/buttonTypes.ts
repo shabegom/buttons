@@ -102,6 +102,9 @@ export const template = async (
       templaterPluginEnabled && app.plugins?.plugins[
         "templater-obsidian"
       ]?.settings.template_folder?.toLowerCase(),
+      templaterPluginEnabled && app.plugins?.plugins[
+        "templater-obsidian"
+      ]?.settings.templates_folder?.toLowerCase(),
     ].filter((folder) => folder);
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();

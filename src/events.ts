@@ -20,8 +20,8 @@ export const initializeListener = (
 
 export const openFileListener = (
   app: App,
-  storeEvents: StoreEvents,
-  callback: (app: App, storeEvents: StoreEvents) => void
+  storeEvents: Events,
+  callback: (app: App, storeEvents: Events) => void
 ): EventRef => {
   return app.workspace.on("file-open", () => {
     callback(app, storeEvents);
