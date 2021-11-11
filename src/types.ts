@@ -9,7 +9,7 @@ declare module "obsidian" {
       plugins: {
         "templater-obsidian": {
           _loaded: boolean;
-          settings: { template_folder: string };
+          settings: { template_folder: string, templates_folder: string };
         };
       };
     };
