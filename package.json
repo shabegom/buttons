@@ -1,21 +1,21 @@
 {
   "name": "buttons",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Buttons for Obsidian",
   "author": "shabegom",
   "main": "main.js",
   "license": "MIT",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "dev": "yarn lint && rollup -c -w",
-    "build:nolint": "NODE_ENV=production rollup -c",
-    "build": "NODE_ENV=production npm run lint && rollup -c",
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "test": "jest",
     "test:watch": "yarn test -- --watch"
   },
   "dependencies": {
     "@babel/runtime": "7.13.10",
     "@popperjs/core": "^2.9.2",
+    "esbuild": "^0.14.11",
     "math-expression-evaluator": "^1.3.7",
     "obsidian": "^0.12.0",
     "tslib": "2.1.0"
