@@ -5,10 +5,10 @@ import {createOnclick} from './handlers'
 
 export default class Buttons extends Plugin {
   onload(): void {
-    console.log("Buttons loading");
+    console.log("Buttons loves you");
     this.registerMarkdownCodeBlockProcessor("button", (source, el) => {
       const args = createArgs(source);
-      const onClick = createOnclick(args);
+      const onClick = createOnclick(args, this.app);
       console.log(args);
       button(el, args.name, onClick);
     });
