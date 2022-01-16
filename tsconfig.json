@@ -1,19 +1,24 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "allowSyntheticDefaultImports": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "jsx": "preserve",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
     "module": "ESNext",
-    "target": "es6",
+    "target": "ES6",
     "allowJs": true,
     "noImplicitAny": true,
-    "importHelpers": true,
     "moduleResolution": "node",
-    "lib": ["dom", "es6", "es5","es7"]
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": [
+      "DOM",
+      "ES5",
+      "ES6",
+      "ES7"
+    ]
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": [
+    "src/*.ts",
+    "src/**/.ts"
+  ]
 }
