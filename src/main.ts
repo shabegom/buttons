@@ -29,7 +29,7 @@ export default class Buttons extends Plugin {
 
     this.registerMarkdownCodeBlockProcessor("button", (source, el) => {
       const args = createArgs(source);
-      const onClick = createOnclick(args, this.app);
+      const onClick = createOnclick(args, this.app, this.index);
       console.log(args);
       button(el, args.name, onClick);
     });
