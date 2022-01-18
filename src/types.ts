@@ -1,3 +1,4 @@
+import { Pos, TFile } from "obsidian";
 
 declare module 'obsidian' {
   interface App {
@@ -9,9 +10,22 @@ declare module 'obsidian' {
   }
 }
 
+interface Mutation {
+  type: string;
+  value: string;
+}
 
 export interface Args {
   name?: string;
   type?: string;
   action?: string;
+  mutations?: Mutation[];
 }
+
+export interface ButtonCache {
+  file: TFile;
+  id: string;
+  position: Pos;
+}
+
+

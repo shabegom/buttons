@@ -1,20 +1,50 @@
-import {App, Notice} from 'obsidian'
-import {Args} from "../types";
+import { App, Notice } from "obsidian";
+import { Args, ButtonCache } from "../types";
+import { combine } from "../utils";
 
 //button types
-import commandButton from './buttonTypes/command';
-import linkButton from './buttonTypes/link';
+import { commandButton, linkButton } from "./buttonTypes";
 
-const createOnclick = (args: Args, app: App) => {
-  const {type, action} = args;
+//buttons mutations
+import { removeMutation } from "./buttonMutations";
+
+const processButtonType = (
+  type: string,
+  action: string,
+  app: App
+) => {
   switch (type) {
     case "command":
       return commandButton(action, app);
     case "link":
-      return linkButton(action)
+      return linkButton(action);
     default:
       return () => new Notice("No command found");
   }
-}
+};
+
+//TODO: Hook up remove mutation
+const processButtonMutations = (
+  mutations: Args["mutations"],
+  app: App,
+  index: ButtonCache[]
+) => {
+  return mutations.reduce((acc: {(): void}[], mutation) => {
+    switch (mutation.type) {
+      case "remove":
+        acc.push(removeMutation(mutation.value, app, index));
+    }
+    return acc;
+  }, []);
+};
+
+const createOnclick = (args: Args, app: App, index: ButtonCache[]) => {
+  const { type, action, mutations } = args;
+  const typeHandler = processButtonType(type, action, app);
+  const mutationHandlers = processButtonMutations(mutations, app, index);
+  const handlerArray = [...mutationHandlers, typeHandler];
+  const handlers = combine(...handlerArray);
+  return handlers;
+};
 
 export default createOnclick;
