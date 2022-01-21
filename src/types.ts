@@ -20,12 +20,14 @@ export interface Args {
   type?: string;
   action?: string;
   mutations?: Mutation[];
+  id?: string;
 }
 
 export interface ButtonCache {
   file: TFile;
-  id: string;
+  button: string;
   position: Pos;
+  id: string;
 }
 
 

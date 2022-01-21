@@ -41,7 +41,7 @@ const processButtonMutations = (
 const createOnclick = (args: Args, app: App, index: ButtonCache[]) => {
   const { type, action, mutations } = args;
   const typeHandler = processButtonType(type, action, app);
-  const mutationHandlers = processButtonMutations(mutations, app, index);
+  const mutationHandlers = mutations ? processButtonMutations(mutations, app, index) : [];
   const handlerArray = [...mutationHandlers, typeHandler];
   const handlers = combine(...handlerArray);
   return handlers;

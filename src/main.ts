@@ -15,11 +15,7 @@ export default class Buttons extends Plugin {
     console.log(this.index)
 
     this.registerEvent(this.app.workspace.on("file-open", () => {
-      this.index = buildIndex(this.app)
-    }))
-
-    this.registerEvent(this.app.workspace.on("layout-change", () => {
-      this.index = buildIndex(this.app)
+        this.index = buildIndex(this.app)
     }))
 
     this.registerEvent(this.app.vault.on("delete", () => {
@@ -29,6 +25,7 @@ export default class Buttons extends Plugin {
 
     this.registerMarkdownCodeBlockProcessor("button", (source, el) => {
       const args = createArgs(source);
+      console.log(args)
       const onClick = createOnclick(args, this.app, this.index);
       console.log(args);
       button(el, args.name, onClick);

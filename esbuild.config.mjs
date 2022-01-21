@@ -44,9 +44,9 @@ esbuild.build({
 		...builtins],
 	format: 'cjs',
 	watch: !prod,
-	target: 'es2016',
+	target: 'es2020',
 	logLevel: "info",
-	sourcemap: prod ? false : 'inline',
+	sourcemap: false,
 	treeShaking: true,
 	outfile: 'main.js',
 }).catch(() => process.exit(1));

@@ -6,6 +6,8 @@ const removeButtonInCurrentNote = (app: App, position: Pos) => {
     const editor = activeView.editor
     const from = editor.offsetToPos(position.start.offset)
     const to = editor.offsetToPos(position.end.offset)
+    editor.setLine(to.line+1, "")
+    to.line++
     editor.replaceRange("", from, to)
   }
 
