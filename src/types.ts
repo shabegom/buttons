@@ -25,6 +25,14 @@ export interface Args {
 
 export interface ButtonCache {
   file: TFile;
+  args?: Args;
+  button?: string;
+  position: Pos;
+  id: string;
+}
+
+export interface PageCache {
+  args: Args;
   button: string;
   position: Pos;
   id: string;

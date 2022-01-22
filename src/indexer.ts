@@ -6,18 +6,35 @@ const buildIndex = (app: App): ButtonCache[] => {
   console.time("indexer");
   const files = app.vault.getMarkdownFiles();
   const index = files.reduce((acc, file) => {
-    const { sections } = app.metadataCache.getFileCache(file);
-    if (sections) {
-      const buttons = sections.filter(
-        (section) => section.id && section.id.includes("button")
-      );
-      buttons.forEach((button) => {
-        acc.push({
-          file,
-          id: button.id.split("-")[1],
-          position: button.position,
+    const cache = app.metadataCache.getFileCache(file);
+    if (cache) {
+      const { sections } = cache;
+      if (sections) {
+        const code = sections.filter(
+          (section) => section.id && section.id.includes("button")
+        );
+        app.vault.read(file).then((content) => {
+          code.forEach((codeblock) => {
+            const button = content.substring(
+              codeblock.position.start.offset,
+              codeblock.position.end.offset
+            );
+            if (button.includes("button")) {
+              const buttonArr = button.split("\n");
+              buttonArr.shift();
+              buttonArr.pop();
+              const args = createArgs(buttonArr.join("\n"));
+              acc.push({
+                file,
+                args,
+                id: codeblock.id.split("-")[1],
+                button,
+                position: codeblock.position,
+              });
+            }
+          });
         });
-      });
+      }
     }
     return acc;
   }, []);
@@ -26,16 +43,16 @@ const buildIndex = (app: App): ButtonCache[] => {
   return index;
 };
 
-const buildPageIndex = async (
-  app: App,
-  file: TFile,
-): Promise<ButtonCache[]> => {
+const buildPageIndex = (app: App, file: TFile): ButtonCache[] => {
   console.time("buildPageIndex");
-  const content = await app.vault.read(file);
+  const buttons: ButtonCache[] = [];
   const { sections } = app.metadataCache.getFileCache(file);
+  const code = sections.filter(
+    (section) => section.id && section.id.includes("button")
+  );
   if (sections) {
-    const code = sections.filter((section) => section.type === "code");
-    const pageIndex = code.reduce((acc, codeblock) => {
+    app.vault.read(file).then((content) => {
+      code.forEach((codeblock) => {
         const button = content.substring(
           codeblock.position.start.offset,
           codeblock.position.end.offset
@@ -45,16 +62,18 @@ const buildPageIndex = async (
           buttonArr.shift();
           buttonArr.pop();
           const args = createArgs(buttonArr.join("\n"));
-          acc.push({
+          buttons.push({
+            file,
             args,
+            id: codeblock.id.split("-")[1],
             button,
             position: codeblock.position,
           });
         }
-        return acc;
-    }, []);
-  console.timeEnd("buildPageIndex");
-  return pageIndex;
+      });
+    });
+    console.timeEnd("buildPageIndex");
+    return buttons;
   }
 };
 
