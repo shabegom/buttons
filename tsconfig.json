@@ -11,6 +11,7 @@
     "importHelpers": true,
     "isolatedModules": true,
     "lib": [
+      "webworker",
       "DOM",
       "ES5",
       "ES6",

@@ -23,6 +23,7 @@
 		"typescript": "4.4.4"
 	},
 	"dependencies": {
-		"@codemirror/language": "^0.19.7"
+		"@codemirror/language": "^0.19.7",
+		"esbuild-plugin-inline-worker": "^0.1.1"
 	}
 }

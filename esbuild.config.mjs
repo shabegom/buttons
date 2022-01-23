@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from 'builtin-modules'
+import inlineWorkerPlugin from 'esbuild-plugin-inline-worker'
 
 const banner =
 `/*
@@ -49,4 +50,5 @@ esbuild.build({
 	sourcemap: false,
 	treeShaking: true,
 	outfile: 'main.js',
+	plugins: [inlineWorkerPlugin()]
 }).catch(() => process.exit(1));

@@ -1,59 +1,36 @@
-import { MarkdownView, Plugin, TFile, App } from "obsidian";
-import { button, buttonPlugin } from "./ui";
+import { Plugin, TFile } from "obsidian";
+import { button } from "./ui";
+import buttonPlugin from "./plugin";
 import { createArgs } from "./utils";
 import { createOnclick } from "./handlers";
 import { ButtonCache } from "./types";
-import { buildIndex, buildPageIndex } from "./indexer";
-
+import { buildIndex } from "./indexer";
 
 export default class Buttons extends Plugin {
-  pageIndex: ButtonCache[] = [];
   index: ButtonCache[];
-  public  getPageIndex: () => ButtonCache[];
+  currentFileButtons: ButtonCache[] = [];
 
   onload(): void {
     console.log("Buttons loves you");
 
     this.app.workspace.onLayoutReady(() => {
       this.index = buildIndex(this.app);
-      const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-      if (activeView) {
-        const { file } = activeView;
-        console.log("Buttons: initial page index for ", file.path);
-        this.pageIndex = buildPageIndex(
-          this.app,
-          file,
-          this.pageIndex,
-          this.index
-        );
-        this.getPageIndex = getPageIndex(this.app, file, this.pageIndex, this.index).bind(this);
-      }
+      const file = this.app.workspace.getActiveFile();
+      this.buildCurrentFileButtons(file);
+      this.registerEditorExtension([buttonPlugin(this)]);
     });
-
-    this.registerEditorExtension(buttonPlugin(this));
 
     this.registerEvent(
       this.app.metadataCache.on("changed", (file) => {
         console.log("metadataCache changed", file.path);
         this.index = buildIndex(this.app);
-        this.pageIndex = buildPageIndex(
-          this.app,
-          file,
-          this.pageIndex,
-          this.index
-        );
+        this.buildCurrentFileButtons(file);
       })
     );
 
     this.registerEvent(
-      this.app.workspace.on("file-open", (file) => {
-        this.pageIndex = buildPageIndex(
-          this.app,
-          file,
-          this.pageIndex,
-          this.index
-        );
-        this.getPageIndex = getPageIndex(this.app, file, this.pageIndex, this.index).bind(this);
+      this.app.workspace.on("file-open", async (file) => {
+        this.buildCurrentFileButtons(file);
       })
     );
 
@@ -63,9 +40,30 @@ export default class Buttons extends Plugin {
       button(el, args.name, onClick);
     });
   }
+  async buildCurrentFileButtons(file: TFile) {
+    const currentFile = await this.app.vault.read(file);
+    const inlineButtons = currentFile.match(/button-[\d\w]{1,6}/g);
+    if (inlineButtons) {
+      console.log("inlineButtons", inlineButtons);
+      inlineButtons.forEach(async (button) => {
+        const buttonId = button.replace("button-", "");
+        const buttonCache = this.index.find((cache) => cache.id === buttonId);
+        if (buttonCache) {
+          const content = await this.app.vault.read(buttonCache.file);
+          const button = content.substring(
+            buttonCache.position.start.offset,
+            buttonCache.position.end.offset
+          );
+          const args = createArgs(button);
+          this.currentFileButtons.push({
+            file: buttonCache.file,
+            args,
+            button,
+            position: buttonCache.position,
+            id: buttonCache.id,
+          });
+        }
+      });
+    }
+  }
 }
-
-const getPageIndex = (app: App, file: TFile , pageIndex: ButtonCache[], index: ButtonCache[]) => () => {
-  return buildPageIndex(app, file, pageIndex, index);
-}
-

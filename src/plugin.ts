@@ -1,4 +1,4 @@
-import Buttons from "../main";
+import Buttons from "./main";
 import {
   WidgetType,
   Range,
@@ -8,14 +8,11 @@ import {
   ViewPlugin,
   DecorationSet,
 } from "@codemirror/view";
-import { StateField, StateEffect } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
-import { createOnclick } from "../handlers";
-import { ButtonCache } from "../types";
+import { createOnclick } from "./handlers";
 
 function inlineButtons(view: EditorView, plugin: Buttons) {
   const buttons: Range<Decoration>[] = [];
-
   for (const { from, to } of view.visibleRanges) {
     syntaxTree(view.state).iterate({
       from,
@@ -33,17 +30,9 @@ function inlineButtons(view: EditorView, plugin: Buttons) {
           const text = view.state.doc.sliceString(from, to);
           if (text.match(/button-[\d\w]{1,6}/)) {
             const id = text.split("-")[1];
-            console.log(
-              "this is the pageIndex in the plugin",
-              plugin.pageIndex
-            );
-            const button = plugin.pageIndex.find((b) => b.id == id);
+            const button = plugin.currentFileButtons.find((b) => b.id == id);
             if (button) {
-              const onClick = createOnclick(
-                button.args,
-                plugin.app,
-                plugin.index
-              );
+            const onClick = createOnclick(button.args, plugin.app, plugin.index);
               const deco = Decoration.replace({
                 widget: new ButtonWidget(button.args.name, onClick),
                 from,
@@ -62,21 +51,14 @@ function buttonPlugin(plugin: Buttons) {
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet;
-      effects: StateEffect<unknown>[];
 
       constructor(view: EditorView) {
         this.decorations = inlineButtons(view, plugin);
-        this.effects = [pageIndexEffect.of(plugin.pageIndex)];
-        if (!view.state.field(pageIndexField)) {
-          this.effects.push(StateEffect.appendConfig.of(pageIndexField));
-        }
-        view.dispatch({ effects: this.effects });
+        console.log(this.decorations);
       }
 
       update(update: ViewUpdate): void {
         this.decorations = inlineButtons(update.view, plugin);
-        this.effects = [pageIndexEffect.of(plugin.pageIndex)];
-        update.view.dispatch({ effects: this.effects });
       }
     },
     {
@@ -97,16 +79,5 @@ class ButtonWidget extends WidgetType {
     return button;
   }
 }
-
-const pageIndexEffect = StateEffect.define<ButtonCache[]>();
-
-const pageIndexField = StateField.define<ButtonCache[]>({
-  create: () => Buttons.prototype.getPageIndex(),
-  update: () => {
-    const index = Buttons.prototype.getPageIndex();
-    return index;
-  },
-  provide: (f) => f,
-});
 
 export default buttonPlugin;
