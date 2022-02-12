@@ -1,6 +1,6 @@
 import { Plugin, TFile } from "obsidian";
-import { button } from "./ui";
-import buttonPlugin from "./plugin";
+import { button, InlineButton } from "./ui";
+import buttonPlugin from "./cmPlugin";
 import { createArgs } from "./utils";
 import { createOnclick } from "./handlers";
 import { ButtonCache } from "./types";
@@ -34,11 +34,38 @@ export default class Buttons extends Plugin {
       })
     );
 
+    this.registerEvent(
+      this.app.workspace.on("layout-change", async () => {
+        const file = this.app.workspace.getActiveFile()
+        if (file) {
+          this.buildCurrentFileButtons(file);
+        }
+      })
+    );
+
     this.registerMarkdownCodeBlockProcessor("button", (source, el) => {
       const args = createArgs(source);
       const onClick = createOnclick(args, this.app, this.index);
       button(el, args.name, onClick);
     });
+    
+    this.registerMarkdownPostProcessor((el, ctx) => {
+      const codeBlocks = el.querySelectorAll("code");
+      for (let index = 0; index < codeBlocks.length; index++) {
+        const codeBlock = codeBlocks[index];
+        const code = codeBlock.innerText;
+        const match = code.match(/button-([\d\w]{1,6})/);
+        if (match) {
+          const id = match[1]
+          console.log(id);
+          const currentButton  = this.currentFileButtons.find((cache) => cache.id === id);
+          if (currentButton) {
+          const onClick = createOnclick(currentButton.args, this.app, this.index);
+          ctx.addChild(new InlineButton(codeBlock, onClick, currentButton.args.name));
+          }
+          }
+        }
+    })
   }
   async buildCurrentFileButtons(file: TFile) {
     const currentFile = await this.app.vault.read(file);
