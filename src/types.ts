@@ -1,7 +1,12 @@
-import { Pos, TFile } from "obsidian";
+import { Pos, TFile, Plugin } from "obsidian";
 
 declare module 'obsidian' {
   interface App {
+    plugins: {
+      plugins: {
+        [name: string]: Plugin
+      }
+    }
     commands: {
      executeCommandById: (id: string) => unknown;
       listCommands: () => [{ id: string; name: string }];

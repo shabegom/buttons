@@ -1,7 +1,7 @@
 import { Plugin, TFile } from "obsidian";
 import { button, InlineButton } from "./ui";
 import buttonPlugin from "./cmPlugin";
-import { createArgs } from "./utils";
+import { createArgs, templater } from "./utils";
 import { createOnclick } from "./handlers";
 import { ButtonCache } from "./types";
 import { buildIndex } from "./indexer";
@@ -9,9 +9,11 @@ import { buildIndex } from "./indexer";
 export default class Buttons extends Plugin {
   index: ButtonCache[];
   currentFileButtons: ButtonCache[] = [];
+  runTemplater: (command: string) => Promise<string>;
 
-  onload(): void {
+  async onload(): Promise<void> {
     console.log("Buttons loves you");
+    this.runTemplater = await templater(this.app);
 
     this.app.workspace.onLayoutReady(() => {
       this.index = buildIndex(this.app);
@@ -43,7 +45,10 @@ export default class Buttons extends Plugin {
       })
     );
 
-    this.registerMarkdownCodeBlockProcessor("button", (source, el) => {
+    this.registerMarkdownCodeBlockProcessor("button", async (source, el) => {
+      if (source.includes("<%")) {
+        source = await this.runTemplater(source);
+      }
       const args = createArgs(source);
       const onClick = createOnclick(args, this.app, this.index);
       button(el, args.name, onClick);
@@ -77,10 +82,13 @@ export default class Buttons extends Plugin {
         const buttonCache = this.index.find((cache) => cache.id === buttonId);
         if (buttonCache) {
           const content = await this.app.vault.read(buttonCache.file);
-          const button = content.substring(
+          let button = content.substring(
             buttonCache.position.start.offset,
             buttonCache.position.end.offset
           );
+          if (button.includes("<%")) {
+            button = await this.runTemplater(button);
+          }
           const args = createArgs(button);
           this.currentFileButtons.push({
             file: buttonCache.file,
