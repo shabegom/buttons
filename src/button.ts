@@ -79,41 +79,35 @@ const clickHandler = async (
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {
-    setTimeout(async () => {
-      content = await app.vault.read(activeView.file);
-      position = inline
-        ? await getInlineButtonPosition(app, id)
-        : getButtonPosition(content, args);
-      template(app, args, position);
-    }, 50);
+    content = await app.vault.read(activeView.file);
+    position = inline
+      ? await getInlineButtonPosition(app, id)
+      : getButtonPosition(content, args);
+    await template(app, args, position);
   }
   if (args.type === "calculate") {
-    calculate(app, args, position);
+    await calculate(app, args, position);
   }
   if (args.type && args.type.includes("text")) {
-    setTimeout(async () => {
-      content = await app.vault.read(activeView.file);
-      position = inline
-        ? await getInlineButtonPosition(app, id)
-        : getButtonPosition(content, args);
-      text(app, args, position);
-    }, 50);
-  }
-  // handle removing the button
-  if (args.remove) {
-    setTimeout(async () => {
-      content = await app.vault.read(activeView.file);
-      position = inline
-        ? await getInlineButtonPosition(app, id)
-        : getButtonPosition(content, args);
-      remove(app, args, position);
-    }, 1000);
+    content = await app.vault.read(activeView.file);
+    position = inline
+      ? await getInlineButtonPosition(app, id)
+      : getButtonPosition(content, args);
+    await text(app, args, position);
   }
   if (args.swap) {
     if (!inline) {
       new Notice("swap args only work in inline buttons for now", 2000);
     } else {
-      swap(app, args.swap, id, inline, activeView.file);
+      await swap(app, args.swap, id, inline, activeView.file);
     }
+  }
+  // handle removing the button
+  if (args.remove) {
+    content = await app.vault.read(activeView.file);
+    position = inline
+      ? await getInlineButtonPosition(app, id)
+      : getButtonPosition(content, args);
+    await remove(app, args, position);
   }
 };
