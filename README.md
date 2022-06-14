@@ -342,6 +342,13 @@ Note: swap count is reset if you close the note.
 
 ## Releases
 
+### Next version (not released yet)
+
+- Bugfix: improve reliability of `templater` option ([Lx])
+
+[Lx]: https://github.com/Lx
+
+
 ### 0.4.4
 - Bugfix: blue and purple colors should now work
 - Bugfix: reduced the height of the Button Maker for smaller displays
