@@ -15,7 +15,7 @@ import {
   getInlineButtonPosition,
   findNumber,
 } from "./parser";
-import { handleValueArray, getNewArgs } from "./utils";
+import { handleValueArray, getNewArgs, runTemplater } from "./utils";
 import {
   getButtonSwapById,
   setButtonSwapById,
@@ -261,9 +261,7 @@ export const templater = async (
     await activeView.save();
     const file = activeView.file;
     const content = await app.vault.cachedRead(file);
-    app.commands.executeCommandById(
-      "templater-obsidian:replace-in-file-templater"
-    );
+    await runTemplater(app);
     const { args } = await getNewArgs(app, position);
     const cachedData: string[] = [];
     const cacheChange = app.vault.on("modify", (file) => {

@@ -116,3 +116,25 @@ export function getNewArgs(
 export const wrapAround = (value: number, size: number): number => {
   return ((value % size) + size) % size;
 };
+
+/**
+ * Run Templater's "Replace templates in the active file" command and wait until complete.
+ */
+export const runTemplater = (
+  app: App
+): Promise<{
+  file: TFile;
+  content: string;
+}> =>
+  new Promise((resolve) => {
+    const ref = app.workspace.on(
+      "templater:overwrite-file",
+      (file: TFile, content: string) => {
+        app.workspace.offref(ref);
+        resolve({ file, content });
+      }
+    );
+    app.commands.executeCommandById(
+      "templater-obsidian:replace-in-file-templater"
+    );
+  });
