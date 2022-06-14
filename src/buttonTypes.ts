@@ -256,9 +256,9 @@ export const templater = async (
   app: App,
   position: Position
 ): Promise<Arguments> => {
-  app.commands.executeCommandById("editor:save-file");
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
+    await activeView.save();
     const file = activeView.file;
     const content = await app.vault.cachedRead(file);
     app.commands.executeCommandById(
