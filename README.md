@@ -345,6 +345,7 @@ Note: swap count is reset if you close the note.
 ### Next version (not released yet)
 
 - Bugfix: improve reliability of `templater` option ([Lx])
+- improve speed of `remove` option ([Lx])
 
 [Lx]: https://github.com/Lx
 
