@@ -17,7 +17,7 @@ function inlineButtons(view: EditorView, plugin: Buttons) {
     syntaxTree(view.state).iterate({
       from,
       to,
-      enter: (type, from, to) => {
+      enter: (type, from, to)  => {
         if (type.name == "inline-code") {
           const selection = view.state.selection;
           if (
@@ -32,7 +32,7 @@ function inlineButtons(view: EditorView, plugin: Buttons) {
             const id = text.split("-")[1];
             const button = plugin.currentFileButtons.find((b) => b.id == id);
             if (button) {
-            const onClick = createOnclick(button.args, plugin.app, plugin.index);
+            const onClick = createOnclick(button.args, plugin.app, plugin.index, button)
               const deco = Decoration.replace({
                 widget: new ButtonWidget(button.args.name, onClick),
                 from,
@@ -54,7 +54,6 @@ function buttonPlugin(plugin: Buttons) {
 
       constructor(view: EditorView) {
         this.decorations = inlineButtons(view, plugin);
-        console.log(this.decorations);
       }
 
       update(update: ViewUpdate): void {

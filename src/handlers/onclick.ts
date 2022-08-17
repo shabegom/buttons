@@ -3,27 +3,32 @@ import { Args, ButtonCache } from "../types";
 import { combine } from "../utils";
 
 //button types
-import { commandButton, linkButton } from "./buttonTypes";
+import { commandButton, linkButton, templateButton } from "./buttonTypes";
 
 //buttons mutations
 import { removeMutation } from "./buttonMutations";
 
-const processButtonType = (type: string, action: string, app: App) => {
+const processButtonType = (
+  args: Args,
+  app: App,
+  button: ButtonCache
+): () => void => {
+  const { type, action } = args;
+  if (type.includes("template")) {
+    return templateButton(action, type, app, button);
+  }
   switch (type) {
     case "command":
       return commandButton(action, app);
     case "link":
       return linkButton(action);
     default:
-      return () => new Notice("No command found");
+        new Notice("No command found");
   }
 };
 
-const processButtonMutations = (
-  mutations: Args["mutations"],
-  app: App,
-  index: ButtonCache[]
-) => {
+const processButtonMutations = (args: Args, app: App, index: ButtonCache[]) => {
+  const { mutations } = args;
   return mutations.reduce((acc: { (): void }[], mutation) => {
     switch (mutation.type) {
       case "remove":
@@ -33,12 +38,16 @@ const processButtonMutations = (
   }, []);
 };
 
-const createOnclick = (args: Args, app: App, index: ButtonCache[]) => {
-  const { type, action, mutations } = args;
-  const typeHandler = processButtonType(type, action, app);
-  const mutationHandlers = mutations
-    ? processButtonMutations(mutations, app, index)
+const createOnclick = (
+  args: Args,
+  app: App,
+  index: ButtonCache[],
+  button: ButtonCache
+) => {
+  const mutationHandlers = args.mutations
+    ? processButtonMutations(args, app, index)
     : [];
+  const typeHandler = processButtonType(args, app, button);
   const handlerArray = [...mutationHandlers, typeHandler];
   const handlers = combine(...handlerArray);
   return handlers;

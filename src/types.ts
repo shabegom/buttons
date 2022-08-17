@@ -33,6 +33,7 @@ export interface ButtonCache {
   args?: Args;
   button?: string;
   position: Pos;
+  inlinePosition?: {line?: number, ch?: {start: number, end: number}};
   id: string;
 }
 

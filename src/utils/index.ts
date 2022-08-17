@@ -1,6 +1,7 @@
 import createArgs from "./args";
 import templater from "./templater";
 import { removeButtonInCurrentNote } from "./remove";
+import {appendContent} from "./content"
 
 // function to combine multiple function and output a function
 const combine =
@@ -8,4 +9,4 @@ const combine =
   () =>
     fns.forEach((fn) => fn && fn());
 
-export { createArgs, removeButtonInCurrentNote, combine, templater };
+export { appendContent, createArgs, removeButtonInCurrentNote, combine, templater };

@@ -1,7 +1,7 @@
-const linkButton = (link: string) => {
+const linkButton = (link: string): (() => void) => {
   return () => {
-    window.open(link.trim(), '_blank');
+    window.open(link.trim(), "_blank");
   };
-}
+};
 
 export default linkButton;
