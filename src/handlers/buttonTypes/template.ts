@@ -2,7 +2,7 @@ import { App, Notice } from "obsidian";
 import { appendContent, templater } from "../../utils";
 import { ButtonCache } from "../../types";
 
-const templateButton = (
+const templateButton = async (
   action: string,
   type: string,
   app: App,
@@ -21,14 +21,28 @@ const templateButton = (
   const file = files.find(
     (file) => file.basename.toLowerCase() === templateFile
   );
+  if (!file) {
+    new Notice(`Could not find ${action} template`);
+    return;
+  }
+  const content = await app.vault.read(file);
+  const runTemplater = await templater(app, file);
+  const processed = await runTemplater(content);
 
   if (type.includes("append")) {
-    return async () => {
-      const content = await app.vault.read(file);
-      const runTemplater = await templater(app, file);
-      const processed = await runTemplater(content);
-      appendContent(app, button, processed);
-    };
+    appendContent(app, button, processed);
+  }
+  if (type.includes("prepned")) {
+    // TODO: write prependContent function
+    // prependContent(app, button, processed);
+  }
+  if (type.includes("line")) {
+    // TODO: write lineContent function
+    // lineContent(app, button, processed);
+  }
+  if (type.includes("note")) {
+    // TODO: write noteContent function
+    // noteContent(app, button, processed);
   }
 };
 

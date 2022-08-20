@@ -3,7 +3,12 @@ import { Args, ButtonCache } from "../types";
 import { combine } from "../utils";
 
 //button types
-import { commandButton, linkButton, templateButton } from "./buttonTypes";
+import {
+  commandButton,
+  linkButton,
+  swapButton,
+  templateButton,
+} from "./buttonTypes";
 
 //buttons mutations
 import { removeMutation } from "./buttonMutations";
@@ -12,7 +17,7 @@ const processButtonType = (
   args: Args,
   app: App,
   button: ButtonCache
-): () => void => {
+): (() => void) => {
   const { type, action } = args;
   if (type.includes("template")) {
     return templateButton(action, type, app, button);
@@ -22,8 +27,10 @@ const processButtonType = (
       return commandButton(action, app);
     case "link":
       return linkButton(action);
+    case "swap":
+      return swapButton(action);
     default:
-        new Notice("No command found");
+      new Notice("No command found");
   }
 };
 

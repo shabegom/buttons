@@ -34,13 +34,13 @@ export default class Buttons extends Plugin {
         console.log("metadataCache changed", file.path);
         indexDebouncer();
         currentFileButtonDebouncer(file);
-      }),
+      })
     );
 
     this.registerEvent(
       this.app.workspace.on("file-open", async (file) => {
         currentFileButtonDebouncer(file);
-      }),
+      })
     );
 
     this.registerEvent(
@@ -49,7 +49,7 @@ export default class Buttons extends Plugin {
         if (file) {
           currentFileButtonDebouncer(file);
         }
-      }),
+      })
     );
 
     this.registerMarkdownCodeBlockProcessor(
@@ -62,18 +62,15 @@ export default class Buttons extends Plugin {
           source = await runTemplater(source);
         }
         const args = createArgs(source);
-        const currentButton = this.getCurrentButton(
-          source,
-          sectionInfo.text,
-        );
+        const currentButton = this.getCurrentButton(source, sectionInfo.text);
         const onClick = createOnclick(
           args,
           this.app,
           this.index,
-          currentButton,
+          currentButton
         );
-        button(el, args.name, onClick);
-      },
+        button(el, args.name, onClick, args.class, args.color);
+      }
     );
 
     this.registerMarkdownPostProcessor(async (el, ctx) => {
@@ -85,21 +82,23 @@ export default class Buttons extends Plugin {
         if (match) {
           const id = match[1];
           const currentButton = this.currentFileButtons.find(
-            (cache) => cache.id === id,
+            (cache) => cache.id === id
           );
           if (currentButton) {
             const onClick = createOnclick(
               currentButton.args,
               this.app,
               this.index,
-              currentButton,
+              currentButton
             );
             ctx.addChild(
               new InlineButton(
                 codeBlock,
                 onClick,
                 currentButton.args.name,
-              ),
+                currentButton.args.class,
+                currentButton.args.color
+              )
             );
           }
         }
@@ -118,10 +117,14 @@ export default class Buttons extends Plugin {
       }, 0);
     const id = content.split("\n")[idLine].replace("^button-", "");
     const currentButton = this.currentFileButtons.find(
-      (cache) => cache.id === id,
+      (cache) => cache.id === id
     );
     return currentButton;
   }
+  /**
+   * Looks for buttons in the current file and builds the cache
+   * @param file - a TFile object of the file in the active view
+   */
   async buildCurrentFileButtons(file: TFile) {
     this.currentFileButtons = [];
     const currentFile: string = await this.app.vault.read(file);
@@ -150,14 +153,12 @@ export default class Buttons extends Plugin {
           }
         });
         const buttonId = button.replace("button-", "");
-        const buttonCache = this.index.find(
-          (cache) => cache.id === buttonId,
-        );
+        const buttonCache = this.index.find((cache) => cache.id === buttonId);
         if (buttonCache) {
           const content = await this.app.vault.read(buttonCache.file);
           let button = content.substring(
             buttonCache.position.start.offset,
-            buttonCache.position.end.offset,
+            buttonCache.position.end.offset
           );
           if (button.includes("<%")) {
             const runTemplater = await templater(this.app, file);
