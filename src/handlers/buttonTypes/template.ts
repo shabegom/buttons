@@ -32,7 +32,7 @@ const templateButton = async (
   if (type.includes("append")) {
     appendContent(app, button, processed);
   }
-  if (type.includes("prepned")) {
+  if (type.includes("prepend")) {
     // TODO: write prependContent function
     // prependContent(app, button, processed);
   }

@@ -15,7 +15,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
 - **Command:** Click the Button to run a Command from the Command Palette
 - **Link:** Click the Button to open a URL or URI
 - **Template:** Click the Button to prepend, append, insert, or create a new note from a template note
-- **Text:** Clock the Button to prepend, append, insert, or create a new note with specified text
+- **Text:** Click the Button to prepend, append, insert, or create a new note with specified text
 - **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click
 
 **Action:** Depending on what **Button Type** you choose, you will choose an Action to perform:

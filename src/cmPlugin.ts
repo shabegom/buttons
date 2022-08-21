@@ -7,7 +7,7 @@ import {
   ViewUpdate,
   WidgetType,
 } from "@codemirror/view";
-import { Range } from "@codemirror/state";
+import { EditorSelection, Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { createOnclick } from "./handlers";
 

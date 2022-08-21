@@ -1,10 +1,10 @@
 import { debounce, Plugin, TFile } from "obsidian";
-import { button, InlineButton } from "./ui";
 import buttonPlugin from "./cmPlugin";
-import { createArgs, templater } from "./utils";
 import { createOnclick } from "./handlers";
-import { ButtonCache } from "./types";
 import { buildIndex } from "./indexer";
+import { ButtonCache } from "./types";
+import { button, InlineButton } from "./ui";
+import { createArgs, templater } from "./utils";
 
 export default class Buttons extends Plugin {
   index: ButtonCache[];
@@ -38,13 +38,13 @@ export default class Buttons extends Plugin {
     );
 
     this.registerEvent(
-      this.app.workspace.on("file-open", async (file) => {
+      this.app.workspace.on("file-open", async (file): Promise<void> => {
         currentFileButtonDebouncer(file);
       })
     );
 
     this.registerEvent(
-      this.app.workspace.on("layout-change", async () => {
+      this.app.workspace.on("layout-change", async (): Promise<void> => {
         const file = this.app.workspace.getActiveFile();
         if (file) {
           currentFileButtonDebouncer(file);
@@ -54,7 +54,7 @@ export default class Buttons extends Plugin {
 
     this.registerMarkdownCodeBlockProcessor(
       "button",
-      async (source, el, ctx) => {
+      async (source, el, ctx): Promise<void> => {
         const activeFile = this.app.workspace.getActiveFile();
         const sectionInfo = ctx.getSectionInfo(el);
         if (source.includes("<%")) {
@@ -94,8 +94,8 @@ export default class Buttons extends Plugin {
             ctx.addChild(
               new InlineButton(
                 codeBlock,
-                onClick,
                 currentButton.args.name,
+                onClick,
                 currentButton.args.class,
                 currentButton.args.color
               )

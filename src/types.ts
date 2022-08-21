@@ -1,17 +1,17 @@
-import { Pos, TFile, Plugin } from "obsidian";
+import { Plugin, Pos, TFile } from "obsidian";
 
-declare module 'obsidian' {
+declare module "obsidian" {
   interface App {
     plugins: {
       plugins: {
-        [name: string]: Plugin
-      }
-    }
+        [name: string]: Plugin;
+      };
+    };
     commands: {
-     executeCommandById: (id: string) => unknown;
+      executeCommandById: (id: string) => unknown;
       listCommands: () => [{ id: string; name: string }];
-      commands: Record<string, { name: string; id: string }>; 
-    }
+      commands: Record<string, { name: string; id: string }>;
+    };
   }
 }
 
@@ -26,6 +26,8 @@ export interface Args {
   action?: string;
   mutations?: Mutation[];
   id?: string;
+  class?: string;
+  color?: string;
 }
 
 export interface ButtonCache {
@@ -33,7 +35,7 @@ export interface ButtonCache {
   args?: Args;
   button?: string;
   position: Pos;
-  inlinePosition?: {line?: number, ch?: {start: number, end: number}};
+  inlinePosition?: { line?: number; ch?: { start: number; end: number } };
   id: string;
 }
 
@@ -43,5 +45,3 @@ export interface PageCache {
   position: Pos;
   id: string;
 }
-
-
