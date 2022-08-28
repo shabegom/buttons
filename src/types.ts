@@ -45,3 +45,10 @@ export interface PageCache {
   position: Pos;
   id: string;
 }
+
+export interface SwapCache {
+  id: string;
+  buttons: ButtonCache[];
+  currentButton: ButtonCache;
+  currentButtonIndex: number;
+}

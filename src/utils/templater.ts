@@ -1,11 +1,11 @@
-import { App, Notice, TFile } from "obsidian";
+import { Notice, TFile } from "obsidian";
 
 interface Item {
   name: string;
   static_functions: Array<[string, () => unknown]>;
 }
 
-async function templater(app: App, activeFile: TFile) {
+async function templater(activeFile: TFile) {
   const config = {
     template_file: activeFile,
     active_file: activeFile,
@@ -37,13 +37,13 @@ async function templater(app: App, activeFile: TFile) {
     functions.user[key] = value;
   });
   if (activeFile) {
-  const userSystemFunctions =
-    await templater.functions_generator.user_functions.user_system_functions.generate_system_functions(
-      config
-    );
-  userSystemFunctions.forEach((value: () => unknown, key: string) => {
-    functions.user[key] = value;
-  });
+    const userSystemFunctions =
+      await templater.functions_generator.user_functions.user_system_functions.generate_system_functions(
+        config
+      );
+    userSystemFunctions.forEach((value: () => unknown, key: string) => {
+      functions.user[key] = value;
+    });
   }
   return async (command: string) => {
     return await templater.parser.parse_commands(command, functions);

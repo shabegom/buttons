@@ -1,60 +1,55 @@
-import { App, Notice } from "obsidian";
-import { Args, ButtonCache } from "../types";
+import { Notice } from "obsidian";
+import { ButtonCache } from "src/types";
 import { combine } from "../utils";
+import Buttons from "src/main";
 
 //button types
-import {
-  commandButton,
-  linkButton,
-  swapButton,
-  templateButton,
-} from "./buttonTypes";
+import { commandButton, linkButton, templateButton } from "./buttonTypes";
 
 //buttons mutations
-import { removeMutation } from "./buttonMutations";
+import {
+  removeMutation,
+  replaceMutation,
+  swapMutation,
+} from "./buttonMutations";
 
-const processButtonType = (
-  args: Args,
-  app: App,
-  button: ButtonCache
-): (() => void) => {
-  const { type, action } = args;
+const processButtonType = (button: ButtonCache): (() => void) => {
+  const { type, action } = button.args;
   if (type.includes("template")) {
-    return templateButton(action, type, app, button);
+    return templateButton(button);
   }
   switch (type) {
     case "command":
-      return commandButton(action, app);
+      return commandButton(action);
     case "link":
       return linkButton(action);
-    case "swap":
-      return swapButton(action);
     default:
       new Notice("No command found");
   }
 };
 
-const processButtonMutations = (args: Args, app: App, index: ButtonCache[]) => {
-  const { mutations } = args;
+const processButtonMutations = (plugin: Buttons, button: ButtonCache) => {
+  const { mutations } = button.args;
   return mutations.reduce((acc: { (): void }[], mutation) => {
     switch (mutation.type) {
       case "remove":
-        acc.push(removeMutation(mutation.value, app, index));
+        acc.push(removeMutation(plugin, mutation.value));
+        break;
+      case "replace":
+        acc.push(replaceMutation(mutation.value));
+        break;
+      case "swap":
+        acc.push(swapMutation(plugin, button));
     }
     return acc;
   }, []);
 };
 
-const createOnclick = (
-  args: Args,
-  app: App,
-  index: ButtonCache[],
-  button: ButtonCache
-) => {
-  const mutationHandlers = args.mutations
-    ? processButtonMutations(args, app, index)
+const createOnclick = (plugin: Buttons, button: ButtonCache) => {
+  const mutationHandlers = button.args.mutations
+    ? processButtonMutations(plugin, button)
     : [];
-  const typeHandler = processButtonType(args, app, button);
+  const typeHandler = processButtonType(button);
   const handlerArray = [...mutationHandlers, typeHandler];
   const handlers = combine(...handlerArray);
   return handlers;

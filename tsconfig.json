@@ -10,17 +10,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": [
-      "webworker",
-      "DOM",
-      "ES5",
-      "ES6",
-      "ES7",
-      "es2019"
-    ]
+    "esModuleInterop": true,
+    "lib": ["webworker", "DOM", "ES5", "ES6", "ES7", "es2019"]
   },
-  "include": [
-    "src/*.ts",
-    "src/**/.ts"
-  ]
+  "include": ["src/*.ts", "src/**/.ts"]
 }

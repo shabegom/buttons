@@ -16,7 +16,7 @@ function selectionAndRangeOverlap(
   selection: EditorSelection,
   rangeFrom: number,
   rangeTo: number
-) {
+): boolean {
   for (const range of selection.ranges) {
     if (range.from <= rangeTo && range.to >= rangeFrom) {
       return true;
@@ -47,12 +47,7 @@ function inlineButtons(view: EditorView, plugin: Buttons) {
           if (id) {
             const button = plugin.currentFileButtons.find((b) => b.id == id);
             if (button) {
-              const onClick = createOnclick(
-                button.args,
-                plugin.app,
-                plugin.index,
-                button
-              );
+              const onClick = createOnclick(plugin, button);
               const deco = Decoration.replace({
                 widget: new ButtonWidget(button.args.name, onClick),
                 from: node.from,

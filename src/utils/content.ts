@@ -25,8 +25,9 @@ function prependContent(app: App, button: ButtonCache, content: string) {
 function insertContent(app: App, button: ButtonCache, content: string) {
   const editor = getEditor(app);
   const { args } = button;
-  const { start } = args;
-  editor.replaceRange(content, { line: start, ch: 0 });
+  const { type } = args;
+  const start = type.match(/\((\d*)\)/)[1];
+  editor.replaceRange(content, { line: parseInt(start) - 1, ch: 0 });
 }
 
-export { appendContent, insertContent, prependContent };
+export { appendContent, getEditor, insertContent, prependContent };

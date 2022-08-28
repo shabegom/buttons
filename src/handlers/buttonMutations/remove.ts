@@ -1,14 +1,23 @@
-import { App, Notice } from "obsidian";
+import Buttons from "src/main";
+import { App, Notice, Pos } from "obsidian";
 import { ButtonCache } from "src/types";
-import { removeButtonInCurrentNote as remove } from "src/utils";
+import { getEditor } from "../../utils";
 
-const removeMutation = (ids: string, app: App, index: ButtonCache[]) => {
+const removeMutation = (plugin: Buttons, ids: string) => {
   return () => {
-    const buttons = index
+    const buttons = plugin.index
       .filter((button) => ids.includes(button.id))
       .sort((a, b) => b.position.start.line - a.position.start.line);
     removeIterator(buttons, app);
   };
+};
+
+const removeButtonInCurrentNote = (app: App, position: Pos) => {
+  const editor = getEditor(app);
+  const from = editor.offsetToPos(position.start.offset);
+  const to = editor.offsetToPos(position.end.offset);
+  editor.setLine(to.line + 1, "");
+  editor.replaceRange("", from, to);
 };
 
 const removeIterator = async (
@@ -21,7 +30,7 @@ const removeIterator = async (
   const button = buttons.shift();
   if (button) {
     console.log(`Removing button ${button.id}`);
-    remove(app, button.position);
+    removeButtonInCurrentNote(app, button.position);
   } else {
     new Notice("The button you are trying to remove does not exist.");
   }

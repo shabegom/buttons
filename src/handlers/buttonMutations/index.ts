@@ -1,3 +1,5 @@
-import removeMutation from './remove';
+import removeMutation from "./remove";
+import replaceMutation from "./replace";
+import swapMutation from "./swap";
 
-export {removeMutation}
+export { removeMutation, replaceMutation, swapMutation };

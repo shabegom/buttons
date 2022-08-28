@@ -1,10 +1,10 @@
-import {Args} from "../types"
+import { Args } from "../types";
 
 const createArgs = (source: string): Args => {
   const args = source.split("\n").reduce((acc: Args, line) => {
     const key = line.split(" ")[0];
     const value = line.split(" ").slice(1).join(" ").trim();
-    if (key === "remove") {
+    if (key === "remove" || key === "replace" || key === "swap") {
       if (!acc.mutations) {
         acc.mutations = [];
       }
@@ -17,6 +17,6 @@ const createArgs = (source: string): Args => {
     return { ...acc, [key]: value };
   }, {});
   return args;
-}
+};
 
 export default createArgs;
