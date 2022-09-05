@@ -11,8 +11,6 @@ import { EditorSelection, Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { createOnclick } from "./handlers";
 
-const widgets: ElementCache[] = [];
-
 // from: https://github.com/blacksmithgu/obsidian-dataview/blob/03d0c5de51e992a650de0c1c769093bedb1c7817/src/ui/lp-render.ts#L44
 export function selectionAndRangeOverlap(
   selection: EditorSelection,
@@ -45,30 +43,19 @@ function inlineButtons(view: EditorView, plugin: Buttons) {
         }
         if (node.type.name.includes("formatting")) return;
         if (regex.test(node.type.name)) {
-          let el = createEl("button");
-          el.addClass("button-default");
-          const id = content.match(/button-([\d\w]{1,6})/)[1];
+          const id = content.match(/button-([\s\S]*)/)[1];
           if (id) {
-            const cachedElement = widgets && widgets.find((w) => w.id === id);
-            if (cachedElement) {
-              el = cachedElement.el;
-              const deco = Decoration.replace({
-                widget: new CachedButtonWidget(el),
-                from: node.from,
-                to: node.to,
-              });
-              buttons.push(deco.range(node.from, node.to));
-            } else {
-              const deco = Decoration.replace({
-                widget: new ButtonWidget(el, id, plugin),
-                from: node.from,
-                to: node.to,
-              });
-              buttons.push(deco.range(node.from, node.to));
-            }
+            const line = view.state.doc.lineAt(node.to).number;
+            const el = createEl("button");
+            el.addClass("button-default");
+            const deco = Decoration.replace({
+              widget: new ButtonWidget(el, id, plugin, line),
+              from: node.from,
+              to: node.to,
+            });
+            buttons.push(deco.range(node.from, node.to));
           }
-        }
-        if (content.includes("^button")) {
+        } else if (content.includes("^button-")) {
           const deco = Decoration.mark({
             attributes: { style: "display: none" },
             from: node.from,
@@ -95,9 +82,7 @@ function buttonPlugin(plugin: Buttons) {
       }
 
       update(update: ViewUpdate): void {
-        if (update.docChanged || update.viewportChanged) {
-          this.decorations = inlineButtons(update.view, plugin);
-        }
+        this.decorations = inlineButtons(update.view, plugin);
       }
     },
     {
@@ -106,35 +91,36 @@ function buttonPlugin(plugin: Buttons) {
   );
 }
 
-interface ElementCache {
-  id: string;
-  el: HTMLButtonElement;
-}
-
-class CachedButtonWidget extends WidgetType {
-  constructor(readonly el: HTMLButtonElement) {
-    super();
-  }
-
-  toDOM() {
-    return this.el;
-  }
-}
-
 class ButtonWidget extends WidgetType {
   constructor(
     readonly el: HTMLElement,
     readonly id: string,
-    readonly plugin: Buttons
+    readonly plugin: Buttons,
+    readonly line: number
   ) {
     super();
   }
+  eq(other: ButtonWidget): boolean {
+    if (other.id === this.id) {
+      return true;
+    }
+    return false;
+  }
+
   toDOM(): HTMLElement {
     this.plugin.getInlineButton(this.id).then((button) => {
       if (button) {
+        const buttonPositionClone = JSON.parse(JSON.stringify(button.position));
         const name = button.args.name;
         const className = button.args.class;
-        const onClick = createOnclick(this.plugin, button);
+        buttonPositionClone.start.line = this.line;
+        buttonPositionClone.end.line = this.line;
+        const onClick = createOnclick(this.plugin, {
+          file: button.file,
+          id: button.id,
+          args: button.args,
+          position: buttonPositionClone,
+        });
         const color = button.args.color;
         this.el.innerText = name;
         if (className) {
@@ -144,10 +130,6 @@ class ButtonWidget extends WidgetType {
         this.el.onclick = onClick;
         if (color) {
           this.el.addClass(color);
-        }
-        const cachedElement = widgets.find((w) => w.id === this.id);
-        if (!cachedElement) {
-          widgets.push({ id: this.id, el: this.el as HTMLButtonElement });
         }
       } else {
         this.el.innerText = "button not foud. check button Id";

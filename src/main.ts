@@ -95,8 +95,8 @@ export default class Buttons extends Plugin {
         .split("\n")
         .reduce((acc, line, index) => {
           if (
-            index >= indexedButton.position.start.line &&
-            index <= indexedButton.position.end.line &&
+            index >= indexedButton.position.start.line - 1 &&
+            index <= indexedButton.position.end.line + 1 &&
             !line.includes("`")
           ) {
             acc.push(line);
@@ -105,8 +105,13 @@ export default class Buttons extends Plugin {
         }, [])
         .join("\n");
       const args = createArgs(codeblock);
-      indexedButton.args = args;
-      return indexedButton;
+      const inlineButton = {
+        id,
+        file,
+        args,
+        position: indexedButton.position,
+      };
+      return inlineButton;
     }
   }
 
@@ -128,8 +133,14 @@ export default class Buttons extends Plugin {
       if (button.id === id) {
         activeButton = button;
       }
-      return activeButton;
+      return {
+        id: activeButton.id,
+        position: activeButton.position,
+        args: activeButton.args,
+        file: activeButton.file,
+      };
     });
+
     return currentButton;
   }
 

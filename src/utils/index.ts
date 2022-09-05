@@ -5,6 +5,7 @@ import {
   getEditor,
   insertContent,
   prependContent,
+  processTemplate,
 } from "./content";
 import { createNote } from "./note";
 
@@ -33,5 +34,6 @@ export {
   insertContent,
   nanoid,
   prependContent,
+  processTemplate,
   templater,
 };

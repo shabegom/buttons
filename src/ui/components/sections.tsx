@@ -190,6 +190,7 @@ const NoteTemplate = ({ input, button, setButton }: Page) => {
               "Vertical Split",
               "Horizontal Split",
               "New Tab",
+              "Same Window",
               "New Window",
               "Don't Open",
             ],

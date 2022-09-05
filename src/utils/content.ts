@@ -1,33 +1,58 @@
-import { App, MarkdownView } from "obsidian";
+import { MarkdownView, Notice, TFile } from "obsidian";
 import { ButtonCache } from "../types";
+import { templater } from "./";
 
-function getEditor(app: App) {
+function getEditor() {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (!activeView) return;
   const { editor } = activeView;
   return editor;
 }
 
-function appendContent(app: App, button: ButtonCache, content: string) {
-  const editor = getEditor(app);
+export async function processTemplate(file: TFile) {
+  try {
+    const content = await app.vault.read(file);
+    const runTemplater = await templater(file);
+    const processed = await runTemplater(content);
+    return processed;
+  } catch (e) {
+    new Notice(`There was an error processing the template!`, 2000);
+  }
+}
+
+function appendContent(button: ButtonCache, file: TFile) {
+  console.log("in append content function");
+  const editor = getEditor();
+  console.log(button);
   const { position } = button;
-  editor.replaceRange(content, { line: position.end.line + 3, ch: 0 });
+  const content = editor.getRange(
+    { line: position.end.line, ch: 0 },
+    { line: position.end.line + 2, ch: 0 }
+  );
+  console.log(content);
+  processTemplate(file).then((processed) => {
+    editor.replaceRange(processed, { line: position.end.line + 2, ch: 0 });
+  });
 }
 
 // TODO: test prependContent actually works
-function prependContent(app: App, button: ButtonCache, content: string) {
-  const editor = getEditor(app);
+function prependContent(button: ButtonCache, file: TFile) {
+  const editor = getEditor();
   const { position } = button;
-  editor.replaceRange(content, { line: position.start.line - 1, ch: 0 });
+  processTemplate(file).then((content) => {
+    editor.replaceRange(content, { line: position.start.line - 1, ch: 0 });
+  });
 }
 
 // TODO: test insertContent actually works
-function insertContent(app: App, button: ButtonCache, content: string) {
-  const editor = getEditor(app);
+function insertContent(button: ButtonCache, file: TFile) {
+  const editor = getEditor();
   const { args } = button;
   const { type } = args;
   const start = type.match(/\((\d*)\)/)[1];
-  editor.replaceRange(content, { line: parseInt(start, 10) - 1, ch: 0 });
+  processTemplate(file).then((content) => {
+    editor.replaceRange(content, { line: parseInt(start, 10) - 1, ch: 0 });
+  });
 }
 
 export { appendContent, getEditor, insertContent, prependContent };
