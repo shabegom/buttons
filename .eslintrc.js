@@ -1,12 +1,20 @@
 module.exports = {
-  root: true,
-  parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint"],
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-  rules: {
-    "@typescript-eslint/no-unused-vars": [
-      2,
-      { args: "all", argsIgnorePattern: "^_" },
-    ],
+  env: {
+    browser: true,
+    es2021: true,
   },
+  extends: [
+    "preact",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+  ],
+  overrides: [],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module",
+  },
+  plugins: ["react", "@typescript-eslint"],
+  rules: {},
 };

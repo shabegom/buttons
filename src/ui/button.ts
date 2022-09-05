@@ -8,9 +8,10 @@ const button = (
   color: string
 ): ButtonComponent => {
   const button = new ButtonComponent(el);
-  button.setClass(
-    `${className ? className : "button-default"} ${color ? color : ""}`
-  );
+  button.buttonEl.addClass(`${className ? className : "button-default"}`);
+  if (color) {
+    button.buttonEl.addClass(color);
+  }
   button.setButtonText(name);
   button.onClick(handler);
   return button;

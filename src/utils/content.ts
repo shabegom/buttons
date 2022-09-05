@@ -27,7 +27,7 @@ function insertContent(app: App, button: ButtonCache, content: string) {
   const { args } = button;
   const { type } = args;
   const start = type.match(/\((\d*)\)/)[1];
-  editor.replaceRange(content, { line: parseInt(start) - 1, ch: 0 });
+  editor.replaceRange(content, { line: parseInt(start, 10) - 1, ch: 0 });
 }
 
 export { appendContent, getEditor, insertContent, prependContent };

@@ -1,6 +1,6 @@
 import Buttons from "../src/main";
 import { Args, ButtonCache } from "../src/types";
-import { Pos, TFile, TFolder, Vault } from "obsidian";
+import { App, Plugin_2, Pos, TFile, TFolder, Vault } from "obsidian";
 
 export const position: Pos = {
   start: { line: 0, col: 0, offset: 0 },
@@ -53,3 +53,39 @@ ${buttonCodeblock}
 \`\`\`
 ^button-test-button
 `;
+
+export const command = { name: "Toggle Pin", id: "toggle-pin" };
+
+export const app = {
+  commands: {
+    listCommands: () => [command],
+    executeCommandById: (id: string) => id,
+  },
+  plugins: {
+    plugins: {
+      "templater-obsidian": {
+        templater: {
+          parser: {
+            parse_commands: (command: string) => {
+              const parsed = command.replace(/<% '(Hello World)' %>/, "$1");
+              return Promise.resolve(parsed);
+            },
+          },
+          functions_generator: {
+            internal_functions: {
+              modules_array: [],
+            },
+            user_functions: {
+              user_system_functions: {
+                generate_system_functions: () => Promise.resolve([]),
+              },
+              user_script_functions: {
+                generate_user_script_functions: async (): Promise<[]> => [],
+              },
+            },
+          },
+        },
+      } as unknown as Plugin_2,
+    },
+  },
+} as unknown as App;

@@ -1,6 +1,6 @@
-const commandButton = (action: string): (() => void) => {
-  const allCommands = app.commands.listCommands();
-  const command = allCommands.filter(
+const commandButton = (action: string) => {
+  const allCommands = app.commands.commands;
+  const command = Object.values(allCommands).filter(
     (command: { name: string }) =>
       command.name.toUpperCase() === action.toUpperCase().trim()
   )[0];

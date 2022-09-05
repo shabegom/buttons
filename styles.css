@@ -68,6 +68,13 @@ settings:
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+.button-error {
+  color: var(--color-red);
+  background-color: var(--background-primary);
+  border: none;
+  box-shadow: none;
+}
+
 .button-default:hover {
   z-index: 100;
   box-shadow: 0 4px 4px var(--button-box-shadow, rgba(0, 0, 0, 0.25)),
@@ -139,4 +146,10 @@ settings:
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   overflow-x: hidden;
+}
+
+.help-text {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 0.5rem;
 }

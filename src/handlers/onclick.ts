@@ -13,7 +13,7 @@ import {
   swapMutation,
 } from "./buttonMutations";
 
-const processButtonType = (button: ButtonCache): (() => void) => {
+export const processButtonType = (button: ButtonCache): (() => void) => {
   const { type, action } = button.args;
   if (type.includes("template")) {
     return templateButton(button);
@@ -25,10 +25,14 @@ const processButtonType = (button: ButtonCache): (() => void) => {
       return linkButton(action);
     default:
       new Notice("No command found");
+      return;
   }
 };
 
-const processButtonMutations = (plugin: Buttons, button: ButtonCache) => {
+export const processButtonMutations = (
+  plugin: Buttons,
+  button: ButtonCache
+) => {
   const { mutations } = button.args;
   return mutations.reduce((acc: { (): void }[], mutation) => {
     switch (mutation.type) {
@@ -46,13 +50,25 @@ const processButtonMutations = (plugin: Buttons, button: ButtonCache) => {
 };
 
 const createOnclick = (plugin: Buttons, button: ButtonCache) => {
+  if (!button.args) {
+    new Notice("There is an issue with the button arguments");
+    return;
+  }
   const mutationHandlers = button.args.mutations
     ? processButtonMutations(plugin, button)
     : [];
-  const typeHandler = processButtonType(button);
-  const handlerArray = [...mutationHandlers, typeHandler];
-  const handlers = combine(...handlerArray);
-  return handlers;
+  const typeHandler = button.args.type && processButtonType(button);
+  if (typeHandler || mutationHandlers.length > 0) {
+    const handlerArray = [...mutationHandlers, typeHandler];
+    const handlers = combine(...handlerArray);
+    return handlers;
+  }
+  if (!button.args.type) {
+    plugin.errors.push("- Button must have a type");
+  }
+  if (!button.args.action) {
+    plugin.errors.push("- Button must have an action");
+  }
 };
 
 export default createOnclick;

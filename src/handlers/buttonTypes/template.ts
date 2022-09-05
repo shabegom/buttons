@@ -30,16 +30,19 @@ const templateButton = (button: ButtonCache): (() => void) => {
   }
   processTemplate(app, file).then((processed) => {
     if (type.includes("append")) {
-      appendContent(app, button, processed);
+      console.log("append template");
+      return () => {
+        appendContent(app, button, processed);
+      };
     }
     if (type.includes("prepend")) {
-      prependContent(app, button, processed);
+      return () => prependContent(app, button, processed);
     }
     if (type.includes("line")) {
-      insertContent(app, button, processed);
+      return () => insertContent(app, button, processed);
     }
     if (type.includes("note")) {
-      createNote(app, button, processed);
+      return () => createNote(app, button, processed);
     }
   });
 };

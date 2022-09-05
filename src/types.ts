@@ -4,7 +4,7 @@ declare module "obsidian" {
   interface App {
     plugins: {
       plugins: {
-        [name: string]: Plugin;
+        [name: string]: ExtendedPlugin;
       };
     };
     commands: {
@@ -13,6 +13,12 @@ declare module "obsidian" {
       commands: Record<string, { name: string; id: string }>;
     };
   }
+}
+
+interface ExtendedPlugin extends Plugin {
+  settings: {
+    template_folder: string;
+  };
 }
 
 interface Mutation {

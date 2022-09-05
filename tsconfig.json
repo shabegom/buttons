@@ -6,12 +6,19 @@
     "module": "ESNext",
     "target": "ES2020",
     "allowJs": true,
+    "jsx": "react",
+    "jsxFactory": "h",
     "noImplicitAny": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["webworker", "DOM", "ES5", "ES6", "ES7", "es2019"]
+    "lib": ["webworker", "DOM", "ES5", "ES6", "ES7", "es2019"],
+    "skipLibCheck": true,
+    "paths": {
+      "react": ["./node_modules/preact/compat/"],
+      "react-dom": ["./node_modules/preact/compat/"]
+    }
   },
-  "include": ["src/*.ts", "src/**/.ts"]
+  "include": ["src/*", "src/**/*"]
 }

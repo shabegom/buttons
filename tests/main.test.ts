@@ -18,5 +18,3 @@ test("getCurrentButton returns the current button in the file", () => {
   );
   expect(currentButton).toEqual(testButton);
 });
-
-export = {};
