@@ -3,15 +3,7 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** May 20, 2021
-
-**0.4.7**  
-[![Video not loaded!](https://img.youtube.com/vi/W17CCQpGZdQ/0.jpg)](https://www.youtube.com/watch?v=W17CCQpGZdQ)
-
-[Watch the Release Video](https://youtu.be/W17CCQpGZdQ)
-- New Button Type: Text Button! Sometimes you don't want to create an entire template note just to insert some text into a note. Sometimes you just want to quickly run a templater command and insert the output into your note. The new Text Button lets you do this!
-- Button Maker Update: The type of template button has moved to its own dropdown so the command dropdown doesn't get so long!
-- Bugfixes: Fixed a couple of bugs with the templater argument. It's a tricky one to catch all the edge cases. If it doesn't work for you, please file an issue!
+**last updated:** Sept 28, 2022
 
 ---
 
