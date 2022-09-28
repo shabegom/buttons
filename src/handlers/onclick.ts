@@ -13,10 +13,13 @@ import {
   swapMutation,
 } from "./buttonMutations";
 
-export const processButtonType = (button: ButtonCache): (() => void) => {
+export const processButtonType = (
+  plugin: Buttons,
+  button: ButtonCache
+): (() => void) => {
   const { type, action } = button.args;
   if (type.includes("template")) {
-    return templateButton(button);
+    return templateButton(plugin, button);
   }
   switch (type) {
     case "command":
@@ -37,12 +40,13 @@ export const processButtonMutations = (
   return mutations.reduce((acc: { (): void }[], mutation) => {
     switch (mutation.type) {
       case "remove":
-        acc.push(removeMutation(plugin, mutation.value));
+        acc.push(removeMutation(plugin, button));
         break;
       case "replace":
         acc.push(replaceMutation(mutation.value));
         break;
       case "swap":
+        swapMutation;
         acc.push(swapMutation(plugin, button));
     }
     return acc;
@@ -57,7 +61,7 @@ const createOnclick = (plugin: Buttons, button: ButtonCache) => {
   const mutationHandlers = button.args.mutations
     ? processButtonMutations(plugin, button)
     : [];
-  const typeHandler = button.args.type && processButtonType(button);
+  const typeHandler = button.args.type && processButtonType(plugin, button);
   if (typeHandler || mutationHandlers.length > 0) {
     const handlerArray = [...mutationHandlers, typeHandler];
     const handlers = combine(...handlerArray);

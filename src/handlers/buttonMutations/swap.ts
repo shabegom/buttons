@@ -4,15 +4,39 @@ import { createOnclick } from "../../handlers";
 
 //TODO: test swapMutation
 function swapMutation(plugin: Buttons, button: ButtonCache): () => void {
-  let currentSwap = plugin.swapCache.find(
-    (swap: SwapCache) => swap.id === button.id
-  );
+  let currentSwap = findCurrentSwapButton(button, plugin);
   if (!currentSwap) {
-    currentSwap = plugin.addToSwapCache(button);
+    setTimeout(() => {
+      currentSwap = findCurrentSwapButton(button, plugin);
+    }, 1000);
   }
-  const returnFunction = () => createOnclick(plugin, currentSwap.currentButton);
-  plugin.updateSwapCache(currentSwap);
-  return returnFunction;
+  if (currentSwap) {
+    const onclickFunctions = currentSwap.buttons.map((button) => {
+      return createOnclick(plugin, button);
+    });
+    const returnFunction = () => {
+      const currentSwap = findCurrentSwapButton(button, plugin);
+      const currentButton = currentSwap.currentButtonIndex;
+      onclickFunctions[currentButton]();
+      plugin.updateSwapCache(currentSwap);
+    };
+    return returnFunction;
+  }
 }
+
+const getSwapButton = (cache: SwapCache[], id: string) => {
+  return cache.find((button) => button.id === id);
+};
+
+const findCurrentSwapButton = (button: ButtonCache, plugin: Buttons) => {
+  let currentSwap = getSwapButton(plugin.swapCache, button.id);
+  if (!currentSwap) {
+    plugin.addToSwapCache(button);
+    currentSwap = getSwapButton(plugin.swapCache, button.id);
+  }
+  if (currentSwap) {
+    return currentSwap;
+  }
+};
 
 export default swapMutation;

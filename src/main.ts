@@ -1,4 +1,4 @@
-import { Plugin } from "obsidian";
+import { Plugin, TFile } from "obsidian";
 import buttonPlugin from "./livePreview";
 import { createOnclick } from "./handlers";
 import { buildIndex } from "./indexer";
@@ -10,11 +10,32 @@ import showErrorMessage from "./error";
 export default class Buttons extends Plugin {
   swapCache: SwapCache[] = [];
   errors: string[] = [];
+  index: ButtonCache[] = [];
+  inlineIndex: ButtonCache[] = [];
+  noteChanged: number;
+  cacheChanged: number;
 
   async onload(): Promise<void> {
     console.log("Buttons loves you");
+    const storedSwapCache = JSON.parse(localStorage.getItem("swapCache"));
+    if (storedSwapCache) {
+      this.swapCache = storedSwapCache;
+    }
 
     this.registerEditorExtension([buttonPlugin(this)]);
+
+    this.registerEvent(
+      app.workspace.on("file-open", () => {
+        this.index = buildIndex();
+      })
+    );
+
+    this.registerEvent(
+      app.metadataCache.on(
+        "changed",
+        () => (this.cacheChanged = new Date().getTime())
+      )
+    );
 
     this.addCommand({
       id: "button-maker",
@@ -26,13 +47,17 @@ export default class Buttons extends Plugin {
       "button",
       async (source, el, ctx): Promise<void> => {
         this.errors = [];
-        const activeFile = this.app.workspace.getActiveFile();
         const sectionInfo = ctx.getSectionInfo(el);
         if (source.includes("<%")) {
-          const runTemplater = await templater(activeFile);
+          const runTemplater = await templater();
           source = await runTemplater(source);
         }
-        const currentButton = this.getCurrentButton(source, sectionInfo.text);
+        // slice the note content to grab the button block id
+        const content = sectionInfo.text
+          .split("\n")
+          .slice(sectionInfo.lineEnd + 1, sectionInfo.lineEnd + 2)
+          .join("\n");
+        const currentButton = this.getCurrentButton(content);
         const args = createArgs(source);
         if (!args.name) {
           args.name = "Give me a name please";
@@ -63,13 +88,15 @@ export default class Buttons extends Plugin {
 
     this.registerMarkdownPostProcessor(async (el, ctx) => {
       const codeBlocks = el.querySelectorAll("code");
+      const sectionInfo = ctx.getSectionInfo(el);
+      const { lineStart } = sectionInfo;
       for (let index = 0; index < codeBlocks.length; index++) {
         const codeBlock = codeBlocks[index];
         const code = codeBlock.innerText;
         const match = code.match(/button-([\d\w]{1,6})/);
         if (match) {
           const id = match[1];
-          const indexedButton = await this.getInlineButton(id);
+          const indexedButton = await this.getInlineButton(id, lineStart);
           const onClick = createOnclick(this, indexedButton);
           ctx.addChild(
             new InlineButton(
@@ -85,100 +112,157 @@ export default class Buttons extends Plugin {
     });
   }
 
-  async getInlineButton(id: string) {
-    const index = buildIndex();
-    const indexedButton = index.find((button) => button.id === id);
-    if (indexedButton) {
-      const file = indexedButton.file;
-      const content = await app.vault.read(file);
-      const codeblock = content
-        .split("\n")
-        .reduce((acc, line, index) => {
-          if (
-            index >= indexedButton.position.start.line - 1 &&
-            index <= indexedButton.position.end.line + 1 &&
-            !line.includes("`")
-          ) {
-            acc.push(line);
-          }
+  buildInlineIndex(inlineButton: ButtonCache) {
+    const newInlineIndex = this.inlineIndex.reduce(
+      (acc: ButtonCache[], button: ButtonCache) => {
+        if (!button) {
           return acc;
-        }, [])
-        .join("\n");
-      const args = createArgs(codeblock);
-      const inlineButton = {
-        id,
-        file,
-        args,
-        position: indexedButton.position,
-      };
-      return inlineButton;
+        }
+        if (
+          inlineButton.id === button.id &&
+          inlineButton.file === button.file &&
+          inlineButton.position.start.line === button.position.start.line
+        ) {
+          acc.push(inlineButton);
+          return acc;
+        }
+        acc.push(button);
+        return acc;
+      },
+      []
+    );
+    this.inlineIndex = newInlineIndex;
+    if (
+      !this.inlineIndex.find(
+        (button) =>
+          inlineButton.id === button.id &&
+          inlineButton.file === button.file &&
+          inlineButton.position.start.line === button.position.start.line
+      )
+    ) {
+      this.inlineIndex.push(inlineButton);
     }
   }
 
-  getCurrentButton(source: string, content: string) {
-    const contentArray = content.split("\n").filter((line) => line !== "");
-    const idLine = contentArray.reduce((acc, line, index) => {
-      if (source.includes(line)) {
-        acc = index + 2;
+  async getInlineButton(id: string, line: number) {
+    const indexedButton = this.findButtonFromIndex(id);
+    if (indexedButton) {
+      const file = app.vault.getAbstractFileByPath(indexedButton.file) as TFile;
+
+      if (file) {
+        const content = await app.vault.read(file);
+        let codeblock = content
+          .split("\n")
+          .reduce((acc, line, index) => {
+            if (
+              index >= indexedButton.position.start.line - 1 &&
+              index <= indexedButton.position.end.line + 1 &&
+              !line.includes("`")
+            ) {
+              acc.push(line);
+            }
+            return acc;
+          }, [])
+          .join("\n");
+        if (codeblock.includes("<%")) {
+          const runTemplater = await templater();
+          codeblock = await runTemplater(codeblock);
+        }
+        const inlinePosition = {
+          start: { line: line - 1, col: 0, offset: 0 },
+          end: { line: line - 1, col: 0, offset: 0 },
+        };
+        const args = createArgs(codeblock);
+        const inlineButton = {
+          inline: true,
+          id,
+          file: file.path,
+          args,
+          position: indexedButton.position,
+          inlinePosition,
+        };
+        console.log(inlineButton);
+        this.buildInlineIndex(inlineButton);
+        return inlineButton;
       }
-      return acc;
-    }, 0);
-    if (!contentArray[idLine] || !contentArray[idLine].includes("^button")) {
-      this.errors.push("- Button must have an id");
-      return;
     }
-    const id = contentArray[idLine].replace("^button-", "");
-    const index = buildIndex();
-    const currentButton = index.reduce((activeButton, button) => {
-      if (button.id === id) {
-        activeButton = button;
-      }
+  }
+
+  getActiveButton(index: ButtonCache[], id: string) {
+    return index.find((button) => button.id === id);
+  }
+
+  findButtonFromIndex(id: string) {
+    let activeButton;
+    activeButton = this.getActiveButton(this.index, id);
+    if (!activeButton) {
+      this.index = buildIndex();
+      activeButton = this.getActiveButton(this.index, id);
+    }
+    if (activeButton) {
       return {
         id: activeButton.id,
         position: activeButton.position,
         args: activeButton.args,
         file: activeButton.file,
       };
-    });
+    }
+  }
 
+  getCurrentButton(content: string) {
+    if (!content.includes("^button")) {
+      this.errors.push("- Button must have an id");
+      return;
+    }
+    const id = content.replace("^button-", "");
+    const currentButton = this.findButtonFromIndex(id);
     return currentButton;
   }
 
-  addToSwapCache(button: ButtonCache): SwapCache {
+  addToSwapCache(button: ButtonCache): void {
     const buttonIds = button.args.mutations
       .filter((mutation) => {
         return mutation.type === "swap";
       })
       .map((mutation) => {
         const match = mutation.value.match(/\[(.*)\]/);
-        const ids = match[1].split(",");
+        const ids = match[1].replace(" ", "").split(",");
         return ids;
       })
       .flat();
-    const buttons = buildIndex().filter((button) => {
-      return buttonIds.some((id) => id === button.id);
+    const buttons = this.index
+      .filter((button) => {
+        return buttonIds.some((id) => id === button.id);
+      })
+      .map(async (button) => {
+        const inlineButton = await this.getInlineButton(button.id);
+        inlineButton.file = button.file;
+        inlineButton.position = button.position;
+        return inlineButton;
+      });
+    Promise.all(buttons).then((buttons) => {
+      const swapButton = {
+        id: button.id,
+        position: button.position,
+        buttons,
+        currentButtonIndex: 0,
+      };
+      this.swapCache.push(swapButton);
     });
-    const swapButton = {
-      id: button.id,
-      buttons,
-      currentButton: buttons[0],
-      currentButtonIndex: 0,
-    };
-    this.swapCache.push(swapButton);
-    return swapButton;
+    localStorage.setItem("swapCache", JSON.stringify(this.swapCache));
   }
 
   updateSwapCache(currentSwap: SwapCache) {
     const updatedCache: SwapCache[] = this.swapCache.map((swap) => {
       if (swap.id === currentSwap.id) {
-        const newIndex =
-          swap.currentButtonIndex === swap.buttons.length
+        swap.currentButtonIndex =
+          swap.currentButtonIndex === swap.buttons.length - 1
             ? 0
             : swap.currentButtonIndex + 1;
-        swap.currentButton = swap.buttons[newIndex];
       }
       return swap;
     });
     this.swapCache = updatedCache;
+    localStorage.setItem("swapCache", JSON.stringify(this.swapCache));
   }
 }

@@ -13,7 +13,7 @@ const buildIndex = (): ButtonCache[] => {
         );
         code.forEach((codeblock) => {
           acc.push({
-            file,
+            file: file.path,
             id: codeblock.id.split("-")[1],
             position: codeblock.position,
           });
@@ -42,7 +42,7 @@ const addButtonToIndex = (index: ButtonCache[]) => {
       });
       newButton.forEach((codeblock) => {
         index.push({
-          file,
+          file: file.path,
           id: codeblock.id.split("-")[1],
           position: codeblock.position,
         });

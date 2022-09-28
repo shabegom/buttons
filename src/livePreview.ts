@@ -108,14 +108,14 @@ class ButtonWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
-    this.plugin.getInlineButton(this.id).then((button) => {
+    this.plugin.getInlineButton(this.id, this.line).then((button) => {
       if (button) {
+        console.log(this.line);
         const buttonPositionClone = JSON.parse(JSON.stringify(button.position));
         const name = button.args.name;
         const className = button.args.class;
-        buttonPositionClone.start.line = this.line;
-        buttonPositionClone.end.line = this.line;
         const onClick = createOnclick(this.plugin, {
+          inline: true,
           file: button.file,
           id: button.id,
           args: button.args,

@@ -1,4 +1,4 @@
-import { Plugin, Pos, TFile } from "obsidian";
+import { Plugin, Pos } from "obsidian";
 
 declare module "obsidian" {
   interface App {
@@ -37,11 +37,12 @@ export interface Args {
 }
 
 export interface ButtonCache {
-  file: TFile;
+  file?: string;
   args?: Args;
   button?: string;
   position: Pos;
-  inlinePosition?: { line?: number; ch?: { start: number; end: number } };
+  inline?: boolean;
+  inlinePosition?: Pos;
   id: string;
 }
 
@@ -55,6 +56,5 @@ export interface PageCache {
 export interface SwapCache {
   id: string;
   buttons: ButtonCache[];
-  currentButton: ButtonCache;
   currentButtonIndex: number;
 }

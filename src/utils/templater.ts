@@ -5,7 +5,8 @@ interface Item {
   static_functions: Array<[string, () => unknown]>;
 }
 
-async function templater(activeFile: TFile) {
+async function templater(file?: TFile) {
+  const activeFile = file ? file : app.workspace.getActiveFile();
   const config = {
     template_file: activeFile,
     active_file: activeFile,
@@ -48,6 +49,17 @@ async function templater(activeFile: TFile) {
   return async (command: string) => {
     return await templater.parser.parse_commands(command, functions);
   };
+}
+
+export async function processTemplate(file: TFile) {
+  try {
+    const content = await app.vault.read(file);
+    const runTemplater = await templater(file);
+    const processed = await runTemplater(content);
+    return processed;
+  } catch (e) {
+    new Notice(`There was an error processing the template!`, 2000);
+  }
 }
 
 export default templater;

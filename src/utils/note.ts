@@ -1,9 +1,9 @@
-import { App, Notice, TFile } from "obsidian";
+import { Notice, TFile } from "obsidian";
 import { ButtonCache } from "../types";
 import { processTemplate } from "./";
 
 // TODO: test createNote actually works
-async function createNote(app: App, button: ButtonCache, templateFile: TFile) {
+async function createNote(button: ButtonCache, templateFile: TFile) {
   const { args } = button;
   const { type } = args;
   const regex = type.match(
