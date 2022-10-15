@@ -28,7 +28,7 @@ export const activeFile: TFile = {
   parent: "" as unknown as TFolder,
 };
 export const testButton: ButtonCache = {
-  file: activeFile,
+  file: activeFile.path,
   args: argsObject,
   position,
   id: "test-button",

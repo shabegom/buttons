@@ -235,7 +235,7 @@ export default class Buttons extends Plugin {
         return buttonIds.some((id) => id === button.id);
       })
       .map(async (button) => {
-        const inlineButton = await this.getInlineButton(button.id);
+        const inlineButton = await this.getInlineButton(button.id, button.position.start.line);
         inlineButton.file = button.file;
         inlineButton.position = button.position;
         return inlineButton;
