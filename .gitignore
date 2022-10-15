@@ -7,3 +7,5 @@ main.js
 *.code-workspace
 package-lock.json
 coverage/
+.doingrc
+doing.taskpaper
