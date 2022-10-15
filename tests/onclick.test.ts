@@ -76,7 +76,7 @@ test("processButtonMutations: multiple mutation", () => {
     //eslint-disable-next-line
     spy.mockReturnValue(() => "command button");
     testButton.args.type = "command";
-    const typeHandler = processButtonType(testButton);
+    const typeHandler = processButtonType(testPlugin, testButton);
     expect(typeof typeHandler).toBe("function");
     expect(typeHandler()).toBe("command button");
     spy.mockRestore();
@@ -87,7 +87,7 @@ test("processButtonType: template button type", () => {
   // eslint-disable-next-line
   spy.mockReturnValue(() => "template button");
   testButton.args.type = "template";
-  const typeHandler = processButtonType(testButton);
+  const typeHandler = processButtonType(testPlugin, testButton);
   expect(typeof typeHandler).toBe("function");
   expect(typeHandler()).toBe("template button");
   spy.mockRestore();
@@ -98,7 +98,7 @@ test("processButtonType: link button type", () => {
   // eslint-disable-next-line
   spy.mockReturnValue(() => "link button");
   testButton.args.type = "link";
-  const typeHandler = processButtonType(testButton);
+  const typeHandler = processButtonType(testPlugin, testButton);
   expect(typeof typeHandler).toBe("function");
   expect(typeHandler()).toBe("link button");
   spy.mockRestore();
@@ -107,6 +107,6 @@ test("processButtonType: link button type", () => {
 test("processButtonType: unknown button type", () => {
   // eslint-disable-next-line
   testButton.args.type = "unknown";
-  const typeHandler = processButtonType(testButton);
+  const typeHandler = processButtonType(testPlugin, testButton);
   expect(typeHandler).toBe(undefined);
 });
