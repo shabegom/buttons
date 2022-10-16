@@ -3,7 +3,7 @@ title: What is Buttons?
 date: 2022-10-16T17:07:58.358Z
 permalink: about.html
 eleventyNavigation:
-  order: 100
+  order: 1
   key: about
   title: About Buttons
 ---
