@@ -25,7 +25,7 @@ section: page
              <div class="main  flex flex-col pr-0 prose sm:prose lg:prose-lg xl:prose-md">
             {% endif %}    
                 <article>
-                <button class="dark:text-gray-500 btn-lrg">{{ title }}</button>
+                <button class="text-purple-500 border border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold  px-8 py-3 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150>{{ title }}</button>
                 {% if site.navigationStyle == "horizontal" %}
                     {% if site.enableEditButton == true or site.enableDatestamp == true %}
                         <div class="flex mt-4 justify-end mr-1">
