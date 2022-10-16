@@ -5,5 +5,6 @@ permalink: usage
 eleventyNavigation:
   order: 100
   key: usage
+  title: Usage
 ---
 [﻿Button Types](/usage/types)
