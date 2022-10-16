@@ -3,7 +3,7 @@ title: Using Buttons
 date: 2022-10-16T17:10:38.320Z
 permalink: usage.html
 eleventyNavigation:
-  order: 100
+  order: 3
   key: usage
   title: Usage
 ---
