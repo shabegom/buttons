@@ -7,4 +7,5 @@ eleventyNavigation:
   title: Install Buttons
   key: install
 ---
-B﻿uttons is easy to install. You can find it in Community Plugins in Obsidian.
+
+Buttons is easy to install. You can find it in Community Plugins in Obsidian.

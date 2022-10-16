@@ -7,4 +7,5 @@ eleventyNavigation:
   key: about
   title: About Buttons
 ---
-B﻿uttons is a plugin for Obsidian.
+
+Buttons is a plugin for Obsidian.

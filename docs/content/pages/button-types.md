@@ -8,14 +8,15 @@ eleventyNavigation:
   parent: usage
   title: ""
 ---
-T﻿here are different types of buttons that will perform actions.
+
+There are different types of buttons that will perform actions.
 
 The basic button types are:
 
-- [﻿Command](/usage/types/command) 
-- [﻿Link](/usage/types/link)
-- [﻿Template](/usage/types/template)
+- [Command](/usage/types/command)
+- [Link](/usage/types/link)
+- [Template](/usage/types/template)
 
-T﻿here are also advanced types. They are:
+There are also advanced types. They are:
 
 - [Swap](/usage/types/swap)

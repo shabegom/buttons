@@ -7,4 +7,5 @@ eleventyNavigation:
   key: usage
   title: Usage
 ---
-[﻿Button Types](/usage/types)
+
+[Button Types](/usage/types)
