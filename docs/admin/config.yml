@@ -1,0 +1,76 @@
+backend:
+  name: git-gateway
+  branch: main # Branch to update (optional; defaults to main)
+
+# Uncomment below to enable drafts
+# publish_mode: editorial_workflow
+
+media_folder: "static/img" # Media files will be stored in the repo under images/uploads
+
+# # Cloudinary
+# media_library:
+#   name: cloudinary
+#   config:
+#     cloud_name: broeker
+#     api_key: 159818251742281
+
+collections:
+  # Our blog posts
+  # - name: "blog" # Used in routes, e.g., /admin/collections/blog
+  #   label: "Post" # Used in the UI
+  #   folder: "posts" # The path to the folder where the documents are stored
+  #   create: true # Allow users to create new documents in this collection
+  #   slug: "{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
+  #   fields: # The fields for each document, usually in front matter
+  #     - { label: "Title", name: "title", widget: "string" }
+  #     - { label: "Publish Date", name: "date", widget: "datetime" }
+  #     - { label: "Author", name: "author", widget: "string", default: "Anonymous" }
+  #     - { label: "Summary", name: "summary", widget: "text" }
+  #     - { label: "Tags", name: "tags", widget: "list", default: ["post"] }
+  #     - { label: "Body", name: "body", widget: "markdown" }
+  # Our pages e.g. About
+  - name: "pages"
+    label: "Page"
+    folder: "content/pages"
+    create: true # Change to true to allow editors to create new pages
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Permalink", name: "permalink", widget: "string" }
+      - label: "Navigation" # https://www.11ty.dev/docs/plugins/navigation/
+        name: "eleventyNavigation"
+        widget: "object"
+        fields:
+          - { label: "Key", name: "key", widget: "string" }
+          - { label: "Order", name: "order", widget: "number", default: 100 }
+          - { label: "Parent", name: "parent", widget: "string", required: false, hint: "(Optional) Enter a matching parent key to set this a nested or child page" }
+          - { label: "Title", name: "title", widget: "string",  required: false, hint: "(Optional) Enter alternate text for navigation link" }
+      - { label: "Body", name: "body", widget: "markdown" }
+  - label: "Globals"
+    name: "globals"
+    files:
+      - label: "Site Data"
+        name: "site_data"
+        delete: false
+        file: "_data/site.json"
+        fields:
+          - {label: "Site name", name: "name", widget: "string"}
+          - {label: "Site subtitle", name: "subtitle", widget: "string", required: false}
+          - {label: "Meta description", name: "description", widget: "string"}
+          - {label: "Site footer", name: "footer", widget: "string", required: false}
+          - {label: "Site Url", name: "url", widget: "string"}
+          - {label: "Github Url", name: "githubUrl", widget: "string"}
+          - {label: "Github branch", name: "githubBranch", widget: "string"}
+          - {label: "Navigation style", name: "navigationStyle", widget: "string"}
+          - {label: "Site emoji", name: "emoji", widget: "string", required: false}
+          - {label: "Enable search", name: "enableSearch", widget: "boolean"}
+          - {label: "Enable darkmode", name: "enableDarkMode", widget: "boolean"}
+          - {label: "Enable edit button", name: "enableEditButton", widget: "boolean"}
+          - {label: "Enable datestamp", name: "enableDatestamp", widget: "boolean"}
+          - {label: "Enable Github link", name: "enableGithubLink", widget: "boolean"}
+          - {label: "Enable contact form", name: "enableContact", widget: "boolean"}
+          - {label: "Enable Netlify CMS", name: "enableNetlifyCMS", widget: "boolean", default: false}
+          - {label: "Enable comments", name: "enableComments", widget: "boolean", default: false}
+          - {label: "Enable encryption", name: "enableEncryption", widget: "boolean", default: false}
+          - {label: "Enable page navigation", name: "enablePageNavigation", widget: "boolean", default: false}

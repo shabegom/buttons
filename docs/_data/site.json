@@ -1,0 +1,21 @@
+{
+  "name": "Buttons Docs",
+  "subtitle": "Documentation for the super popular Obsidian plugin Buttons",
+  "description": "Buttons is a plugin for Obsidian that allows you to create buttons that can run commands, open files, or open URLs.",
+  "footer": "Made with ❤ by shabegom",
+  "url": "https://buttonslovesyou.com",
+  "githubUrl": "https://github.com/shabegom/buttons",
+  "githubBranch": "main",
+  "navigationStyle": "vertical",
+  "emoji": "🔘",
+  "enableSearch": true,
+  "enableDarkMode": true,
+  "enableEditButton": true,
+  "enableDatestamp": true,
+  "enableGithubLink": false,
+  "enableContact": false,
+  "enableNetlifyCMS": true,
+  "enableComments": false,
+  "enableEncryption": false,
+  "enablePageNavigation": true
+}
