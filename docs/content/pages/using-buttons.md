@@ -1,7 +1,7 @@
 ---
 title: Using Buttons
 date: 2022-10-16T17:10:38.320Z
-permalink: usage
+permalink: usage.html
 eleventyNavigation:
   order: 100
   key: usage
