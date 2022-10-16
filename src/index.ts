@@ -1,23 +1,24 @@
 import {
   App,
-  Plugin,
   EventRef,
   Events,
-  MarkdownView,
   MarkdownRenderChild,
+  MarkdownView,
+  Plugin,
 } from "obsidian";
 import { createArgumentObject } from "./utils";
 import {
-  initializeButtonStore,
   addButtonToStore,
-  getButtonFromStore,
   getButtonById,
+  getButtonFromStore,
   getStore,
+  initializeButtonStore,
 } from "./buttonStore";
 import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
-import { createButton, Button } from "./button";
+import { Button, createButton } from "./button";
+import { updateWarning } from "./version";
 
 export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
@@ -26,7 +27,7 @@ export default class ButtonsPlugin extends Plugin {
   private createButton: Button;
   private storeEvents = new Events();
   private indexCount = 0;
-  private storeEventsRef: EventRef
+  private storeEventsRef: EventRef;
 
   private async addButtonInEdit(app: App) {
     let widget: CodeMirror.LineWidget;
@@ -66,13 +67,20 @@ export default class ButtonsPlugin extends Plugin {
     }
   }
   async onload(): Promise<void> {
+    this.app.workspace.onLayoutReady(async () => {
+      await updateWarning();
+    });
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
-    this.closedFile = openFileListener(this.app, this.storeEvents, initializeButtonStore);
+    this.closedFile = openFileListener(
+      this.app,
+      this.storeEvents,
+      initializeButtonStore
+    );
     this.createButton = createButton as Button;
-    this.storeEventsRef = this.storeEvents.on('index-complete', () => { 
+    this.storeEventsRef = this.storeEvents.on("index-complete", () => {
       this.indexCount++;
-    })
-        initializeButtonStore(this.app, this.storeEvents);
+    });
+    initializeButtonStore(this.app, this.storeEvents);
 
     this.buttonEdit = openFileListener(
       this.app,
@@ -117,20 +125,22 @@ export default class ButtonsPlugin extends Plugin {
         if (text.startsWith("button")) {
           const id = text.split("button-")[1].trim();
           if (this.indexCount < 2) {
-          this.storeEventsRef = this.storeEvents.on('index-complete', async () => {
-          this.indexCount++;
-          const args = await getButtonById(this.app, id);
-          if (args) {
-            ctx.addChild(new InlineButton(codeblock, this.app, args, id))
+            this.storeEventsRef = this.storeEvents.on(
+              "index-complete",
+              async () => {
+                this.indexCount++;
+                const args = await getButtonById(this.app, id);
+                if (args) {
+                  ctx.addChild(new InlineButton(codeblock, this.app, args, id));
+                }
+              }
+            );
+          } else {
+            const args = await getButtonById(this.app, id);
+            if (args) {
+              ctx.addChild(new InlineButton(codeblock, this.app, args, id));
+            }
           }
-        })
-
-      } else {
-        const args = await getButtonById(this.app, id);
-        if (args) {
-          ctx.addChild(new InlineButton(codeblock, this.app, args, id))
-        }
-      }
         }
       }
     });
