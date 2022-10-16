@@ -1,7 +1,7 @@
 ---
 title: Installing Buttons
 date: 2022-10-16T17:08:41.383Z
-permalink: install
+permalink: install.html
 eleventyNavigation:
   order: 100
   title: Install Buttons
