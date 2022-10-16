@@ -3,7 +3,7 @@ title: Button Types
 date: 2022-10-16T17:12:07.067Z
 permalink: /usage/types.html
 eleventyNavigation:
-  order: 100
+  order: 4
   key: types
   parent: usage
   title: ""
