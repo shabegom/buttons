@@ -9,12 +9,14 @@
     "cp-watch": "fswatch -0 main.js | xargs -0 -I {} cp main.js ~/plugin-development/.obsidian/plugins/buttons/",
     "cp": "cp main.js ~/plugin-development/.obsidian/plugins/buttons/",
     "test": "jest",
-    "test:watch": "jest --watch --coverage=false"
+    "test:watch": "jest --watch --coverage=false",
+    "eleventy": "npx @11ty/eleventy"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@11ty/eleventy": "^1.0.2",
     "@babel/core": "^7.19.3",
     "@types/jest": "27.x",
     "@types/node": "^16.11.6",
