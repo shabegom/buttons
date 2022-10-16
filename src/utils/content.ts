@@ -14,8 +14,10 @@ export async function processTemplate(file: TFile) {
   try {
     const content = await app.vault.read(file);
     const runTemplater = await templater();
-    const processed = await runTemplater(content);
-    return processed;
+    if (runTemplater) {
+      const processed = await runTemplater(content);
+      return processed;
+    }
   } catch (e) {
     new Notice(`There was an error processing the template!`, 2000);
   }
@@ -31,14 +33,14 @@ function appendContent(button: ButtonCache, file: TFile) {
       ? position.end.line
       : position.end.line + 2;
   // need to change the position if the button is being removed
-  if (args.mutations && args.mutations.remove) {
+  if (args?.mutations) {
     appendPosition = position.start.line;
   }
   processTemplate(file).then((processed) => {
     if (mode === "preview") {
       appendPosition = appendPosition + 1;
     }
-    const replaceRange = toggleMode(editor.replaceRange.bind(editor));
+    const replaceRange = toggleMode(editor?.replaceRange.bind(editor));
     replaceRange(processed, { line: appendPosition, ch: 0 });
   });
 }
@@ -48,7 +50,7 @@ function prependContent(button: ButtonCache, file: TFile) {
   const { position } = button;
   const prependPosition = position.start.line - 1;
   processTemplate(file).then((content) => {
-    const replaceRange = toggleMode(editor.replaceRange);
+    const replaceRange = toggleMode(editor?.replaceRange);
     replaceRange(content, { line: prependPosition, ch: 0 });
   });
 }
@@ -56,12 +58,19 @@ function prependContent(button: ButtonCache, file: TFile) {
 function insertContent(button: ButtonCache, file: TFile) {
   const editor = getEditor();
   const { args } = button;
-  const { type } = args;
-  const start = type.match(/\((\d*)\)/)[1];
-  processTemplate(file).then((content) => {
-    const replaceRange = toggleMode(editor.replaceRange);
-    replaceRange(content, { line: parseInt(start, 10) - 1, ch: 0 });
-  });
+  if (args) {
+    const type = args.type;
+    if (type) {
+      const matches = type.match(/\((\d*)\)/);
+      const start = matches && matches[1] ? matches[1] : "";
+      processTemplate(file).then((content) => {
+        const replaceRange = toggleMode(editor?.replaceRange);
+        if (start) {
+          replaceRange(content, { line: parseInt(start, 10) - 1, ch: 0 });
+        }
+      });
+    }
+  }
 }
 
 export { appendContent, getEditor, insertContent, prependContent };

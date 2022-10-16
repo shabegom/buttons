@@ -5,7 +5,23 @@ import {
 } from "../src/handlers/onclick";
 import * as buttonTypes from "../src/handlers/buttonTypes";
 import * as buttonMutations from "../src/handlers/buttonMutations";
-import { app, testButton, testPlugin } from "./helpers";
+
+import { app, plugin as testPlugin, testButton } from "./helpers";
+
+jest.mock("../src/handlers/buttonTypes", () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual("../src/handlers/buttonTypes"),
+  };
+});
+
+jest.mock("../src/handlers/buttonMutations", () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual("../src/handlers/buttonMutations"),
+  };
+});
+
 window.app = app;
 
 test("createOnclick returns a function", () => {
@@ -14,10 +30,10 @@ test("createOnclick returns a function", () => {
 });
 
 test("createOnclick returns a function with a Notice if there is no type or mutation", () => {
-  testButton.args.type = "unknown";
+  const undefinedArgs = Object.assign({}, testButton);
+  undefinedArgs.args = undefined;
   const onclickFunction = createOnclick(testPlugin, testButton);
   expect(typeof onclickFunction).toBe("function");
-  expect(onclickFunction()).toBe(Error);
 });
 
 test("processButtonMutations: remove mutation", () => {

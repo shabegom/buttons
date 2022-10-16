@@ -5,8 +5,8 @@ import { processTemplate } from "./";
 // TODO: test createNote actually works
 async function createNote(button: ButtonCache, templateFile: TFile) {
   const { args } = button;
-  const { type } = args;
-  const regex = type.match(
+  const type = args?.type;
+  const regex = type?.match(
     /\(([\s\S]*?),?\s?(vsplit|hsplit|window|tab|same|false)?\)/
   );
   if (regex) {
@@ -14,7 +14,7 @@ async function createNote(button: ButtonCache, templateFile: TFile) {
     console.log(path);
     console.log(openIn);
     try {
-      const content = await processTemplate(templateFile);
+      const content = (await processTemplate(templateFile)) || "";
       await app.vault.create(`${path}.md`, content);
       const file = app.vault.getAbstractFileByPath(`${path}.md`) as TFile;
       switch (openIn) {

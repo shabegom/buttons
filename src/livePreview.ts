@@ -43,7 +43,8 @@ function inlineButtons(view: EditorView, plugin: Buttons) {
         }
         if (node.type.name.includes("formatting")) return;
         if (regex.test(node.type.name)) {
-          const id = content.match(/button-([\s\S]*)/)[1];
+          const matches = content.match(/button-([\s\S]*)/);
+          const id = matches && matches[1] ? matches[1] : "";
           if (id) {
             const line = view.state.doc.lineAt(node.to).number;
             const el = createEl("button");
@@ -122,12 +123,13 @@ class ButtonWidget extends WidgetType {
           position: buttonPositionClone,
         });
         const color = button.args.color;
-        this.el.innerText = name;
+        this.el.innerText = name || "";
         if (className) {
           this.el.addClass(className);
           this.el.removeClass("button-default");
         }
-        this.el.onclick = onClick;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        this.el.onclick = onClick || (() => {});
         if (color) {
           this.el.addClass(color);
         }

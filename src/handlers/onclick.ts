@@ -55,8 +55,9 @@ export const processButtonMutations = (
 
 const createOnclick = (plugin: Buttons, button: ButtonCache) => {
   if (!button.args) {
-    new Notice("There is an issue with the button arguments");
-    return;
+    return () => {
+      new Notice("There is an issue with the button arguments");
+    };
   }
   const mutationHandlers = button.args.mutations
     ? processButtonMutations(plugin, button)

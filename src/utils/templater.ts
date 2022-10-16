@@ -1,11 +1,12 @@
 import { Notice, TFile } from "obsidian";
+import { RunTemplater } from "src/types";
 
 interface Item {
   name: string;
   static_functions: Array<[string, () => unknown]>;
 }
 
-async function templater(file?: TFile) {
+async function templater(file?: TFile): Promise<RunTemplater | undefined> {
   const activeFile = file ? file : app.workspace.getActiveFile();
   const config = {
     template_file: activeFile,
@@ -55,8 +56,10 @@ export async function processTemplate(file: TFile) {
   try {
     const content = await app.vault.read(file);
     const runTemplater = await templater(file);
-    const processed = await runTemplater(content);
-    return processed;
+    if (runTemplater) {
+      const processed = await runTemplater(content);
+      return processed;
+    }
   } catch (e) {
     new Notice(`There was an error processing the template!`, 2000);
   }

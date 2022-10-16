@@ -11,7 +11,7 @@ const getViewState = (): any => {
 };
 
 export const getCurrentMode = () =>
-  app.workspace.getActiveViewOfType(MarkdownView).getMode();
+  app.workspace.getActiveViewOfType(MarkdownView)?.getMode();
 
 export const setSourceMode = (): void => {
   const viewState = getViewState();

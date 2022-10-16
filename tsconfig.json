@@ -1,23 +1,25 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "module": "ESNext",
-    "target": "ES2020",
+    "target": "esnext",
+    "lib": ["DOM", "esnext"],
     "allowJs": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "lib": ["webworker", "DOM", "ES5", "ES6", "ES7", "es2019"],
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
     "paths": {
-      "react": ["./node_modules/preact/compat/"],
-      "react-dom": ["./node_modules/preact/compat/"]
+      "react": ["./node_modules/preact/compat"],
+      "react-dom": ["./node_modules/preact/compact"]
     }
   },
   "include": ["src/*", "src/**/*"]

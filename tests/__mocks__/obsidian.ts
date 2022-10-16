@@ -1,9 +1,7 @@
-function Notice(message: string) {
-  this.message = message;
-}
-
 class MarkdownRenderChild {}
 
 class Plugin {}
+
+class Notice {}
 
 export { MarkdownRenderChild, Notice, Plugin };

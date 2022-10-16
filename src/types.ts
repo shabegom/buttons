@@ -21,7 +21,7 @@ interface ExtendedPlugin extends Plugin {
   };
 }
 
-interface Mutation {
+export interface Mutation {
   type: string;
   value: string;
 }
@@ -58,3 +58,5 @@ export interface SwapCache {
   buttons: ButtonCache[];
   currentButtonIndex: number;
 }
+
+export type RunTemplater = (command: string) => Promise<string>;

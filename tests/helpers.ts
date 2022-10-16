@@ -1,4 +1,3 @@
-import Buttons from "../src/main";
 import { Args, ButtonCache } from "../src/types";
 import { App, Plugin_2, Pos, TFile, TFolder, Vault } from "obsidian";
 
@@ -34,7 +33,13 @@ export const testButton: ButtonCache = {
   id: "test-button",
 };
 
-const manifest = {
+export const testSwap = {
+  id: 0,
+  buttons: [testButton],
+  currentButtonIndex: 0,
+};
+
+export const manifest = {
   id: "buttons",
   name: "Buttons",
   description:
@@ -46,18 +51,32 @@ const manifest = {
   minAppVersion: "0.12.8",
 };
 
-export const testPlugin = new Buttons(window.app, manifest);
-
 export const sectionContent = `\`\`\`button
 ${buttonCodeblock}
 \`\`\`
 ^button-test-button
 `;
 
+const testInlineButton = Object.assign({}, testButton);
+testInlineButton.inline = true;
+testInlineButton.inlinePosition = testButton.position;
+
+export const plugin = {
+  swapCache: [testSwap],
+  errors: [],
+  index: [testButton],
+  inlineIndex: [testInlineButton],
+  noteChanged: 0,
+  cacheChanged: 0,
+};
+
 export const command = { name: "Toggle Pin", id: "toggle-pin" };
 
 export const app = {
   commands: {
+    commands: {
+      "toggle-pin": command,
+    },
     listCommands: () => [command],
     executeCommandById: (id: string) => id,
   },

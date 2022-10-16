@@ -9,3 +9,4 @@ package-lock.json
 coverage/
 .doingrc
 doing.taskpaper
+pnpm-lock.yaml 
