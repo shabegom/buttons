@@ -1,7 +1,7 @@
 ---
 title: Button Types
 date: 2022-10-16T17:12:07.067Z
-permalink: types.html
+permalink: /usage/types.html
 eleventyNavigation:
   order: 100
   key: types
