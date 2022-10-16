@@ -31,7 +31,7 @@ collections:
   # Our pages e.g. About
   - name: "pages"
     label: "Page"
-    folder: "content/pages"
+    folder: "docs/content/pages"
     create: true # Change to true to allow editors to create new pages
     slug: "{{slug}}"
     fields:
@@ -65,7 +65,7 @@ collections:
       - label: "Site Data"
         name: "site_data"
         delete: false
-        file: "_data/site.json"
+        file: "docs/_data/site.json"
         fields:
           - { label: "Site name", name: "name", widget: "string" }
           - {
