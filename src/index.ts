@@ -67,7 +67,9 @@ export default class ButtonsPlugin extends Plugin {
     }
   }
   async onload(): Promise<void> {
-    await updateWarning();
+    this.app.workspace.onLayoutReady(async () => {
+      await updateWarning();
+    });
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
     this.closedFile = openFileListener(
       this.app,
