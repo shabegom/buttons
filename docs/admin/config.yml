@@ -88,6 +88,11 @@ collections:
             }
           - { label: "Site Url", name: "url", widget: "string" }
           - { label: "Github Url", name: "githubUrl", widget: "string" }
+          - {
+              label: "Github Base Url",
+              name: "githubBaseUrl",
+              widget: "string",
+            }
           - { label: "Github branch", name: "githubBranch", widget: "string" }
           - {
               label: "Navigation style",
