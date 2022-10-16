@@ -1,17 +1,13 @@
 ---
-title: Hello, world.
-date: Last Modified 
+title: Buttons Loves you.
+date: Last Modified
 permalink: /
 eleventyNavigation:
-  key: Hello 
+  key: home
   order: 0
-  title: Hello, world.
+  title: Home.
 ---
-You have successfully launched your spacebook. If you are new here, you may want to [read the docs](https://spacebook.app/) for tips and tricks on setting up your project.
 
-![Hello, world](/content/images/hello.jpg)
-
-->*Onward...*<-
-
-
-
+This will eventually be the documentation site for the amazing
+[Obsidian](https://obisidian.md) plugin
+[Buttons](https://github.com/shabegom/buttons)
