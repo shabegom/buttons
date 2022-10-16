@@ -9,4 +9,4 @@ eleventyNavigation:
 ---
 This will eventually be the documentation site for the amazing [Obsidian](https://obisidian.md) plugin [Buttons](https://github.com/shabegom/buttons)
 
-R﻿ight now it is pretty empty. Want to help fill it out? Contact shabegom in the OMG Dsicord.
+R﻿ight now, it is pretty empty. Want to help fill it out? Contact shabegom in the OMG Discord.
