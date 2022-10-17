@@ -35,9 +35,12 @@ export const createButton = ({
 }: Button): HTMLElement => {
   //create the button element
   const button = el.createEl("button", {
-    cls: args.class
+    cls: [
+      args.class
       ? `${args.class} ${args.color}`
       : `button-default ${args.color ? args.color : ""}`,
+      inline ? "button-inline" : ""
+      ]
   });
   button.innerHTML = args.name;
   args.id ? button.setAttribute("id", args.id) : "";
