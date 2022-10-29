@@ -47,7 +47,7 @@ action Toggle Pin
 ^button-toggle
 </pre>
 
-The button above will render: <button>This is My Button</button>. When it is clicked the _Toggle Pin_ command will run.
+The button above will render: <button class="btn"><strong>This is My Button</strong></button>. When it is clicked the _Toggle Pin_ command will run.
 
 ## Button ID
 
