@@ -8,4 +8,6 @@ eleventyNavigation:
   key: install
 ---
 
-Buttons is easy to install. You can find it in Community Plugins in Obsidian.
+Buttons is easy to install. You can find it in [Community Plugins in Obsidian](obsidian://show-plugin?id=buttons).
+
+Buttons doesn't have any settings, but the [styling](/usage/styling) can be changed using the [Style Settings](obsidian://show-plugin?id=obsidian-style-settings) plugin. 

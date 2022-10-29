@@ -27,7 +27,10 @@ action Toggle Pin
 And renders like this:
 ![](/content/images/button-example.png)
 
-You can also render a button inline. Create the button codeblock and then reference it using the button block id: <pre>`button-super`</pre>
+You can also render a button inline. Create the button codeblock and then reference it using the button block id: 
+<pre>
+`button-super`
+</pre>
 
 To get started quickly making buttons there is a [Button Maker](/maker) command that will walk you through button creation step-by-step.
 
