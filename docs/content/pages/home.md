@@ -14,11 +14,13 @@ With Buttons you can add codeblocks into your Obsidian notes that will render a 
 
 A button codeblock looks like this:
 
+```
 \`\`\`button
 name My Super Button
 type command
 action Toggle Pin
 \`\`\`
+```
 
 And renders like this:
 ![](/content/images/button-example.png)
