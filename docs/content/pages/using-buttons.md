@@ -35,7 +35,7 @@ If you're using Live Preview, when the cursor moves out of a button codeblock it
 
 You specify what a button does by supplying arguments inside a codeblock. There are 3 required arguments:
 - `name`: The text that will be displayed on the button when it is rendered.
-- `type``: What the type of button it is (command, link, template, swap).
+- `type`: What the type of button it is (command, link, template, swap).
 - `action`: Depending on the type chosen the action is what the button will actually do.
 
 <pre>
