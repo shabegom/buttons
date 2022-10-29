@@ -21,6 +21,6 @@ action Toggle Pin
 \`\`\`
 
 And renders like this:
-!()[images/example-button.png]
+![](/content/images/button-example.png)
 
 Right now, it is pretty empty. Want to help fill it out? Contact shabegom in the OMG Discord.
