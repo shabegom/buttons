@@ -27,6 +27,8 @@ action Toggle Pin
 And renders like this:
 ![](/content/images/button-example.png)
 
+Clicking on that will run the command _Toggle Pin_.  
+
 You can also render a button inline. Create the button codeblock and then reference it using the button block id: 
 <pre>
 `button-super`
