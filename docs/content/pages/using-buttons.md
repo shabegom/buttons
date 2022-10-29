@@ -47,7 +47,7 @@ action Toggle Pin
 ^button-toggle
 </pre>
 
-The button above will render: <button class="text-purple-500 border border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold  rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 py-2"><strong>This is My Button</strong></button>. When it is clicked the _Toggle Pin_ command will run.
+The button above will render: <button class="text-purple-500 border border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold  rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 px-2"><strong>This is My Button</strong></button>. When it is clicked the _Toggle Pin_ command will run.
 
 ## Button ID
 
