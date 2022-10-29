@@ -18,7 +18,7 @@ import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { Button, createButton } from "./button";
-import { updateWarning } from "./version";
+// import { updateWarning } from "./version";
 
 export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
