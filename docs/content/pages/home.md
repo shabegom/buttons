@@ -38,7 +38,6 @@ To get started quickly making buttons there is a [Button Maker](/maker) command 
 
 There are also some advanced feautures like:
 - [Button Mutations](/usage/mutations)
-- [Swap Buttons](/usage/types/swap)
 - [Templater inside Buttons](/templater)
 
 

@@ -16,3 +16,4 @@ The mutations available are:
 
 - [Replace](/usage/mutations/replace)
 - [Remove](/usage/mutations/remove)
+- [Swap](/usage/mutations/swap)

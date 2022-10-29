@@ -41,6 +41,7 @@ const templateButton = (plugin: Buttons, button: ButtonCache): (() => void) => {
       plugin.noteChanged = new Date().getTime();
     };
   }
+  //TODO: fix line template
   if (type.includes("line")) {
     return () => {
       insertContent(button, file);

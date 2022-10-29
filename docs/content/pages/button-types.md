@@ -9,14 +9,9 @@ eleventyNavigation:
   title: "Button Types"
 ---
 
-There are different types of buttons that will perform actions.
+A Button Type is what you supply to the `type` argument inside your button codeblock. This could be `command`, `link`, or `template`. This defined what kind of action the button should take when it is clicked:
 
-The basic button types are:
+- [Command](/usage/types/command): Run a command from the Command Palette
+- [Link](/usage/types/link): Open a URL or URI
+- [Template](/usage/types/template): Add template to the current note, or create a note from a template. Uses Templater.
 
-- [Command](/usage/types/command)
-- [Link](/usage/types/link)
-- [Template](/usage/types/template)
-
-There are also advanced types. They are:
-
-- [Swap](/usage/types/swap)

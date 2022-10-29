@@ -45,7 +45,7 @@ export const TemplateButton = ({ input, button, setButton }: Page) => {
       {input(
         "select",
         "command",
-        ["choose an insertion method", "append", "prepend", "insert", "create"],
+        ["choose an insertion method", "append", "prepend", "line", "create"],
         setInsertionType
       )}
       {type.includes("insert") && InsertTemplate({ input, button, setButton })}
@@ -66,11 +66,11 @@ const InsertTemplate = ({ input, button, setButton }: Page) => {
       const startInt = parseInt(insertValue, 10);
       if (!isNaN(startInt)) {
         setStart(startInt);
-        setButton({ ...button, type: `insert(${startInt},${end}) template` });
+        setButton({ ...button, type: `line(${startInt},${end}) template` });
       }
       if (isNaN(start)) {
         setStart(1);
-        setButton({ ...button, type: `insert() template` });
+        setButton({ ...button, type: `line() template` });
       }
     }
     if (type === "end") {
@@ -79,14 +79,14 @@ const InsertTemplate = ({ input, button, setButton }: Page) => {
         setEnd(endInt);
         setButton({
           ...button,
-          type: `insert(${start},${endInt}) template`,
+          type: `line(${start},${endInt}) template`,
         });
       }
       if (isNaN(end)) {
         setEnd(100);
         setButton({
           ...button,
-          type: `insert(${start}) template`,
+          type: `line(${start}) template`,
         });
       }
     }

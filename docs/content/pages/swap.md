@@ -1,6 +1,6 @@
 ---
 title: Swap Buttons
-permalink: /usage/types/swap.html
+permalink: /usage/mutations/swap.html
 eleventyNavigation:
   order: 8
   key: swap

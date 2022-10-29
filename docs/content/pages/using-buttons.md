@@ -51,7 +51,7 @@ The button above will render: <button class="text-purple-500 border border-purpl
 
 ## Button ID
 
-You might have noticed the `^button-toggle` directly below the codeblock. **This is required for Buttons to run**. All Button IDs must start with `button`.
+You might have noticed the `^button-toggle` directly below the codeblock. **This is required for Buttons to run**. All Button IDs must start with `button` and must be unique.
 
 If you use the [Button Maker](/maker) an ID will be generated for you. As of Buttons 1.0, the Button ID is hidden unless the cursor is above or below the line it is on. Besides being necessary for the proper functioning of Buttons, IDs can also be used to reference a button once it has been defined. This way you can create a button once and then reuse that button throughout your vault.
 
