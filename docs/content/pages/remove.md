@@ -5,5 +5,5 @@ eleventyNavigation:
   order: 9
   key: remove
   parent: mutations
-  title: ""
+  title: "Remove Mutations"
 ---

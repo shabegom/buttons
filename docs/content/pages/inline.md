@@ -6,5 +6,5 @@ eleventyNavigation:
   order: 4
   key: inline
   parent: usage
-  title: ""
+  title: "Inline Buttons"
 ---

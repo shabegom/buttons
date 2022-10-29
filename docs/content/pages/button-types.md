@@ -6,7 +6,7 @@ eleventyNavigation:
   order: 4
   key: types
   parent: usage
-  title: ""
+  title: "Button Types"
 ---
 
 There are different types of buttons that will perform actions.

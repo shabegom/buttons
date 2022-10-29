@@ -6,7 +6,7 @@ eleventyNavigation:
   order: 4
   key: mutations
   parent: usage
-  title: ""
+  title: "Mutations"
 ---
 
 Mutations are additional arguments added to a button to modify the note the

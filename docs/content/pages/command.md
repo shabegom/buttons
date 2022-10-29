@@ -5,5 +5,5 @@ eleventyNavigation:
   order: 5
   key: command
   parent: types
-  title: ""
+  title: "Command Buttons"
 ---

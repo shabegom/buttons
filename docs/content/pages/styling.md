@@ -6,5 +6,5 @@ eleventyNavigation:
   order: 4
   key: styling
   parent: usage
-  title: ""
+  title: "Styling"
 ---

@@ -5,5 +5,5 @@ eleventyNavigation:
   order: 8
   key: swap
   parent: types
-  title: ""
+  title: "Swap Buttons"
 ---

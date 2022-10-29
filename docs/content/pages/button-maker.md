@@ -5,5 +5,5 @@ permalink: /maker.html
 eleventyNavigation:
   order: 10
   key: maker
-  title: ""
+  title: "Button Maker"
 ---

@@ -5,5 +5,5 @@ eleventyNavigation:
   order: 7
   key: template
   parent: types
-  title: ""
+  title: "Template Buttons"
 ---

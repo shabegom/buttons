@@ -8,4 +8,8 @@ eleventyNavigation:
   title: Usage
 ---
 
-[Button Types](/usage/types)
+- [Button Types](/usage/types)
+- [Button Mutations](/usage/mutations)
+- [Templater inside Buttons](/usage/templater)
+- [Inline Buttons](/usage/inline)
+- [Button Styling](/usage/styling)

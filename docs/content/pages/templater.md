@@ -4,5 +4,5 @@ permalink: /templater.html
 eleventyNavigation:
   order: 4
   key: templater
-  title: ""
+  title: "Templater"
 ---

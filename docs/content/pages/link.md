@@ -5,5 +5,5 @@ eleventyNavigation:
   order: 6
   key: link
   parent: types
-  title: ""
+  title: "Link Buttons"
 ---
