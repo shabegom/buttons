@@ -143,7 +143,7 @@ export const template = async (
         );
       }
       if (args.type.includes("note")) {
-        createNote(app, content, args.type);
+        createNote(app, content, args.type, file, args.templater);
       }
       if (args.type.includes("line")) {
         addContentAtLine(app, content, args.type);
