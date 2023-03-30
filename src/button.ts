@@ -63,6 +63,7 @@ const clickHandler = async (
   let position = inline
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
+    const buttonStart = getButtonPosition(content,args);
   // handle command buttons
   if (args.templater) {
     args = await templater(app, position);
@@ -73,8 +74,8 @@ const clickHandler = async (
   if (args.replace) {
     replace(app, args);
   }
-  if (args.type === "command") {
-    command(app, args);
+  if (args.type && args.type.includes("command")) {
+    command(app, args, buttonStart);
   }
   // handle link buttons
   if (args.type === "link") {
