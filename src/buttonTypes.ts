@@ -174,12 +174,23 @@ export const link = ({ action }: Arguments): void => {
   window.open(link);
 };
 
-export const command = (app: App, { action }: Arguments): void => {
+export const command = (app: App, args: Arguments, buttonStart): void => {
   const allCommands = app.commands.listCommands();
+  const action = args.action;
   const command = allCommands.filter(
     (command) => command.name.toUpperCase() === action.toUpperCase().trim()
   )[0];
-  app.commands.executeCommandById(command.id);
+  if (args.type.includes("prepend")) {
+    app.workspace.getActiveViewOfType(MarkdownView).editor.setCursor(buttonStart.lineStart,0);
+    app.commands.executeCommandById(command.id);
+  }
+  if (args.type.includes("append")) {
+    app.workspace.getActiveViewOfType(MarkdownView).editor.setCursor(buttonStart.lineEnd+2,0);
+    app.commands.executeCommandById(command.id);
+  }
+  if (args.type === "command") {
+    app.commands.executeCommandById(command.id);
+  }
 };
 
 export const swap = async (
