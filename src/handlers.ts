@@ -154,7 +154,7 @@ export const createNote = async (
   if (path) {
     try {
       await app.vault.create(`${path[1]}.md`, content);
-      const file = app.vault.getAbstractFileByPath(`${path[1]}.md`);
+      const file = app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
       if (path[2] == "split") {
         await app.workspace.splitActiveLeaf().openFile(file);
       } else if (path[2] == "tab") {
@@ -163,9 +163,9 @@ export const createNote = async (
         app.workspace.activeLeaf.openFile(file);
       }
     } catch (e) {
-      new obsidian.Notice("There was an error! Maybe the file already exists?", 2000);
+      new Notice("There was an error! Maybe the file already exists?", 2000);
     }
   } else {
-    new obsidian.Notice(`couldn't parse the path!`, 2000);
+    new Notice(`couldn't parse the path!`, 2000);
   }
 };
