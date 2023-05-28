@@ -1,6 +1,8 @@
 # Obsidian Buttons
 Run commands and open links by clicking on ✨ Buttons ✨
 
+## This plugin is seeking people to maintain it. [Reply to this issue if you're interested](https://github.com/shabegom/buttons/issues/179)
+
 ---
 
 **last updated:** Sept 28, 2022
