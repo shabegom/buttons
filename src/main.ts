@@ -17,7 +17,7 @@ export default class Buttons extends Plugin {
 
   async onload(): Promise<void> {
     console.log("Buttons loves you");
-    const storedSwapCache = JSON.parse(localStorage.getItem("swapCache") || "");
+    const storedSwapCache = JSON.parse(localStorage.getItem("swapCache") || "{}");
     if (storedSwapCache) {
       this.swapCache = storedSwapCache;
     }
