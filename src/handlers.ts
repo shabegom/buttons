@@ -151,10 +151,19 @@ export const createNote = async (
   type: string
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split)?\)/);
+
   if (path) {
+    const fullPath = `${path[1]}.md`;
+    const directoryPath = fullPath.substring(0, fullPath.lastIndexOf('/'));
+
     try {
-      await app.vault.create(`${path[1]}.md`, content);
-      const file = app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
+      // Check if the directory exists, if not, create it
+      if (!app.vault.getAbstractFileByPath(directoryPath)) {
+        await app.vault.createFolder(directoryPath);
+      }
+
+      await app.vault.create(fullPath, content);
+      const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
       if (path[2]) {
         await app.workspace.splitActiveLeaf().openFile(file);
       } else {
