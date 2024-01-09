@@ -112,7 +112,8 @@ export default class ButtonsPlugin extends Plugin {
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs.args : args;
         const id = storeArgs && storeArgs.id;
-        createButton({ app: this.app, el, args, inline: false, id });
+        if (Boolean(args['hidden']) !== true)
+          createButton({ app: this.app, el, args, inline: false, id });
       }
     );
 
