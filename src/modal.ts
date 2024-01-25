@@ -74,6 +74,8 @@ export class ButtonModal extends Modal {
     templater: false,
     class: "",
     color: "",
+    customColor: "",
+    customTextColor: "",
     blockId: "",
   };
 
@@ -408,7 +410,34 @@ export class ButtonModal extends Modal {
           drop.addOption("green", "Green");
           drop.addOption("yellow", "Yellow");
           drop.addOption("purple", "Purple");
+          drop.addOption("custom", "Custom")
           drop.onChange((value) => {
+            customBackgroundColor.empty()
+            customTextColor.empty()
+            if(value === 'custom') {
+              this.outputObject.color = "";
+              new Setting(customBackgroundColor)
+                .setName("Background: ")
+                .addText((el) => {
+                  el.setPlaceholder("#FFFFFF");
+                  el.onChange((value: string) => {
+                    this.buttonPreviewEl.className = "";
+                    this.buttonPreviewEl.style.background = value;
+                    this.outputObject.customColor = value;
+                  });
+              })
+              new Setting(customTextColor)
+              .setName("Text Color: ")
+                .addText((el) => {
+                  el.setPlaceholder("#000000");
+                  el.onChange((value: string) => {
+                    this.buttonPreviewEl.className = "";
+                    this.buttonPreviewEl.style.color = value;
+                    this.outputObject.customTextColor = value;
+                  });
+                });
+              return
+            }
             this.outputObject.color = value;
             const buttonClass = this.buttonPreviewEl
               .getAttribute("class")
@@ -438,6 +467,10 @@ export class ButtonModal extends Modal {
             }
           });
         });
+
+      const customBackgroundColor = formEl.createEl("div");
+      const customTextColor = formEl.createEl("div");
+
       formEl.createDiv("modal-button-container", (buttonContainerEl) => {
         buttonContainerEl
           .createEl("button", {

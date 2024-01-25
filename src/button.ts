@@ -42,6 +42,13 @@ export const createButton = ({
       inline ? "button-inline" : ""
       ]
   });
+  
+  if(args.customcolor) {
+    button.style.backgroundColor = args.customcolor;
+  }
+  if(args.customtextcolor) {
+    button.style.color = args.customtextcolor;
+  }
   button.innerHTML = args.name;
   args.id ? button.setAttribute("id", args.id) : "";
   button.on("click", "button", () => {

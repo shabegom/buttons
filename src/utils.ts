@@ -23,6 +23,8 @@ interface OutputObject {
   templater: boolean;
   class: string;
   color: string;
+  customColor: string;
+  customTextColor: string;
   blockId: string;
 }
 
@@ -39,6 +41,8 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   outputObject.templater === true &&
     buttonArr.push(`templater ${outputObject.templater}`);
   outputObject.color && buttonArr.push(`color ${outputObject.color}`);
+  outputObject.customColor && buttonArr.push(`customColor ${outputObject.customColor}`);
+  outputObject.customTextColor && buttonArr.push(`customTextColor ${outputObject.customTextColor}`);
   outputObject.class && buttonArr.push(`class ${outputObject.class}`);
   buttonArr.push("```");
   outputObject.blockId
