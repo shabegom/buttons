@@ -10,6 +10,7 @@ import {
   swap,
   templater,
   text,
+  copyText
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 
@@ -86,6 +87,10 @@ const clickHandler = async (
   // handle link buttons
   if (args.type === "link") {
     link(args);
+  }
+  // handle copy text buttons
+  if(args.type === 'copy') {
+    copyText(args)
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {

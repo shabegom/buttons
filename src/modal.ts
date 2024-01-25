@@ -121,6 +121,7 @@ export class ButtonModal extends Modal {
           "swap",
           "Swap - Create a multi-purpose Inline Button from other Buttons"
         );
+        drop.addOption("copy", "Text - Copy text to clipboard");
         const action = formEl.createEl("div");
         drop.onChange((value) => {
           this.outputObject.type = value;
@@ -293,6 +294,16 @@ export class ButtonModal extends Modal {
               .addText((textEl) => {
                 textEl.inputEl.replaceWith(this.swapSuggestEl);
               });
+          }
+          if(value === "copy") {
+            action.empty();
+            new Setting(action)
+              .setName("Text")
+              .setDesc("Text to copy for clipboard")
+              .addText((textEl) => {
+                textEl.setPlaceholder("Text to copy");
+                textEl.onChange((value) => (this.outputObject.action = value));
+              })
           }
         });
       });
