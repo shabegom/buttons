@@ -7,7 +7,7 @@ export class ButtonModal extends Modal {
   activeView: MarkdownView;
   activeEditor: Editor;
   activeCursor: CodeMirror.Position;
-  actionInterval: Timeout;
+  // actionInterval: Timeout;
   buttonPreviewEl: HTMLElement = createEl("p");
   commandSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
   fileSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
@@ -175,10 +175,13 @@ export class ButtonModal extends Modal {
                         new Setting(action)
                           .setName("Default Folder")
                           .setDesc(
-                            'Enter a folder path to place the note in. Defaults to root ("/")'
+                            "Enter a folder path to place the note in. Defaults to root"
                           )
                           .addText((textEl) => {
-                            this.outputObject.folder;
+                            this.outputObject.folder = "";
+                            textEl.onChange((textVal) => {
+                              this.outputObject.folder = textVal;
+                            });
                           });
                         new Setting(action)
                           .setName("Split")
