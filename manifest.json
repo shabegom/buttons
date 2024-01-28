@@ -1,7 +1,7 @@
 {
-  "id": "unxok-buttons",
-  "name": "Unxok-Buttons",
-  "description": "Create Buttons in your Obsidian notes to run commands, open links, and insert templates",
+  "id": "buttons-unxok-fork",
+  "name": "Buttons (Unxok's fork)",
+  "description": "Create Buttons in your Obsidian notes to run commands, open links, and insert templates. This is a fork made by Unxok",
   "version": "0.4.19",
   "author": "shabegom",
   "authorUrl": "https://shbgm.ca",

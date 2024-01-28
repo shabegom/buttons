@@ -24,6 +24,8 @@ interface OutputObject {
   class: string;
   color: string;
   blockId: string;
+  folder: string;
+  prompt: boolean;
 }
 
 export const insertButton = (app: App, outputObject: OutputObject): void => {
@@ -40,6 +42,8 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
     buttonArr.push(`templater ${outputObject.templater}`);
   outputObject.color && buttonArr.push(`color ${outputObject.color}`);
   outputObject.class && buttonArr.push(`class ${outputObject.class}`);
+  outputObject.folder && buttonArr.push(`folder ${outputObject.folder}`);
+  outputObject.folder && buttonArr.push(`prompt ${outputObject.prompt}`);
   buttonArr.push("```");
   outputObject.blockId
     ? buttonArr.push(`^button-${outputObject.blockId}`)
@@ -60,7 +64,10 @@ export const createArgumentObject = (source: string): Arguments =>
   source.split("\n").reduce((acc: Arguments, i: string) => {
     const split: string[] = i.split(" ");
     const key: string = split[0].toLowerCase();
-    acc[key] = split.filter((item) => item !== split[0]).join(" ").trim();
+    acc[key] = split
+      .filter((item) => item !== split[0])
+      .join(" ")
+      .trim();
     return acc;
   }, {});
 

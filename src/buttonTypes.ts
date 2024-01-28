@@ -79,7 +79,7 @@ export const text = async (
     appendContent(app, args.action, position.lineEnd);
   }
   if (args.type.includes("note")) {
-    createNote(app, args.action, args.type);
+    createNote(app, args.action, args.type, args.folder, args.prompt);
   }
   if (args.type.includes("line")) {
     addContentAtLine(app, args.action, args.type);
@@ -92,19 +92,21 @@ export const template = async (
   position: Position
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
-  const templaterPluginEnabled =
-    app.plugins.plugins["templater-obsidian"];
+  const templaterPluginEnabled = app.plugins.plugins["templater-obsidian"];
 
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPluginEnabled) {
     const folders: string[] = [
-      templatesEnabled && app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
-      templaterPluginEnabled && app.plugins?.plugins[
-        "templater-obsidian"
-      ]?.settings.template_folder?.toLowerCase(),
-      templaterPluginEnabled && app.plugins?.plugins[
-        "templater-obsidian"
-      ]?.settings.templates_folder?.toLowerCase(),
+      templatesEnabled &&
+        app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
+      templaterPluginEnabled &&
+        app.plugins?.plugins[
+          "templater-obsidian"
+        ]?.settings.template_folder?.toLowerCase(),
+      templaterPluginEnabled &&
+        app.plugins?.plugins[
+          "templater-obsidian"
+        ]?.settings.templates_folder?.toLowerCase(),
     ].filter((folder) => folder);
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
@@ -143,7 +145,7 @@ export const template = async (
         );
       }
       if (args.type.includes("note")) {
-        createNote(app, content, args.type);
+        createNote(app, content, args.type, args.folder, args.prompt);
       }
       if (args.type.includes("line")) {
         addContentAtLine(app, content, args.type);
@@ -295,7 +297,7 @@ export const templater = async (
             position.lineEnd - position.lineStart + 2,
             button
           );
-        }  else {
+        } else {
           cachedContent.splice(
             position.lineStart,
             position.lineEnd - position.lineStart + 2,

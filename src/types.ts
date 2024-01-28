@@ -50,6 +50,7 @@ export interface Arguments {
   remove?: string;
   replace?: string;
   folder?: string;
+  // prompt?: string;
   [key: string]: string;
 }
 

@@ -76,6 +76,7 @@ export class ButtonModal extends Modal {
     color: "",
     blockId: "",
     folder: "",
+    prompt: false,
   };
 
   onOpen(): void {
@@ -168,8 +169,21 @@ export class ButtonModal extends Modal {
                   }
                   if (value == "note template") {
                     new Setting(action)
+                      .setName("Prompt")
+                      .setDesc(
+                        "Should you be prompted to enter a name for the file on creation?"
+                      )
+                      .addToggle((toggleEl) => {
+                        this.outputObject.prompt = false;
+                        toggleEl.onChange(
+                          (bool) => (this.outputObject.prompt = bool)
+                        );
+                      });
+                    new Setting(action)
                       .setName("Note Name")
-                      .setDesc("What should the new note be named?")
+                      .setDesc(
+                        "What should the new note be named? Note: if prompt is on, this will be the default name"
+                      )
                       .addText((textEl) => {
                         textEl.setPlaceholder("My New Note");
                         new Setting(action)
