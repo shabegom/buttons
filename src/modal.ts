@@ -75,6 +75,7 @@ export class ButtonModal extends Modal {
     class: "",
     color: "",
     blockId: "",
+    folder: "",
   };
 
   onOpen(): void {
@@ -171,6 +172,14 @@ export class ButtonModal extends Modal {
                       .setDesc("What should the new note be named?")
                       .addText((textEl) => {
                         textEl.setPlaceholder("My New Note");
+                        new Setting(action)
+                          .setName("Default Folder")
+                          .setDesc(
+                            'Enter a folder path to place the note in. Defaults to root ("/")'
+                          )
+                          .addText((textEl) => {
+                            this.outputObject.folder;
+                          });
                         new Setting(action)
                           .setName("Split")
                           .setDesc("Should the new note open in a split pane?")
