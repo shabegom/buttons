@@ -7,6 +7,7 @@ import {
   template,
   link,
   command,
+  copy,
   swap,
   templater,
   text,
@@ -84,6 +85,9 @@ const clickHandler = async (
 
   if (args.type && args.type.includes("command")) {
     command(app, args, buttonStart);
+  }
+  if (args.type === "copy") {
+    copy(args);
   }
   // handle link buttons
   if (args.type === "link") {

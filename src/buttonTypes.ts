@@ -161,7 +161,13 @@ export const link = ({ action }: Arguments): void => {
   window.open(link);
 };
 
-export const command = (app: App, args: Arguments, buttonStart): void => {
+// take the action and copy it to the clipboard
+export const copy = ({ action }: Arguments): void => {
+  navigator.clipboard.writeText(action);
+}
+
+export const command = (app: App, { action }: Arguments): void => {
+
   const allCommands = app.commands.listCommands();
   const action = args.action;
   const command = allCommands.filter(
