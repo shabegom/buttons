@@ -148,7 +148,9 @@ export const addContentAtLine = async (
 export const createNote = async (
   app: App,
   content: string,
-  type: string
+  type: string,
+  filePath?: TFile,
+  templater?: string
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
   if (path) {
@@ -160,7 +162,16 @@ export const createNote = async (
       } else if (path[2] == "tab") {
         await app.workspace.getLeaf(!0).openFile(file);
       } else {
-        app.workspace.activeLeaf.openFile(file);
+        await app.vault.create(`${path[1]}.md`, content);
+      }
+      const file = await app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
+      await app.workspace.getLeaf().openFile(file);
+      if (filePath) {
+        if (templater) {
+          (app as any).plugins.plugins["templater-obsidian"].templater.append_template_to_active_file(filePath);
+        } else {
+          (app as any).internalPlugins?.plugins["templates"].instance.insertTemplate(filePath);
+        }
       }
     } catch (e) {
       new Notice("There was an error! Maybe the file already exists?", 2000);

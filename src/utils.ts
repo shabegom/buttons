@@ -92,27 +92,44 @@ export const handleValueArray = (
   }
 };
 
-export function getNewArgs(
+export async function getNewArgs(
   app: App,
   position: Position
-): Promise<{ args: Arguments; content: string }> {
-  const promise = new Promise((resolve) => {
-    setTimeout(async () => {
-      const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-      const newContent = await app.vault
-        .cachedRead(activeView.file)
-        .then((content: string) => content.split("\n"));
-      const newButton = newContent
-        .splice(position.lineStart, position.lineEnd - position.lineStart)
-        .join("\n")
-        .replace("```button", "")
-        .replace("```", "");
-      resolve({ args: createArgumentObject(newButton) });
-    }, 150);
-  });
-  return promise as Promise<{ args: Arguments; content: string }>;
+): Promise<{ args: Arguments }> {
+  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const newContent = await app.vault
+    .cachedRead(activeView.file)
+    .then((content: string) => content.split("\n"));
+  const newButton = newContent
+    .splice(position.lineStart, position.lineEnd - position.lineStart)
+    .join("\n")
+    .replace("```button", "")
+    .replace("```", "");
+  return { args: createArgumentObject(newButton) };
 }
 
 export const wrapAround = (value: number, size: number): number => {
   return ((value % size) + size) % size;
 };
+
+/**
+ * Run Templater's "Replace templates in the active file" command and wait until complete.
+ */
+export const runTemplater = (
+  app: App
+): Promise<{
+  file: TFile;
+  content: string;
+}> =>
+  new Promise((resolve) => {
+    const ref = app.workspace.on(
+      "templater:overwrite-file",
+      (file: TFile, content: string) => {
+        app.workspace.offref(ref);
+        resolve({ file, content });
+      }
+    );
+    app.commands.executeCommandById(
+      "templater-obsidian:replace-in-file-templater"
+    );
+  });

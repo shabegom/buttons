@@ -1,6 +1,8 @@
 # Obsidian Buttons
 Run commands and open links by clicking on ✨ Buttons ✨
 
+## This plugin is seeking people to maintain it. [Reply to this issue if you're interested](https://github.com/shabegom/buttons/issues/179)
+
 ---
 
 **last updated:** Sept 28, 2022
@@ -232,7 +234,7 @@ Create a new note in a new split pane for an upcoming meeting based on a Meeting
 
     ```button
     name New Meeting
-    type note(Meeting, split) note
+    type note(Meeting, split) template
     action Meeting Note Template
     ```
     ^button-meeting
@@ -307,7 +309,11 @@ Note: swap count is reset if you close the note.
 
 ### Next version (not released yet)
 
+
 - Bugfix: buttons now render in Live Preview mode when Obsidian starts ([Lx])
+- Bugfix: improve reliability of `templater` option ([Lx])
+- improve speed of `remove` option ([Lx])
+
 
 [Lx]: https://github.com/Lx
 
