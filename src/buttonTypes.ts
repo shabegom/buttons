@@ -134,7 +134,9 @@ export const template = async (
         await runTemplater(app);
       }
       if (args.type.includes("note")) {
-        await createNote(app, content, args.type);
+
+        createNote(app, content, args.type, file, args.templater);
+
       }
       if (args.type.includes("line")) {
         await addContentAtLine(app, content, args.type);
