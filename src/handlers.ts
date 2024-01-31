@@ -152,11 +152,15 @@ export const createNote = async (
   filePath?: TFile,
   templater?: string
 ): Promise<void> => {
-  const path = type.match(/\(([\s\S]*?),?\s?(split)?\)/);
+  const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
   if (path) {
     try {
-      if (filePath) {
-        await app.vault.create(`${path[1]}.md`, "");
+      await app.vault.create(`${path[1]}.md`, content);
+      const file = app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
+      if (path[2] == "split") {
+        await app.workspace.splitActiveLeaf().openFile(file);
+      } else if (path[2] == "tab") {
+        await app.workspace.getLeaf(!0).openFile(file);
       } else {
         await app.vault.create(`${path[1]}.md`, content);
       }
