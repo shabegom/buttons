@@ -137,6 +137,14 @@ export class ButtonModal extends Modal {
             new Setting(action)
               .setName("Command")
               .setDesc("Enter a command to run")
+              .addDropdown((drop) => {
+              drop.addOption("command", "Default");
+              drop.addOption("prepend command", "Prepend");
+              drop.addOption("apped command", "Append");
+              drop.onChange((value) => {
+                this.outputObject.type = value;
+              })
+              })
               .addText((textEl) => {
                 textEl.inputEl.replaceWith(this.commandSuggestEl);
               });
@@ -319,6 +327,7 @@ export class ButtonModal extends Modal {
                 .addText((textEl) => {
                   textEl.inputEl.replaceWith(this.removeSuggestEl);
                 });
+                this.outputObject.remove = value;
             }
             if (!value) {
               this.outputObject.remove = "";
