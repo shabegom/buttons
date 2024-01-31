@@ -11,6 +11,7 @@ import {
   swap,
   templater,
   text,
+  copyText
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 
@@ -43,6 +44,13 @@ export const createButton = ({
       inline ? "button-inline" : ""
       ]
   });
+  
+  if(args.customcolor) {
+    button.style.backgroundColor = args.customcolor;
+  }
+  if(args.customtextcolor) {
+    button.style.color = args.customtextcolor;
+  }
   button.innerHTML = args.name;
   args.id ? button.setAttribute("id", args.id) : "";
   button.on("click", "button", () => {
@@ -92,6 +100,10 @@ const clickHandler = async (
   // handle link buttons
   if (args.type === "link") {
     link(args);
+  }
+  // handle copy text buttons
+  if(args.type === 'copy') {
+    copyText(args)
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {
