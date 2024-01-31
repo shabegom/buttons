@@ -59,6 +59,13 @@ const clickHandler = async (
   id: string
 ) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+   if (args.type === "command") {
+    command(app, args);
+  }
+  // handle link buttons
+  if (args.type === "link") {
+    link(args);
+  }
   let content = await app.vault.read(activeView.file);
   let position = inline
     ? await getInlineButtonPosition(app, id)
@@ -73,13 +80,7 @@ const clickHandler = async (
   if (args.replace) {
     replace(app, args);
   }
-  if (args.type === "command") {
-    command(app, args);
-  }
-  // handle link buttons
-  if (args.type === "link") {
-    link(args);
-  }
+
   // handle template buttons
   if (args.type && args.type.includes("template")) {
     setTimeout(async () => {
