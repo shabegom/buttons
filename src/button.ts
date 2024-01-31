@@ -70,6 +70,7 @@ const clickHandler = async (
   let position = inline
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
+    const buttonStart = getButtonPosition(content,args);
   // handle command buttons
   if (args.templater) {
     args = await templater(app, position);
@@ -81,6 +82,13 @@ const clickHandler = async (
     replace(app, args);
   }
 
+  if (args.type && args.type.includes("command")) {
+    command(app, args, buttonStart);
+  }
+  // handle link buttons
+  if (args.type === "link") {
+    link(args);
+  }
   // handle template buttons
   if (args.type && args.type.includes("template")) {
     content = await app.vault.read(activeView.file);
