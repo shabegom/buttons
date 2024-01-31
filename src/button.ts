@@ -60,10 +60,18 @@ const clickHandler = async (
   id: string
 ) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+   if (args.type === "command") {
+    command(app, args);
+  }
+  // handle link buttons
+  if (args.type === "link") {
+    link(args);
+  }
   let content = await app.vault.read(activeView.file);
   let position = inline
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
+    const buttonStart = getButtonPosition(content,args);
   // handle command buttons
   if (args.templater) {
     args = await templater(app, position);
@@ -74,8 +82,9 @@ const clickHandler = async (
   if (args.replace) {
     replace(app, args);
   }
-  if (args.type === "command") {
-    command(app, args);
+
+  if (args.type && args.type.includes("command")) {
+    command(app, args, buttonStart);
   }
   if (args.type === "copy") {
     copy(args);
@@ -86,41 +95,35 @@ const clickHandler = async (
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {
-    setTimeout(async () => {
-      content = await app.vault.read(activeView.file);
-      position = inline
-        ? await getInlineButtonPosition(app, id)
-        : getButtonPosition(content, args);
-      template(app, args, position);
-    }, 50);
+    content = await app.vault.read(activeView.file);
+    position = inline
+      ? await getInlineButtonPosition(app, id)
+      : getButtonPosition(content, args);
+    await template(app, args, position);
   }
   if (args.type === "calculate") {
-    calculate(app, args, position);
+    await calculate(app, args, position);
   }
   if (args.type && args.type.includes("text")) {
-    setTimeout(async () => {
-      content = await app.vault.read(activeView.file);
-      position = inline
-        ? await getInlineButtonPosition(app, id)
-        : getButtonPosition(content, args);
-      text(app, args, position);
-    }, 50);
-  }
-  // handle removing the button
-  if (args.remove) {
-    setTimeout(async () => {
-      content = await app.vault.read(activeView.file);
-      position = inline
-        ? await getInlineButtonPosition(app, id)
-        : getButtonPosition(content, args);
-      remove(app, args, position);
-    }, 1000);
+    content = await app.vault.read(activeView.file);
+    position = inline
+      ? await getInlineButtonPosition(app, id)
+      : getButtonPosition(content, args);
+    await text(app, args, position);
   }
   if (args.swap) {
     if (!inline) {
       new Notice("swap args only work in inline buttons for now", 2000);
     } else {
-      swap(app, args.swap, id, inline, activeView.file);
+      await swap(app, args.swap, id, inline, activeView.file);
     }
+  }
+  // handle removing the button
+  if (args.remove) {
+    content = await app.vault.read(activeView.file);
+    position = inline
+      ? await getInlineButtonPosition(app, id)
+      : getButtonPosition(content, args);
+    await remove(app, args, position);
   }
 };

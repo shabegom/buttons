@@ -31,7 +31,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
         - **Prepend Template:** Click the Button to prepend a template into the current note.
         - **Append Template:** Click the Button to append a template into the current note.
         - **Add Template at Line:** Click the Button to add a template into the current note at the specified line.
-        - **New Note From Template:** Choose the Template, write the name of the new note, choose whether the new note should open in a split pane.
+        - **New Note From Template:** Choose the Template, write the name of the new note, choose whether the new note should replace the existing tab, open a new tab or split pane.
     - **Text:** Choose Prepend, Append, New Note, or Line and the text you want to use:
         - **Prepend Template:** Click the Button to prepend text into the current note.
         - **Append Template:** Click the Button to append text into the current note.
@@ -230,20 +230,20 @@ Say you want the weather to appear at a specific place in your note that isn't d
     ^button-weatherLine
 
 #### New Note From Template
-Create a new note for an upcoming meeting based on a Meeting Note Template:
+Create a new note in a new split pane for an upcoming meeting based on a Meeting Note Template:
 
     ```button
     name New Meeting
-    type note(Meeting, split) note
+    type note(Meeting, split) template
     action Meeting Note Template
     ```
     ^button-meeting
 
-Dynamically add the hour and minute to the note title:
+Dynamically add the hour and minute to the note title and open as a new tab:
 
     ```button
     name New Meeting
-    type note(Meeting-<%tp.date.now("HH-MM") %>, split) note
+    type note(Meeting-<%tp.date.now("HH-MM") %>, tab) note
     action Meeting Note Template
     templater true
     ```
@@ -309,7 +309,11 @@ Note: swap count is reset if you close the note.
 
 ### Next version (not released yet)
 
+
 - Bugfix: buttons now render in Live Preview mode when Obsidian starts ([Lx])
+- Bugfix: improve reliability of `templater` option ([Lx])
+- improve speed of `remove` option ([Lx])
+
 
 [Lx]: https://github.com/Lx
 
