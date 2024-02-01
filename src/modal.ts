@@ -7,7 +7,7 @@ export class ButtonModal extends Modal {
   activeView: MarkdownView;
   activeEditor: Editor;
   activeCursor: CodeMirror.Position;
-  actionInterval: Timeout;
+  // actionInterval: Timeout;
   buttonPreviewEl: HTMLElement = createEl("p");
   commandSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
   fileSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
@@ -77,6 +77,8 @@ export class ButtonModal extends Modal {
     customColor: "",
     customTextColor: "",
     blockId: "",
+    folder: "",
+    prompt: false,
   };
 
   onOpen(): void {
@@ -178,10 +180,34 @@ export class ButtonModal extends Modal {
                   }
                   if (value == "note template") {
                     new Setting(action)
+                      .setName("Prompt")
+                      .setDesc(
+                        "Should you be prompted to enter a name for the file on creation?"
+                      )
+                      .addToggle((toggleEl) => {
+                        this.outputObject.prompt = false;
+                        toggleEl.onChange(
+                          (bool) => (this.outputObject.prompt = bool)
+                        );
+                      });
+                    new Setting(action)
                       .setName("Note Name")
-                      .setDesc("What should the new note be named?")
+                      .setDesc(
+                        "What should the new note be named? Note: if prompt is on, this will be the default name"
+                      )
                       .addText((textEl) => {
                         textEl.setPlaceholder("My New Note");
+                        new Setting(action)
+                          .setName("Default Folder")
+                          .setDesc(
+                            "Enter a folder path to place the note in. Defaults to root"
+                          )
+                          .addText((textEl) => {
+                            this.outputObject.folder = "";
+                            textEl.onChange((textVal) => {
+                              this.outputObject.folder = textVal;
+                            });
+                          });
                         new Setting(action)
                           .setName("Split")
                           .setDesc("Should the new note open in a split pane?")

@@ -2,6 +2,7 @@ import { MarkdownView, App, Notice, TFile } from "obsidian";
 import { ExtendedBlockCache } from "./types";
 import { getStore } from "./buttonStore";
 import { createContentArray, handleValueArray } from "./utils";
+import { nameModal } from "./nameModal";
 
 export const removeButton = async (
   app: App,
@@ -149,6 +150,8 @@ export const createNote = async (
   app: App,
   content: string,
   type: string,
+  folder: string,
+  prompt: string
   filePath?: TFile,
   templater?: string
 ): Promise<void> => {
@@ -159,6 +162,14 @@ export const createNote = async (
     const directoryPath = fullPath.substring(0, fullPath.lastIndexOf('/'));
 
     try {
+      if (prompt === "true") {
+        const promptedName = await new Promise<string>((res) =>
+          new nameModal(app, res, path[1]).open()
+        );
+        path[1] = promptedName ? promptedName : path[1];
+      }
+      path[1] = folder ? `${folder}/${path[1]}` : path[1];
+     
       // Check if the directory exists, if not, create it
       if (!app.vault.getAbstractFileByPath(directoryPath)) {
         await app.vault.createFolder(directoryPath);
@@ -166,6 +177,7 @@ export const createNote = async (
 
       await app.vault.create(fullPath, content);
       const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
+
       if (path[2]) {
         await app.workspace.splitActiveLeaf().openFile(file);
       } else if (path[2] == "tab") {
@@ -183,6 +195,7 @@ export const createNote = async (
         }
       }
     } catch (e) {
+      console.error("Error in Buttons: ", e);
       new Notice("There was an error! Maybe the file already exists?", 2000);
     }
   } else {

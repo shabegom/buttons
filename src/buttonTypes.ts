@@ -82,7 +82,7 @@ export const text = async (
     await appendContent(app, args.action, position.lineEnd);
   }
   if (args.type.includes("note")) {
-    await createNote(app, args.action, args.type);
+    createNote(app, args.action, args.type, args.folder, args.prompt);
   }
   if (args.type.includes("line")) {
     await addContentAtLine(app, args.action, args.type);
@@ -95,20 +95,22 @@ export const template = async (
   position: Position
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
-  const templaterPluginEnabled =
-    app.plugins.plugins["templater-obsidian"];
+  const templaterPluginEnabled = app.plugins.plugins["templater-obsidian"];
 
   // only run if templates plugin is enabled
   if (templatesEnabled || templaterPluginEnabled) {
     const folders: string[] = [
-      templatesEnabled && app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
-      templaterPluginEnabled && app.plugins?.plugins[
-        "templater-obsidian"
-      ]?.settings.template_folder?.toLowerCase(),
-      templaterPluginEnabled && app.plugins?.plugins[
-        "templater-obsidian"
-      ]?.settings.templates_folder?.toLowerCase(),
-    ].filter((folder) => folder).map((folder) => folder.replace(/^\//, ''));
+      templatesEnabled &&
+        app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
+      templaterPluginEnabled &&
+        app.plugins?.plugins[
+          "templater-obsidian"
+        ]?.settings.template_folder?.toLowerCase(),
+      templaterPluginEnabled &&
+        app.plugins?.plugins[
+          "templater-obsidian"
+        ]?.settings.templates_folder?.toLowerCase(),
+    ].filter((folder) => folder);
     const templateFile = args.action.toLowerCase();
     const allFiles = app.vault.getFiles();
     const file: TFile = allFiles.filter((file) => {
@@ -134,9 +136,7 @@ export const template = async (
         await runTemplater(app);
       }
       if (args.type.includes("note")) {
-
-        createNote(app, content, args.type, file, args.templater);
-
+        createNote(app, content, args.type, file, args.templater args.folder, args.prompt);
       }
       if (args.type.includes("line")) {
         await addContentAtLine(app, content, args.type);
@@ -261,7 +261,50 @@ export const templater = async (
     const content = await app.vault.cachedRead(file);
     await runTemplater(app);
     const { args } = await getNewArgs(app, position);
-    await app.vault.modify(file, content);
+    const cachedData: string[] = [];
+    const cacheChange = app.vault.on("modify", (file) => {
+      cachedData.push(file.unsafeCachedData);
+    });
+    setTimeout(async () => {
+      const button = content
+        .split("\n")
+        .splice(position.lineStart, position.lineEnd - position.lineStart + 2)
+        .join("\n");
+      let finalContent;
+      if (cachedData[0]) {
+        const cachedContent = cachedData[cachedData.length - 1].split("\n");
+        let addOne = false;
+        if (args.type.includes("prepend")) {
+          addOne = true;
+        } else if (args.type.includes("line")) {
+          const lineNumber = args.type.match(/(\d+)/g);
+          if (lineNumber[0]) {
+            const line = parseInt(lineNumber[0]) - 1;
+            if (line < position.lineStart && !args.replace) {
+              addOne = true;
+            }
+          }
+        }
+        if (addOne) {
+          cachedContent.splice(
+            position.lineStart + 1,
+            position.lineEnd - position.lineStart + 2,
+            button
+          );
+        } else {
+          cachedContent.splice(
+            position.lineStart,
+            position.lineEnd - position.lineStart + 2,
+            button
+          );
+        }
+        finalContent = cachedContent.join("\n");
+      } else {
+        finalContent = content;
+      }
+      await app.vault.modify(file, finalContent);
+      app.metadataCache.offref(cacheChange);
+    }, 200);
     return args;
   }
 };
