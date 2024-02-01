@@ -45,6 +45,8 @@ export interface Arguments {
   action?: string;
   style?: string;
   color?: string;
+  customColor?: string;
+  customTextColor?: string;
   class?: string;
   id?: string;
   remove?: string;

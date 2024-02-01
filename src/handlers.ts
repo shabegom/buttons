@@ -152,9 +152,15 @@ export const createNote = async (
   type: string,
   folder: string,
   prompt: string
+  filePath?: TFile,
+  templater?: string
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split)?\)/);
+
   if (path) {
+    const fullPath = `${path[1]}.md`;
+    const directoryPath = fullPath.substring(0, fullPath.lastIndexOf('/'));
+
     try {
       if (prompt === "true") {
         const promptedName = await new Promise<string>((res) =>
@@ -163,12 +169,30 @@ export const createNote = async (
         path[1] = promptedName ? promptedName : path[1];
       }
       path[1] = folder ? `${folder}/${path[1]}` : path[1];
-      await app.vault.create(`${path[1]}.md`, content);
-      const file = app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
+     
+      // Check if the directory exists, if not, create it
+      if (!app.vault.getAbstractFileByPath(directoryPath)) {
+        await app.vault.createFolder(directoryPath);
+      }
+
+      await app.vault.create(fullPath, content);
+      const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
+
       if (path[2]) {
         await app.workspace.splitActiveLeaf().openFile(file);
+      } else if (path[2] == "tab") {
+        await app.workspace.getLeaf(!0).openFile(file);
       } else {
-        app.workspace.activeLeaf.openFile(file);
+        await app.vault.create(`${path[1]}.md`, content);
+      }
+      const file = await app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
+      await app.workspace.getLeaf().openFile(file);
+      if (filePath) {
+        if (templater) {
+          (app as any).plugins.plugins["templater-obsidian"].templater.append_template_to_active_file(filePath);
+        } else {
+          (app as any).internalPlugins?.plugins["templates"].instance.insertTemplate(filePath);
+        }
       }
     } catch (e) {
       console.error("Error in Buttons: ", e);

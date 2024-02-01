@@ -15,7 +15,7 @@ import {
   getInlineButtonPosition,
   findNumber,
 } from "./parser";
-import { handleValueArray, getNewArgs } from "./utils";
+import { handleValueArray, getNewArgs, runTemplater } from "./utils";
 import {
   getButtonSwapById,
   setButtonSwapById,
@@ -54,16 +54,19 @@ export const calculate = async (
   fun && appendContent(app, `Result: ${fun}`, position.lineEnd);
 };
 
-export const remove = (
+export const remove = async (
   app: App,
   { remove }: Arguments,
   { lineStart, lineEnd }: { lineStart: number; lineEnd: number }
-): void => {
-  setTimeout(() => removeButton(app, remove, lineStart, lineEnd), 1000);
+): Promise<void> => {
+  await removeButton(app, remove, lineStart, lineEnd);
 };
 
-export const replace = (app: App, { replace }: Arguments): void => {
-  removeSection(app, replace);
+export const replace = async (
+  app: App,
+  { replace }: Arguments
+): Promise<void> => {
+  await removeSection(app, replace);
 };
 export const text = async (
   app: App,
@@ -72,17 +75,17 @@ export const text = async (
 ): Promise<void> => {
   // prepend template above the button
   if (args.type.includes("prepend")) {
-    prependContent(app, args.action, position.lineStart);
+    await prependContent(app, args.action, position.lineStart);
   }
   // append template below the button
   if (args.type.includes("append")) {
-    appendContent(app, args.action, position.lineEnd);
+    await appendContent(app, args.action, position.lineEnd);
   }
   if (args.type.includes("note")) {
     createNote(app, args.action, args.type, args.folder, args.prompt);
   }
   if (args.type.includes("line")) {
-    addContentAtLine(app, args.action, args.type);
+    await addContentAtLine(app, args.action, args.type);
   }
 };
 
@@ -124,38 +127,20 @@ export const template = async (
       const content = await app.vault.read(file);
       // prepend template above the button
       if (args.type.includes("prepend")) {
-        prependContent(app, content, position.lineStart);
-        setTimeout(
-          () =>
-            app.commands.executeCommandById(
-              "templater-obsidian:replace-in-file-templater"
-            ),
-          100
-        );
+        await prependContent(app, content, position.lineStart);
+        await runTemplater(app);
       }
       // append template below the button
       if (args.type.includes("append")) {
-        appendContent(app, content, position.lineEnd);
-        setTimeout(
-          () =>
-            app.commands.executeCommandById(
-              "templater-obsidian:replace-in-file-templater"
-            ),
-          100
-        );
+        await appendContent(app, content, position.lineEnd);
+        await runTemplater(app);
       }
       if (args.type.includes("note")) {
-        createNote(app, content, args.type, args.folder, args.prompt);
+        createNote(app, content, args.type, file, args.templater args.folder, args.prompt);
       }
       if (args.type.includes("line")) {
-        addContentAtLine(app, content, args.type);
-        setTimeout(
-          () =>
-            app.commands.executeCommandById(
-              "templater-obsidian:replace-in-file-templater"
-            ),
-          100
-        );
+        await addContentAtLine(app, content, args.type);
+        await runTemplater(app);
       }
     } else {
       new Notice(
@@ -176,12 +161,29 @@ export const link = ({ action }: Arguments): void => {
   window.open(link);
 };
 
+// take the action and copy it to the clipboard
+export const copy = ({ action }: Arguments): void => {
+  navigator.clipboard.writeText(action);
+}
+
 export const command = (app: App, { action }: Arguments): void => {
+
   const allCommands = app.commands.listCommands();
+  const action = args.action;
   const command = allCommands.filter(
     (command) => command.name.toUpperCase() === action.toUpperCase().trim()
   )[0];
-  app.commands.executeCommandById(command.id);
+  if (args.type.includes("prepend")) {
+    app.workspace.getActiveViewOfType(MarkdownView).editor.setCursor(buttonStart.lineStart,0);
+    app.commands.executeCommandById(command.id);
+  }
+  if (args.type.includes("append")) {
+    app.workspace.getActiveViewOfType(MarkdownView).editor.setCursor(buttonStart.lineEnd+2,0);
+    app.commands.executeCommandById(command.id);
+  }
+  if (args.type === "command") {
+    app.commands.executeCommandById(command.id);
+  }
 };
 
 export const swap = async (
@@ -206,7 +208,7 @@ export const swap = async (
         }
       }
       if (args.replace) {
-        replace(app, args);
+        await replace(app, args);
       }
       if (args.type === "command") {
         command(app, args);
@@ -217,38 +219,32 @@ export const swap = async (
       }
       // handle template buttons
       if (args.type && args.type.includes("template")) {
-        setTimeout(async () => {
-          content = await app.vault.read(file);
-          position = inline
-            ? await getInlineButtonPosition(app, id)
-            : getButtonPosition(content, args);
-          template(app, args, position);
-        }, 50);
+        content = await app.vault.read(file);
+        position = inline
+          ? await getInlineButtonPosition(app, id)
+          : getButtonPosition(content, args);
+        await template(app, args, position);
       }
       if (args.type === "calculate") {
-        calculate(app, args, position);
+        await calculate(app, args, position);
       }
       if (args.type && args.type.includes("text")) {
-        setTimeout(async () => {
-          content = await app.vault.read(file);
-          position = inline
-            ? await getInlineButtonPosition(app, id)
-            : getButtonPosition(content, args);
-          text(app, args, position);
-        }, 50);
+        content = await app.vault.read(file);
+        position = inline
+          ? await getInlineButtonPosition(app, id)
+          : getButtonPosition(content, args);
+        await text(app, args, position);
       }
       // handle removing the button
       if (args.remove) {
-        setTimeout(async () => {
-          content = await app.vault.read(file);
-          position = inline
-            ? await getInlineButtonPosition(app, id)
-            : getButtonPosition(content, args);
-          remove(app, args, position);
-        }, 75);
+        content = await app.vault.read(file);
+        position = inline
+          ? await getInlineButtonPosition(app, id)
+          : getButtonPosition(content, args);
+        await remove(app, args, position);
       }
       if (args.replace) {
-        replace(app, args);
+        await replace(app, args);
       }
     }
   });
@@ -258,14 +254,12 @@ export const templater = async (
   app: App,
   position: Position
 ): Promise<Arguments> => {
-  app.commands.executeCommandById("editor:save-file");
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
+    await activeView.save();
     const file = activeView.file;
     const content = await app.vault.cachedRead(file);
-    app.commands.executeCommandById(
-      "templater-obsidian:replace-in-file-templater"
-    );
+    await runTemplater(app);
     const { args } = await getNewArgs(app, position);
     const cachedData: string[] = [];
     const cacheChange = app.vault.on("modify", (file) => {
@@ -314,3 +308,8 @@ export const templater = async (
     return args;
   }
 };
+
+export const copyText = ({ action }: Arguments): void => {
+  navigator.clipboard.writeText(action);
+  new Notice('Text Copied!');
+}
