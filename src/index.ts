@@ -19,6 +19,7 @@ import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { Button, createButton } from "./button";
 // import { updateWarning } from "./version";
+import templater from "./templater"
 
 export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
@@ -103,6 +104,12 @@ export default class ButtonsPlugin extends Plugin {
     this.registerMarkdownCodeBlockProcessor(
       "button",
       async (source, el, ctx) => {
+        if (source.includes("<%")) {
+          const runTemplater = await templater();
+          if (runTemplater) {
+            source = await runTemplater(source);
+          }
+        }
         // create an object out of the arguments
         const file = this.app.vault
           .getFiles()

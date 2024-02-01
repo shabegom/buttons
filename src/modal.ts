@@ -145,7 +145,7 @@ export class ButtonModal extends Modal {
               .addDropdown((drop) => {
               drop.addOption("command", "Default");
               drop.addOption("prepend command", "Prepend");
-              drop.addOption("apped command", "Append");
+              drop.addOption("append command", "Append");
               drop.onChange((value) => {
                 this.outputObject.type = value;
               })

@@ -1,14 +1,15 @@
-import { MarkdownView, App, Notice, TFile } from "obsidian";
+import { App, MarkdownView, Notice, TFile } from "obsidian";
 import { ExtendedBlockCache } from "./types";
 import { getStore } from "./buttonStore";
 import { createContentArray, handleValueArray } from "./utils";
 import { nameModal } from "./nameModal";
+import { Z_FULL_FLUSH } from "node:zlib";
 
 export const removeButton = async (
   app: App,
   remove: string,
   lineStart: number,
-  lineEnd: number
+  lineEnd: number,
 ): Promise<void> => {
   const { contentArray, file } = await createContentArray(app);
   const store = getStore(app.isMobile);
@@ -30,8 +31,7 @@ export const removeButton = async (
     await app.vault.modify(file, content);
   } else {
     handleValueArray(remove, async (argArray) => {
-      const buttons =
-        store &&
+      const buttons = store &&
         store.filter((item: ExtendedBlockCache) => {
           let exists;
           argArray.forEach((arg) => {
@@ -45,8 +45,8 @@ export const removeButton = async (
         let offset = 0;
         buttons.forEach((button: ExtendedBlockCache) => {
           const start = button.position.start.line - offset;
-          const numLines =
-            button.position.end.line - button.position.start.line;
+          const numLines = button.position.end.line -
+            button.position.start.line;
           contentArray.splice(start, numLines + 2);
           offset += numLines + 2;
         });
@@ -59,7 +59,7 @@ export const removeButton = async (
 
 export const removeSection = async (
   app: App,
-  section: string
+  section: string,
 ): Promise<void> => {
   const { contentArray, file } = await createContentArray(app);
   if (section.includes("[") && section.includes("]")) {
@@ -81,7 +81,7 @@ export const removeSection = async (
 export const prependContent = async (
   app: App,
   insert: string,
-  lineStart: number
+  lineStart: number,
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
@@ -99,7 +99,7 @@ export const prependContent = async (
 export const appendContent = async (
   app: App,
   insert: string,
-  lineEnd: number
+  lineEnd: number,
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
@@ -127,7 +127,7 @@ export const appendContent = async (
 export const addContentAtLine = async (
   app: App,
   insert: string,
-  type: string
+  type: string,
 ): Promise<void> => {
   const lineNumber = type.match(/(\d+)/g);
   if (lineNumber[0]) {
@@ -151,49 +151,57 @@ export const createNote = async (
   content: string,
   type: string,
   folder: string,
-  prompt: string
+  prompt: string,
   filePath?: TFile,
-  templater?: string
+  templater?: string,
 ): Promise<void> => {
-  const path = type.match(/\(([\s\S]*?),?\s?(split)?\)/);
+  const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
 
   if (path) {
-    const fullPath = `${path[1]}.md`;
-    const directoryPath = fullPath.substring(0, fullPath.lastIndexOf('/'));
+    let fullPath = `${path[1]}.md`;
+    const fileName = fullPath.substring(fullPath.lastIndexOf("/"));
+
+    // TODO: support folders with "folder" in the name
+    // If a folder is provided in the button args, add it to the path
+    fullPath = folder ? `${folder}/${fullPath}` : fullPath;
+
+    const directoryPath = fullPath.substring(0, fullPath.lastIndexOf("/"));
+    // Check if the directory exists, if not, create it
+    if (directoryPath && !app.vault.getAbstractFileByPath(directoryPath)) {
+      console.log("trying to create folder at: ", directoryPath)
+      await app.vault.createFolder(directoryPath);
+    }
 
     try {
       if (prompt === "true") {
         const promptedName = await new Promise<string>((res) =>
-          new nameModal(app, res, path[1]).open()
+          new nameModal(app, res, fileName).open()
         );
-        path[1] = promptedName ? promptedName : path[1];
-      }
-      path[1] = folder ? `${folder}/${path[1]}` : path[1];
-     
-      // Check if the directory exists, if not, create it
-      if (!app.vault.getAbstractFileByPath(directoryPath)) {
-        await app.vault.createFolder(directoryPath);
+        fullPath = promptedName
+          ? `${directoryPath}/${promptedName}.md`
+          : fullPath;
       }
 
       await app.vault.create(fullPath, content);
       const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
 
-      if (path[2]) {
+      if (path[2] === "split") {
         await app.workspace.splitActiveLeaf().openFile(file);
-      } else if (path[2] == "tab") {
+      } else if (path[2] === "tab") {
         await app.workspace.getLeaf(!0).openFile(file);
       } else {
-        await app.vault.create(`${path[1]}.md`, content);
+        await app.workspace.getLeaf().openFile(file);
       }
-      const file = await app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
-      await app.workspace.getLeaf().openFile(file);
-      if (filePath) {
-        if (templater) {
-          (app as any).plugins.plugins["templater-obsidian"].templater.append_template_to_active_file(filePath);
-        } else {
-          (app as any).internalPlugins?.plugins["templates"].instance.insertTemplate(filePath);
-        }
-      }
+      // I don't know what this was supposed to do...
+      // if (filePath) {
+      //   if (templater) {
+      //     (app as any).plugins.plugins["templater-obsidian"].templater
+      //       .append_template_to_active_file(filePath);
+      //   } else {
+      //     (app as any).internalPlugins?.plugins["templates"].instance
+      //       .insertTemplate(filePath);
+      //   }
+      // }
     } catch (e) {
       console.error("Error in Buttons: ", e);
       new Notice("There was an error! Maybe the file already exists?", 2000);
