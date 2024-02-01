@@ -15,12 +15,13 @@ import {
   getInlineButtonPosition,
   findNumber,
 } from "./parser";
-import { handleValueArray, getNewArgs, runTemplater } from "./utils";
+import { handleValueArray, getNewArgs } from "./utils";
 import {
   getButtonSwapById,
   setButtonSwapById,
   getButtonById,
 } from "./buttonStore";
+import { processTemplate } from "./templater"
 
 export const calculate = async (
   app: App,
@@ -105,10 +106,6 @@ export const template = async (
       templaterPluginEnabled &&
         app.plugins?.plugins[
           "templater-obsidian"
-        ]?.settings.template_folder?.toLowerCase(),
-      templaterPluginEnabled &&
-        app.plugins?.plugins[
-          "templater-obsidian"
         ]?.settings.templates_folder?.toLowerCase(),
     ].filter((folder) => folder);
     const templateFile = args.action.toLowerCase();
@@ -124,23 +121,20 @@ export const template = async (
       return found;
     })[0];
     if (file) {
-      const content = await app.vault.read(file);
+      const content = await processTemplate(file)
       // prepend template above the button
       if (args.type.includes("prepend")) {
         await prependContent(app, content, position.lineStart);
-        await runTemplater(app);
       }
       // append template below the button
       if (args.type.includes("append")) {
         await appendContent(app, content, position.lineEnd);
-        await runTemplater(app);
       }
       if (args.type.includes("note")) {
         createNote(app, content, args.type, args.folder, args.prompt, file, args.templater);
       }
       if (args.type.includes("line")) {
         await addContentAtLine(app, content, args.type);
-        await runTemplater(app);
       }
     } else {
       new Notice(
@@ -259,8 +253,7 @@ export const templater = async (
   if (activeView) {
     await activeView.save();
     const file = activeView.file;
-    const content = await app.vault.cachedRead(file);
-    await runTemplater(app);
+    const content = await processTemplate(file);
     const { args } = await getNewArgs(app, position);
     const cachedData: string[] = [];
     const cacheChange = app.vault.on("modify", (file) => {
