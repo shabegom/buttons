@@ -151,7 +151,7 @@ export const createNote = async (
   content: string,
   type: string,
   folder: string,
-  prompt: string
+  prompt: string,
   filePath?: TFile,
   templater?: string
 ): Promise<void> => {
@@ -185,7 +185,6 @@ export const createNote = async (
       } else {
         await app.vault.create(`${path[1]}.md`, content);
       }
-      const file = await app.vault.getAbstractFileByPath(`${path[1]}.md`) as TFile;
       await app.workspace.getLeaf().openFile(file);
       if (filePath) {
         if (templater) {

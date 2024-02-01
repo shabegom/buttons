@@ -1,17 +1,17 @@
-import { App, Notice, MarkdownView } from "obsidian";
+import { App, MarkdownView, Notice } from "obsidian";
 import { Arguments } from "./types";
 import {
   calculate,
-  remove,
-  replace,
-  template,
-  link,
   command,
   copy,
+  copyText,
+  link,
+  remove,
+  replace,
   swap,
+  template,
   templater,
   text,
-  copyText
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 
@@ -39,16 +39,16 @@ export const createButton = ({
   const button = el.createEl("button", {
     cls: [
       args.class
-      ? `${args.class} ${args.color}`
-      : `button-default ${args.color ? args.color : ""}`,
-      inline ? "button-inline" : ""
-      ]
+        ? `${args.class} ${args.color}`
+        : `button-default ${args.color ? args.color : ""}`,
+      inline ? "button-inline" : "",
+    ],
   });
-  
-  if(args.customcolor) {
+
+  if (args.customcolor) {
     button.style.backgroundColor = args.customcolor;
   }
-  if(args.customtextcolor) {
+  if (args.customtextcolor) {
     button.style.color = args.customtextcolor;
   }
   button.innerHTML = args.name;
@@ -65,21 +65,21 @@ const clickHandler = async (
   app: App,
   args: Arguments,
   inline: boolean,
-  id: string
+  id: string,
 ) => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-   if (args.type === "command") {
-    command(app, args);
+  let content = await app.vault.read(activeView.file);
+  const buttonStart = getButtonPosition(content, args);
+  if (args.type === "command") {
+    command(app, args, buttonStart);
   }
   // handle link buttons
   if (args.type === "link") {
     link(args);
   }
-  let content = await app.vault.read(activeView.file);
   let position = inline
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
-    const buttonStart = getButtonPosition(content,args);
   // handle command buttons
   if (args.templater) {
     args = await templater(app, position);
@@ -102,8 +102,8 @@ const clickHandler = async (
     link(args);
   }
   // handle copy text buttons
-  if(args.type === 'copy') {
-    copyText(args)
+  if (args.type === "copy") {
+    copyText(args);
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {
@@ -127,7 +127,7 @@ const clickHandler = async (
     if (!inline) {
       new Notice("swap args only work in inline buttons for now", 2000);
     } else {
-      await swap(app, args.swap, id, inline, activeView.file);
+      await swap(app, args.swap, id, inline, activeView.file, buttonStart);
     }
   }
   // handle removing the button

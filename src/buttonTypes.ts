@@ -136,7 +136,7 @@ export const template = async (
         await runTemplater(app);
       }
       if (args.type.includes("note")) {
-        createNote(app, content, args.type, file, args.templater args.folder, args.prompt);
+        createNote(app, content, args.type, args.folder, args.prompt, file, args.templater);
       }
       if (args.type.includes("line")) {
         await addContentAtLine(app, content, args.type);
@@ -166,7 +166,7 @@ export const copy = ({ action }: Arguments): void => {
   navigator.clipboard.writeText(action);
 }
 
-export const command = (app: App, { action }: Arguments): void => {
+export const command = (app: App, args: Arguments, buttonStart): void => {
 
   const allCommands = app.commands.listCommands();
   const action = args.action;
@@ -191,7 +191,8 @@ export const swap = async (
   swap: string,
   id: string,
   inline: boolean,
-  file: TFile
+  file: TFile,
+  buttonStart
 ): Promise<void> => {
   handleValueArray(swap, async (argArray) => {
     const swap = await getButtonSwapById(app, id);
@@ -211,7 +212,7 @@ export const swap = async (
         await replace(app, args);
       }
       if (args.type === "command") {
-        command(app, args);
+        command(app, args, buttonStart);
       }
       // handle link buttons
       if (args.type === "link") {
