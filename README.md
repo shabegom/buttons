@@ -1,6 +1,8 @@
 # Obsidian Buttons
 Run commands and open links by clicking on ✨ Buttons ✨
 
+## What are you doing here? Don't use this! [Use the amazing Meta Bind plugin instead.](https://github.com/mProjectsCode/obsidian-meta-bind-plugin)
+
 ## This plugin is seeking people to maintain it. [Reply to this issue if you're interested](https://github.com/shabegom/buttons/issues/179)
 
 ---
