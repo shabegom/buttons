@@ -152,6 +152,7 @@ export const createNote = async (
   folder: string,
   prompt: string,
   filePath: TFile,
+  templater?: string
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
 
@@ -180,13 +181,22 @@ export const createNote = async (
           : fullPath;
       }
 
+      //first we create the file and put the template into it
       if (filePath) {
         const templateContent = await app.vault.read(filePath)
         await app.vault.create(fullPath, templateContent);
       }
 
+      //get the TFile
       const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
+
+      //run templater or built in templates plugin
+      if (filePath && templater) {
       processTemplate(file)
+      } else if (filePath && !templater) {
+          (app as any).internalPlugins?.plugins["templates"].instance
+            .insertTemplate(filePath);
+      }
 
       if (path[2] === "split") {
         await app.workspace.splitActiveLeaf().openFile(file);
