@@ -4,7 +4,6 @@ import {
   calculate,
   command,
   copy,
-  copyText,
   link,
   remove,
   replace,
@@ -92,10 +91,6 @@ const clickHandler = async (
   // handle link buttons
   if (args.type === "link") {
     link(args);
-  }
-  // handle copy text buttons
-  if (args.type === "copy") {
-    copyText(args);
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {

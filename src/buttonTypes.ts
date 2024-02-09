@@ -303,7 +303,3 @@ export const templater = async (
   }
 };
 
-export const copyText = ({ action }: Arguments): void => {
-  navigator.clipboard.writeText(action);
-  new Notice('Text Copied!');
-}
