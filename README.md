@@ -5,8 +5,11 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** February 1st, 2024
+**last updated:** February 9th, 2024
 
+0.5.1 - fixed all those templater issues
+
+0.5.0
 Holy shit, look at all these awesome people that helped improve Buttons!
 
 - Enhancement: Moved to more reliable templater processor ([shabegom])
@@ -331,15 +334,33 @@ Note: swap count is reset if you close the note.
 
 ## Releases
 
+### 0.5.1
+- Bugfix: Templater commands that move, rename, etc should be working again
+- The default templates plugin should be working again
+- sets a default name for a button so problems don't happen.
+
 ### 0.5.0
-
-
+- Enhancement: Moved to more reliable templater processor ([shabegom])
 - Bugfix: buttons now render in Live Preview mode when Obsidian starts ([Lx])
 - Bugfix: improve reliability of `templater` option ([Lx])
-- improve speed of `remove` option ([Lx])
+- Enhancement: improve speed of `remove` option ([Lx])
+- Feature: Add default folder and prompt for name settings ([unxok])
+- Features: Button type copy for "copy text to clipboard", and custom color for button background and tex ([rafa-carmo])
+- Feature: adds hidden attribute to buttons ([Liimurr])
+- Enhancement: Create folder for new note if it doesn't exist ([SabriDW])
+- Bugfix: fix template search with folders having "/" prefixed ([Balake])
+- Feature: Open new tab when creating new file ([0snug0])
+- Update Readme: new note from template ([antulik])
 
 
 [Lx]: https://github.com/Lx
+[unxok]: https://github.com/unxok
+[rafa-carmo]: https://github.com/rafa-carmo
+[Liimurr]: https://github.com/Liimurr
+[SabriDW]: https://github.com/SabriDW
+[Balake]: https://github.com/Balake
+[0snug0]: https://github.com/0snug0 
+[antulik]: https://github.com/antulik
 
 
 ### 0.4.4
