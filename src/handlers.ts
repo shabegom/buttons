@@ -3,7 +3,7 @@ import { ExtendedBlockCache } from "./types";
 import { getStore } from "./buttonStore";
 import { createContentArray, handleValueArray } from "./utils";
 import { nameModal } from "./nameModal";
-import { processTemplate } from "./templater";
+import templater from "./templater";
 
 export const removeButton = async (
   app: App,
@@ -152,7 +152,6 @@ export const createNote = async (
   folder: string,
   prompt: string,
   filePath: TFile,
-  templater?: string
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
 
@@ -181,22 +180,12 @@ export const createNote = async (
           : fullPath;
       }
 
-      //first we create the file and put the template into it
-      if (filePath) {
         const templateContent = await app.vault.read(filePath)
-        await app.vault.create(fullPath, templateContent);
-      }
-
-      //get the TFile
-      const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
-
-      //run templater or built in templates plugin
-      if (filePath && templater) {
-      processTemplate(file)
-      } else if (filePath && !templater) {
-          (app as any).internalPlugins?.plugins["templates"].instance
-            .insertTemplate(filePath);
-      }
+        const file = await app.vault.create(fullPath, templateContent);
+        const runTemplater = await templater(file)
+        const content = await app.vault.read(file)
+        const processed = await runTemplater(content)
+        await app.vault.modify(file, processed)
 
       if (path[2] === "split") {
         await app.workspace.splitActiveLeaf().openFile(file);
@@ -205,15 +194,6 @@ export const createNote = async (
       } else {
         await app.workspace.getLeaf().openFile(file);
       }
-      // if (filePath) {
-      //   if (templater) {
-      //     (app as any).plugins.plugins["templater-obsidian"].templater
-      //       .append_template_to_active_file(filePath);
-      //   } else {
-      //     (app as any).internalPlugins?.plugins["templates"].instance
-      //       .insertTemplate(filePath);
-      //   }
-      // }
     } catch (e) {
       console.error("Error in Buttons: ", e);
       new Notice("There was an error! Maybe the file already exists?", 2000);
