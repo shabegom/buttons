@@ -3,7 +3,7 @@ import { ExtendedBlockCache } from "./types";
 import { getStore } from "./buttonStore";
 import { createContentArray, handleValueArray } from "./utils";
 import { nameModal } from "./nameModal";
-import { Z_FULL_FLUSH } from "node:zlib";
+import { processTemplate } from "./templater";
 
 export const removeButton = async (
   app: App,
@@ -148,12 +148,10 @@ export const addContentAtLine = async (
 
 export const createNote = async (
   app: App,
-  content: string,
   type: string,
   folder: string,
   prompt: string,
-  filePath?: TFile,
-  templater?: string,
+  filePath: TFile,
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
 
@@ -182,8 +180,13 @@ export const createNote = async (
           : fullPath;
       }
 
-      await app.vault.create(fullPath, content);
+      if (filePath) {
+        const templateContent = await app.vault.read(filePath)
+        await app.vault.create(fullPath, templateContent);
+      }
+
       const file = app.vault.getAbstractFileByPath(fullPath) as TFile;
+      processTemplate(file)
 
       if (path[2] === "split") {
         await app.workspace.splitActiveLeaf().openFile(file);
@@ -192,7 +195,6 @@ export const createNote = async (
       } else {
         await app.workspace.getLeaf().openFile(file);
       }
-      // I don't know what this was supposed to do...
       // if (filePath) {
       //   if (templater) {
       //     (app as any).plugins.plugins["templater-obsidian"].templater
