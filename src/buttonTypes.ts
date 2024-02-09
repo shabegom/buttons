@@ -76,17 +76,17 @@ export const text = async (
 ): Promise<void> => {
   // prepend template above the button
   if (args.type.includes("prepend")) {
-    await prependContent(app, args.action, position.lineStart);
+    await prependContent(app, args.action, position.lineStart, false);
   }
   // append template below the button
   if (args.type.includes("append")) {
-    await appendContent(app, args.action, position.lineEnd);
+    await appendContent(app, args.action, position.lineEnd, false);
   }
   if (args.type.includes("note")) {
     createNote(app, args.type, args.folder, args.prompt, args.action, false);
   }
   if (args.type.includes("line")) {
-    await addContentAtLine(app, args.action, args.type);
+    await addContentAtLine(app, args.action, args.type, false);
   }
 };
 
@@ -137,26 +137,17 @@ export const template = async (
     if (file) {
       // prepend template above the button
       if (args.type.includes("prepend")) {
-      const processTemplate = await createTemplater(file)
-      const templateContent = await app.vault.read(file)
-      const content = await processTemplate(templateContent)
-        await prependContent(app, content, position.lineStart);
+        await prependContent(app, file, position.lineStart, isTemplater);
       }
       // append template below the button
       if (args.type.includes("append")) {
-      const processTemplate = await createTemplater(file)
-      const templateContent = await app.vault.read(file)
-      const content = await processTemplate(templateContent)
-        await appendContent(app, content, position.lineEnd);
+        await appendContent(app, file, position.lineEnd, isTemplater);
       }
       if (args.type.includes("note")) {
         createNote(app, args.type, args.folder, args.prompt, file, isTemplater);
       }
       if (args.type.includes("line")) {
-      const processTemplate = await createTemplater(file)
-      const templateContent = await app.vault.read(file)
-      const content = await processTemplate(templateContent)
-        await addContentAtLine(app, content, args.type);
+        await addContentAtLine(app, file, args.type, isTemplater);
       }
     } else {
       new Notice(

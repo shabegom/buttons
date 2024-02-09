@@ -9,6 +9,7 @@ interface Item {
 
 async function templater(file?: TFile): Promise<RunTemplater | undefined> {
   const activeFile = file ? file : app.workspace.getActiveFile();
+  console.log(activeFile)
   const config = {
     template_file: activeFile,
     active_file: activeFile,

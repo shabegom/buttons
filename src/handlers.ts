@@ -80,15 +80,29 @@ export const removeSection = async (
 
 export const prependContent = async (
   app: App,
-  insert: string,
+  insert: string | TFile,
   lineStart: number,
+  isTemplater: boolean,
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
     const file = activeView.file;
     let content = await app.vault.read(file);
     const contentArray = content.split("\n");
-    contentArray.splice(lineStart, 0, insert);
+    if (typeof insert === "string") {
+      contentArray.splice(lineStart, 0, `${insert}`);
+    } else {
+      if (isTemplater) {
+        const runTemplater = await templater(insert);
+        const content = await app.vault.read(insert);
+        const processed = await runTemplater(content);
+        contentArray.splice(lineStart, 0, `${processed}`);
+      } else {
+        app.workspace.getActiveFileView().editor.setCursor(lineStart)
+        await (app as any).internalPlugins?.plugins["templates"].instance
+          .insertTemplate(insert);
+      }
+    }
     content = contentArray.join("\n");
     await app.vault.modify(file, content);
   } else {
@@ -98,8 +112,9 @@ export const prependContent = async (
 
 export const appendContent = async (
   app: App,
-  insert: string,
+  insert: any,
   lineEnd: number,
+  isTemplater: boolean,
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
@@ -112,11 +127,23 @@ export const appendContent = async (
       contentArray[lineEnd + 1].includes("^button")
     ) {
       insertionPoint = lineEnd + 2;
-      insert = `\n${insert}`;
     } else {
       insertionPoint = lineEnd + 1;
     }
-    contentArray.splice(insertionPoint, 0, `${insert}`);
+    if (typeof insert === "string") {
+      contentArray.splice(insertionPoint, 0, `\n${insert}`);
+    } else {
+      if (isTemplater) {
+        const runTemplater = await templater(insert);
+        const content = await app.vault.read(insert);
+        const processed = await runTemplater(content);
+        contentArray.splice(insertionPoint, 0, `${processed}`);
+      } else {
+        app.workspace.getActiveFileView().editor.setCursor(insertionPoint)
+        await (app as any).internalPlugins?.plugins["templates"].instance
+          .insertTemplate(insert);
+      }
+    }
     content = contentArray.join("\n");
     await app.vault.modify(file, content);
   } else {
@@ -126,8 +153,9 @@ export const appendContent = async (
 
 export const addContentAtLine = async (
   app: App,
-  insert: string,
+  insert: string | TFile,
   type: string,
+  isTemplater: boolean,
 ): Promise<void> => {
   const lineNumber = type.match(/(\d+)/g);
   if (lineNumber[0]) {
@@ -137,7 +165,20 @@ export const addContentAtLine = async (
       const file = activeView.file;
       let content = await app.vault.read(file);
       const contentArray = content.split("\n");
-      contentArray.splice(insertionPoint, 0, `${insert}`);
+      if (typeof insert === "string") {
+        contentArray.splice(insertionPoint, 0, `${insert}`);
+      } else {
+        if (isTemplater) {
+          const runTemplater = await templater(insert);
+          const content = await app.vault.read(insert);
+          const processed = await runTemplater(content);
+          contentArray.splice(insertionPoint, 0, `${processed}`);
+        } else {
+        app.workspace.getActiveFileView().editor.setCursor(insertionPoint)
+          await (app as any).internalPlugins?.plugins["templates"].instance
+            .insertTemplate(insert);
+        }
+      }
       content = contentArray.join("\n");
       await app.vault.modify(file, content);
     }
@@ -183,19 +224,19 @@ export const createNote = async (
       let file: TFile;
 
       if (typeof filePath === "string") {
-        file = await app.vault.create(fullPath, filePath)
+        file = await app.vault.create(fullPath, filePath);
       }
 
       const templateContent = await app.vault.read(filePath as TFile);
       if (isTemplater) {
-       file = await app.vault.create(fullPath, templateContent);
+        file = await app.vault.create(fullPath, templateContent);
         const runTemplater = await templater(file);
         const content = await app.vault.read(file);
         const processed = await runTemplater(content);
         await app.vault.modify(file, processed);
       }
       if (!isTemplater && typeof filePath !== "string") {
-        file = await app.vault.create(fullPath, "")
+        file = await app.vault.create(fullPath, "");
       }
 
       if (path[2] === "split") {
@@ -206,7 +247,8 @@ export const createNote = async (
         await app.workspace.getLeaf().openFile(file);
       }
       if (!isTemplater && typeof filePath !== "string") {
-         await (app as any).internalPlugins?.plugins["templates"].instance.insertTemplate(filePath);
+        await (app as any).internalPlugins?.plugins["templates"].instance
+          .insertTemplate(filePath);
       }
     } catch (e) {
       console.error("Error in Buttons: ", e);
