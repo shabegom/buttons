@@ -21,7 +21,7 @@ import {
   setButtonSwapById,
   getButtonById,
 } from "./buttonStore";
-import { processTemplate } from "./templater"
+import createTemplater from "./templater"
 
 export const calculate = async (
   app: App,
@@ -83,7 +83,7 @@ export const text = async (
     await appendContent(app, args.action, position.lineEnd);
   }
   if (args.type.includes("note")) {
-    createNote(app, args.action, args.type, args.folder, args.prompt);
+    createNote(app, args.type, args.folder, args.prompt, args.action, false);
   }
   if (args.type.includes("line")) {
     await addContentAtLine(app, args.action, args.type);
@@ -104,7 +104,6 @@ export const template = async (
 
   if (templatesEnabled || templaterPluginEnabled) {
   if (templatesEnabled) {
-      console.log("searching internal templates plugin folder")
     const folder: string = 
       templatesEnabled &&
         app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase()
@@ -119,7 +118,6 @@ export const template = async (
   }
 
   if (!file && templaterPluginEnabled) {
-    console.log('searching templater folder')
     const folder: string = 
       templaterPluginEnabled &&
         app.plugins?.plugins[
@@ -139,20 +137,25 @@ export const template = async (
     if (file) {
       // prepend template above the button
       if (args.type.includes("prepend")) {
-      const content = await processTemplate(file)
+      const processTemplate = await createTemplater(file)
+      const templateContent = await app.vault.read(file)
+      const content = await processTemplate(templateContent)
         await prependContent(app, content, position.lineStart);
       }
       // append template below the button
       if (args.type.includes("append")) {
-      const content = await processTemplate(file)
+      const processTemplate = await createTemplater(file)
+      const templateContent = await app.vault.read(file)
+      const content = await processTemplate(templateContent)
         await appendContent(app, content, position.lineEnd);
       }
       if (args.type.includes("note")) {
-        console.log(isTemplater)
         createNote(app, args.type, args.folder, args.prompt, file, isTemplater);
       }
       if (args.type.includes("line")) {
-      const content = await processTemplate(file)
+      const processTemplate = await createTemplater(file)
+      const templateContent = await app.vault.read(file)
+      const content = await processTemplate(templateContent)
         await addContentAtLine(app, content, args.type);
       }
     } else {

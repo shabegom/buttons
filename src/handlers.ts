@@ -151,7 +151,7 @@ export const createNote = async (
   type: string,
   folder: string,
   prompt: string,
-  filePath: TFile,
+  filePath: TFile | string,
   isTemplater?: boolean,
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
@@ -182,7 +182,11 @@ export const createNote = async (
       }
       let file: TFile;
 
-      const templateContent = await app.vault.read(filePath);
+      if (typeof filePath === "string") {
+        file = await app.vault.create(fullPath, filePath)
+      }
+
+      const templateContent = await app.vault.read(filePath as TFile);
       if (isTemplater) {
        file = await app.vault.create(fullPath, templateContent);
         const runTemplater = await templater(file);
@@ -190,7 +194,7 @@ export const createNote = async (
         const processed = await runTemplater(content);
         await app.vault.modify(file, processed);
       }
-      if (!isTemplater) {
+      if (!isTemplater && typeof filePath !== "string") {
         file = await app.vault.create(fullPath, "")
       }
 
@@ -201,7 +205,7 @@ export const createNote = async (
       } else {
         await app.workspace.getLeaf().openFile(file);
       }
-      if (!isTemplater) {
+      if (!isTemplater && typeof filePath !== "string") {
          await (app as any).internalPlugins?.plugins["templates"].instance.insertTemplate(filePath);
       }
     } catch (e) {
