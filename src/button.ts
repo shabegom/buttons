@@ -9,7 +9,6 @@ import {
   replace,
   swap,
   template,
-  templater,
   text,
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
