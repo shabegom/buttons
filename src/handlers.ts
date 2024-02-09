@@ -152,6 +152,7 @@ export const createNote = async (
   folder: string,
   prompt: string,
   filePath: TFile,
+  isTemplater?: boolean,
 ): Promise<void> => {
   const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
 
@@ -166,7 +167,7 @@ export const createNote = async (
     const directoryPath = fullPath.substring(0, fullPath.lastIndexOf("/"));
     // Check if the directory exists, if not, create it
     if (directoryPath && !app.vault.getAbstractFileByPath(directoryPath)) {
-      console.log("trying to create folder at: ", directoryPath)
+      console.log("trying to create folder at: ", directoryPath);
       await app.vault.createFolder(directoryPath);
     }
 
@@ -179,13 +180,19 @@ export const createNote = async (
           ? `${directoryPath}/${promptedName}.md`
           : fullPath;
       }
+      let file: TFile;
 
-        const templateContent = await app.vault.read(filePath)
-        const file = await app.vault.create(fullPath, templateContent);
-        const runTemplater = await templater(file)
-        const content = await app.vault.read(file)
-        const processed = await runTemplater(content)
-        await app.vault.modify(file, processed)
+      const templateContent = await app.vault.read(filePath);
+      if (isTemplater) {
+       file = await app.vault.create(fullPath, templateContent);
+        const runTemplater = await templater(file);
+        const content = await app.vault.read(file);
+        const processed = await runTemplater(content);
+        await app.vault.modify(file, processed);
+      }
+      if (!isTemplater) {
+        file = await app.vault.create(fullPath, "")
+      }
 
       if (path[2] === "split") {
         await app.workspace.splitActiveLeaf().openFile(file);
@@ -193,6 +200,9 @@ export const createNote = async (
         await app.workspace.getLeaf(!0).openFile(file);
       } else {
         await app.workspace.getLeaf().openFile(file);
+      }
+      if (!isTemplater) {
+         await (app as any).internalPlugins?.plugins["templates"].instance.insertTemplate(filePath);
       }
     } catch (e) {
       console.error("Error in Buttons: ", e);

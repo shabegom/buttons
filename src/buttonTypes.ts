@@ -97,43 +97,62 @@ export const template = async (
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   const templaterPluginEnabled = app.plugins.plugins["templater-obsidian"];
+  let isTemplater = false
+  const templateFile = args.action.toLowerCase();
+  const allFiles = app.vault.getFiles();
+  let file = null
 
-  // only run if templates plugin is enabled
   if (templatesEnabled || templaterPluginEnabled) {
-    const folders: string[] = [
+  if (templatesEnabled) {
+      console.log("searching internal templates plugin folder")
+    const folder: string = 
       templatesEnabled &&
-        app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
-      templaterPluginEnabled &&
-        app.plugins?.plugins[
-          "templater-obsidian"
-        ]?.settings.templates_folder?.toLowerCase(),
-    ].filter((folder) => folder);
-    const templateFile = args.action.toLowerCase();
-    const allFiles = app.vault.getFiles();
-    const file: TFile = allFiles.filter((file) => {
+        app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase()
+    const isFound = allFiles.filter((file) => {
       let found = false;
-      folders[0] &&
-        folders.forEach((folder) => {
           if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
             found = true;
           }
-        });
+        return found
+    })
+      file = isFound[0]
+  }
+
+  if (!file && templaterPluginEnabled) {
+    console.log('searching templater folder')
+    const folder: string = 
+      templaterPluginEnabled &&
+        app.plugins?.plugins[
+          "templater-obsidian"
+        ]?.settings.templates_folder?.toLowerCase()
+    const isFound = allFiles.filter((file) => {
+      let found = false;
+          if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
+            found = true;
+            isTemplater = true;
+          }
       return found;
-    })[0];
+    })
+      file = isFound[0]
+  }
+
     if (file) {
-      const content = await processTemplate(file)
       // prepend template above the button
       if (args.type.includes("prepend")) {
+      const content = await processTemplate(file)
         await prependContent(app, content, position.lineStart);
       }
       // append template below the button
       if (args.type.includes("append")) {
+      const content = await processTemplate(file)
         await appendContent(app, content, position.lineEnd);
       }
       if (args.type.includes("note")) {
-        createNote(app, args.type, args.folder, args.prompt, file);
+        console.log(isTemplater)
+        createNote(app, args.type, args.folder, args.prompt, file, isTemplater);
       }
       if (args.type.includes("line")) {
+      const content = await processTemplate(file)
         await addContentAtLine(app, content, args.type);
       }
     } else {
