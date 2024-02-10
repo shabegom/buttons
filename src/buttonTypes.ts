@@ -21,7 +21,7 @@ import {
   setButtonSwapById,
   getButtonById,
 } from "./buttonStore";
-import createTemplater from "./templater"
+import {processTemplate} from "./templater"
 
 export const calculate = async (
   app: App,

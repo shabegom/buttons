@@ -93,12 +93,12 @@ export const prependContent = async (
       contentArray.splice(lineStart, 0, `${insert}`);
     } else {
       if (isTemplater) {
-        const runTemplater = await templater(insert);
+        const runTemplater = await templater(insert, file);
         const content = await app.vault.read(insert);
         const processed = await runTemplater(content);
         contentArray.splice(lineStart, 0, `${processed}`);
       } else {
-        app.workspace.getActiveFileView().editor.setCursor(lineStart)
+        activeView.editor.setCursor(lineStart)
         await (app as any).internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
       }
@@ -134,12 +134,12 @@ export const appendContent = async (
       contentArray.splice(insertionPoint, 0, `\n${insert}`);
     } else {
       if (isTemplater) {
-        const runTemplater = await templater(insert);
+        const runTemplater = await templater(insert, file);
         const content = await app.vault.read(insert);
         const processed = await runTemplater(content);
         contentArray.splice(insertionPoint, 0, `${processed}`);
       } else {
-        app.workspace.getActiveFileView().editor.setCursor(insertionPoint)
+        activeView.editor.setCursor(insertionPoint)
         await (app as any).internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
       }
@@ -169,12 +169,12 @@ export const addContentAtLine = async (
         contentArray.splice(insertionPoint, 0, `${insert}`);
       } else {
         if (isTemplater) {
-          const runTemplater = await templater(insert);
+          const runTemplater = await templater(insert, file);
           const content = await app.vault.read(insert);
           const processed = await runTemplater(content);
           contentArray.splice(insertionPoint, 0, `${processed}`);
         } else {
-        app.workspace.getActiveFileView().editor.setCursor(insertionPoint)
+        activeView.editor.setCursor(insertionPoint)
           await (app as any).internalPlugins?.plugins["templates"].instance
             .insertTemplate(insert);
         }
@@ -227,11 +227,12 @@ export const createNote = async (
         file = await app.vault.create(fullPath, filePath);
       }
 
+
       const templateContent = await app.vault.read(filePath as TFile);
       if (isTemplater) {
         file = await app.vault.create(fullPath, templateContent);
-        const runTemplater = await templater(file);
-        const content = await app.vault.read(file);
+        const runTemplater = await templater(filePath, file);
+        const content = await app.vault.read(filePath);
         const processed = await runTemplater(content);
         await app.vault.modify(file, processed);
       }
