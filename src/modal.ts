@@ -64,7 +64,7 @@ export class ButtonModal extends Modal {
   }
 
   private outputObject = {
-    name: "",
+    name: "My Awesome Button",
     type: "",
     action: "",
     swap: "",
