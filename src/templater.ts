@@ -44,7 +44,6 @@ async function templater(
       functions.user[key] = value;
     });
   }
-  console.log(functions);
   return async (command: string) => {
     return await templater.parser.parse_commands(command, functions);
   };
