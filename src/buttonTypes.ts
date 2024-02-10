@@ -21,7 +21,7 @@ import {
   setButtonSwapById,
   getButtonById,
 } from "./buttonStore";
-import { processTemplate } from "./templater"
+import {processTemplate} from "./templater"
 
 export const calculate = async (
   app: App,
@@ -76,17 +76,17 @@ export const text = async (
 ): Promise<void> => {
   // prepend template above the button
   if (args.type.includes("prepend")) {
-    await prependContent(app, args.action, position.lineStart);
+    await prependContent(app, args.action, position.lineStart, false);
   }
   // append template below the button
   if (args.type.includes("append")) {
-    await appendContent(app, args.action, position.lineEnd);
+    await appendContent(app, args.action, position.lineEnd, false);
   }
   if (args.type.includes("note")) {
-    createNote(app, args.action, args.type, args.folder, args.prompt);
+    createNote(app, args.type, args.folder, args.prompt, args.action, false);
   }
   if (args.type.includes("line")) {
-    await addContentAtLine(app, args.action, args.type);
+    await addContentAtLine(app, args.action, args.type, false);
   }
 };
 
@@ -97,44 +97,57 @@ export const template = async (
 ): Promise<void> => {
   const templatesEnabled = app.internalPlugins.plugins.templates.enabled;
   const templaterPluginEnabled = app.plugins.plugins["templater-obsidian"];
+  let isTemplater = false
+  const templateFile = args.action.toLowerCase();
+  const allFiles = app.vault.getFiles();
+  let file = null
 
-  // only run if templates plugin is enabled
   if (templatesEnabled || templaterPluginEnabled) {
-    const folders: string[] = [
+  if (templatesEnabled) {
+    const folder: string = 
       templatesEnabled &&
-        app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase(),
-      templaterPluginEnabled &&
-        app.plugins?.plugins[
-          "templater-obsidian"
-        ]?.settings.templates_folder?.toLowerCase(),
-    ].filter((folder) => folder);
-    const templateFile = args.action.toLowerCase();
-    const allFiles = app.vault.getFiles();
-    const file: TFile = allFiles.filter((file) => {
+        app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase()
+    const isFound = allFiles.filter((file) => {
       let found = false;
-      folders[0] &&
-        folders.forEach((folder) => {
           if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
             found = true;
           }
-        });
+        return found
+    })
+      file = isFound[0]
+  }
+
+  if (!file && templaterPluginEnabled) {
+    const folder: string = 
+      templaterPluginEnabled &&
+        app.plugins?.plugins[
+          "templater-obsidian"
+        ]?.settings.templates_folder?.toLowerCase()
+    const isFound = allFiles.filter((file) => {
+      let found = false;
+          if (file.path.toLowerCase() === `${folder}/${templateFile}.md`) {
+            found = true;
+            isTemplater = true;
+          }
       return found;
-    })[0];
+    })
+      file = isFound[0]
+  }
+
     if (file) {
-      const content = await processTemplate(file)
       // prepend template above the button
       if (args.type.includes("prepend")) {
-        await prependContent(app, content, position.lineStart);
+        await prependContent(app, file, position.lineStart, isTemplater);
       }
       // append template below the button
       if (args.type.includes("append")) {
-        await appendContent(app, content, position.lineEnd);
+        await appendContent(app, file, position.lineEnd, isTemplater);
       }
       if (args.type.includes("note")) {
-        createNote(app, content, args.type, args.folder, args.prompt, file, args.templater);
+        createNote(app, args.type, args.folder, args.prompt, file, isTemplater);
       }
       if (args.type.includes("line")) {
-        await addContentAtLine(app, content, args.type);
+        await addContentAtLine(app, file, args.type, isTemplater);
       }
     } else {
       new Notice(
@@ -303,7 +316,3 @@ export const templater = async (
   }
 };
 
-export const copyText = ({ action }: Arguments): void => {
-  navigator.clipboard.writeText(action);
-  new Notice('Text Copied!');
-}

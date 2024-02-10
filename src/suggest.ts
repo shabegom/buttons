@@ -233,7 +233,7 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
         folders.push(folder.toLowerCase());
       }
       if (this.templaterPlugin) {
-        const folder = this.templaterPlugin.settings.template_folder;
+        const folder = this.templaterPlugin.settings.templates_folder;
         if (folder) {
           folders.push(folder.toLowerCase());
         }
