@@ -58,7 +58,7 @@ const clickHandler = async (
   inline: boolean,
   id: string
 ) => {
-  const activeView = app.workspace.getActiveViewOfType(MarkdownView);
+  const activeView = app.workspace.getActiveViewOfType(ItemView);
   let content = await app.vault.read(activeView.file);
   let position = inline
     ? await getInlineButtonPosition(app, id)
