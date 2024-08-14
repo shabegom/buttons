@@ -115,6 +115,11 @@ button.purple {
   background: #725585;
 }
 
+button.orange{
+    background: #ff944c;
+    color: black;
+}
+
 button.blue:hover {
   background: #76b3fa;
   color: black;
@@ -135,6 +140,11 @@ button.yellow:hover {
 
 button.purple:hover {
   background: #725585;
+}
+
+button.orange:hover {
+    background: #ff944c;
+    color: black;
 }
 
 .button-maker {
