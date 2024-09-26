@@ -11,6 +11,7 @@ export const initializeButtonStore = (app: App, storeEvents: Events): void => {
   const files = app.vault.getMarkdownFiles();
   const blocksArr = files
     .map((file) => {
+      if (!file) file = app.workspace.getActiveFile();
       const cache = app.metadataCache.getFileCache(file);
       return buildButtonArray(cache, file);
     })
@@ -22,6 +23,7 @@ export const initializeButtonStore = (app: App, storeEvents: Events): void => {
 };
 
 export const addButtonToStore = (app: App, file: TFile): void => {
+  if (!file) file = app.workspace.getActiveFile();
   const cache = app.metadataCache.getFileCache(file);
   const buttons = buildButtonArray(cache, file);
   const store = getStore(app.isMobile);
