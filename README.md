@@ -50,7 +50,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
     - **Link:** Click the Button to open a URL or URI.
     - **Calculate:** Click the Button to run a math calculation. Calculate Buttons can reference lines from the note.
     - **Template:** Click the Button to prepend, append, insert, or create a new note from a template note.
-    - **Text:** Clock the Button to prepend, append, insert, or create a new note with specified text.
+    - **Text:** Click the Button to prepend, append, insert, or create a new note with specified text.
     - **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click.
 - **Action:** Depending on what **Button Type** you choose, you will choose an Action to perform:
     - **Command:** Choose the Command Palette Command to run.
