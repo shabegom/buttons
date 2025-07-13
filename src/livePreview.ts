@@ -10,7 +10,7 @@ import {
 import { EditorSelection, Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { getButtonById } from "./buttonStore";
-import { getButtonPosition, getInlineButtonPosition } from "./parser";
+import { getInlineButtonPosition } from "./parser";
 import { 
   command, 
   copy, 
@@ -168,12 +168,12 @@ class ButtonWidget extends WidgetType {
       return;
     }
     
-    let content = await this.app.vault.read(activeFile);
-    const buttonStart = getButtonPosition(content, args);
+    const buttonStart = await getInlineButtonPosition(this.app, this.id);
     let position = await getInlineButtonPosition(this.app, this.id);
+    let content: string;
     
     if (args.replace) {
-      replace(this.app, args);
+      await replace(this.app, args);
     }
 
     if (args.type && args.type.includes("command")) {
