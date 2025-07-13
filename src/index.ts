@@ -105,9 +105,14 @@ export default class ButtonsPlugin extends Plugin {
       "button",
       async (source, el, ctx) => {
         if (source.includes("<%")) {
-          const runTemplater = await templater();
-          if (runTemplater) {
-            source = await runTemplater(source);
+          const file = this.app.vault
+            .getFiles()
+            .find((f) => f.path === ctx.sourcePath);
+          if (file) {
+            const runTemplater = await templater(file, file);
+            if (runTemplater) {
+              source = await runTemplater(source);
+            }
           }
         }
         // create an object out of the arguments

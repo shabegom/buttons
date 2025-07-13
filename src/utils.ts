@@ -133,7 +133,7 @@ export const runTemplater = (
   content: string;
 }> =>
   new Promise((resolve) => {
-    const ref = app.workspace.on(
+    const ref = (app.workspace as any).on(
       "templater:overwrite-file",
       (file: TFile, content: string) => {
         app.workspace.offref(ref);

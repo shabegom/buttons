@@ -231,8 +231,8 @@ export const createNote = async (
       const templateContent = await app.vault.read(filePath as TFile);
       if (isTemplater) {
         file = await app.vault.create(fullPath, templateContent);
-        const runTemplater = await templater(filePath, file);
-        const content = await app.vault.read(filePath);
+        const runTemplater = await templater(filePath as TFile, file);
+        const content = await app.vault.read(filePath as TFile);
         const processed = await runTemplater(content);
         await app.vault.modify(file, processed);
       }

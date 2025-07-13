@@ -52,7 +52,7 @@ export const calculate = async (
     });
   }
   const fun = equation && mexp.eval(equation);
-  fun && appendContent(app, `Result: ${fun}`, position.lineEnd);
+  fun && appendContent(app, `Result: ${fun}`, position.lineEnd, false);
 };
 
 export const remove = async (
@@ -173,7 +173,7 @@ export const copy = ({ action }: Arguments): void => {
   navigator.clipboard.writeText(action);
 }
 
-export const command = (app: App, args: Arguments, buttonStart): void => {
+export const command = (app: App, args: Arguments, buttonStart: any): void => {
 
   const allCommands = app.commands.listCommands();
   const action = args.action;
@@ -199,7 +199,7 @@ export const swap = async (
   id: string,
   inline: boolean,
   file: TFile,
-  buttonStart
+  buttonStart: any
 ): Promise<void> => {
   handleValueArray(swap, async (argArray) => {
     const swap = await getButtonSwapById(app, id);
