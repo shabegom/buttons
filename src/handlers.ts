@@ -93,7 +93,7 @@ export const prependContent = async (
       contentArray.splice(lineStart, 0, `${insert}`);
     } else {
       if (isTemplater) {
-        const runTemplater = await templater(insert, file);
+        const runTemplater = await templater(app, insert, file);
         const content = await app.vault.read(insert);
         const processed = await runTemplater(content);
         contentArray.splice(lineStart, 0, `${processed}`);
@@ -134,7 +134,7 @@ export const appendContent = async (
       contentArray.splice(insertionPoint, 0, `\n${insert}`);
     } else {
       if (isTemplater) {
-        const runTemplater = await templater(insert, file);
+        const runTemplater = await templater(app, insert, file);
         const content = await app.vault.read(insert);
         const processed = await runTemplater(content);
         contentArray.splice(insertionPoint, 0, `${processed}`);
@@ -169,7 +169,7 @@ export const addContentAtLine = async (
         contentArray.splice(insertionPoint, 0, `${insert}`);
       } else {
         if (isTemplater) {
-          const runTemplater = await templater(insert, file);
+          const runTemplater = await templater(app, insert, file);
           const content = await app.vault.read(insert);
           const processed = await runTemplater(content);
           contentArray.splice(insertionPoint, 0, `${processed}`);
@@ -231,7 +231,7 @@ export const createNote = async (
       const templateContent = await app.vault.read(filePath as TFile);
       if (isTemplater) {
         file = await app.vault.create(fullPath, templateContent);
-        const runTemplater = await templater(filePath as TFile, file);
+        const runTemplater = await templater(app, filePath as TFile, file);
         const content = await app.vault.read(filePath as TFile);
         const processed = await runTemplater(content);
         await app.vault.modify(file, processed);

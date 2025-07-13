@@ -104,16 +104,23 @@ export default class ButtonsPlugin extends Plugin {
     this.registerMarkdownCodeBlockProcessor(
       "button",
       async (source, el, ctx) => {
-        if (source.includes("<%")) {
-          const runTemplater = await templater();
-          if (runTemplater) {
-            source = await runTemplater(source);
-          }
-        }
         // create an object out of the arguments
         const file = this.app.vault
           .getFiles()
           .find((f) => f.path === ctx.sourcePath);
+        
+        if (source.includes("<%") && file) {
+          try {
+            const runTemplater = await templater(this.app, file, file);
+            if (runTemplater) {
+              source = await runTemplater(source);
+            }
+          } catch (error) {
+            console.error('Error processing templater in button:', error);
+            // Continue with original source if templater fails
+          }
+        }
+        
         addButtonToStore(this.app, file);
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
