@@ -1,4 +1,4 @@
-import { App } from "obsidian";
+import { App, MarkdownView, Notice } from "obsidian";
 import {
   Decoration,
   DecorationSet,
@@ -10,7 +10,18 @@ import {
 import { EditorSelection, Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { getButtonById } from "./buttonStore";
-import { createButton } from "./button";
+import { getButtonPosition, getInlineButtonPosition } from "./parser";
+import { 
+  command, 
+  copy, 
+  link, 
+  template, 
+  calculate, 
+  text, 
+  swap, 
+  remove,
+  replace
+} from "./buttonTypes";
 
 // Check if selection and range overlap (from DataView plugin)
 export function selectionAndRangeOverlap(
@@ -99,21 +110,12 @@ class ButtonWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
-    // Asynchronously get the button data and create the button
+    // Asynchronously get the button data and set up the button
     getButtonById(this.app, this.id).then((args) => {
       if (args) {
         const name = args.name;
         const className = args.class;
         const color = args.color;
-        
-        // Create the button element
-        const buttonEl = createButton({
-          app: this.app,
-          el: this.el,
-          args,
-          inline: true,
-          id: this.id,
-        });
         
         // Update the button element with the proper styling
         this.el.innerText = name || "";
@@ -125,10 +127,57 @@ class ButtonWidget extends WidgetType {
           this.el.addClass(color);
         }
         
-        // Set up the click handler
-        this.el.onclick = () => {
-          if (buttonEl && buttonEl.onclick) {
-            buttonEl.onclick(new MouseEvent('click'));
+        // Set up the click handler by directly implementing the click handler logic
+        this.el.onclick = async () => {
+          // Replicate the clickHandler logic from button.ts
+          const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+          const activeFile = activeView?.file || this.app.workspace.getActiveFile();
+          
+          if (!activeFile) {
+            new Notice("No active file found. Buttons can only be used with files.");
+            return;
+          }
+          
+          let content = await this.app.vault.read(activeFile);
+          const buttonStart = getButtonPosition(content, args);
+          let position = await getInlineButtonPosition(this.app, this.id);
+          
+          if (args.replace) {
+            replace(this.app, args);
+          }
+
+          if (args.type && args.type.includes("command")) {
+            command(this.app, args, buttonStart);
+          }
+          if (args.type === "copy") {
+            copy(args);
+          }
+          // handle link buttons
+          if (args.type === "link") {
+            link(args);
+          }
+          // handle template buttons
+          if (args.type && args.type.includes("template")) {
+            content = await this.app.vault.read(activeFile);
+            position = await getInlineButtonPosition(this.app, this.id);
+            await template(this.app, args, position);
+          }
+          if (args.type === "calculate") {
+            await calculate(this.app, args, position);
+          }
+          if (args.type && args.type.includes("text")) {
+            content = await this.app.vault.read(activeFile);
+            position = await getInlineButtonPosition(this.app, this.id);
+            await text(this.app, args, position);
+          }
+          if (args.swap) {
+            await swap(this.app, args.swap, this.id, true, activeFile, buttonStart);
+          }
+          // handle removing the button
+          if (args.remove) {
+            content = await this.app.vault.read(activeFile);
+            position = await getInlineButtonPosition(this.app, this.id);
+            await remove(this.app, args, position);
           }
         };
       } else {
