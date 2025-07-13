@@ -1,6 +1,6 @@
 export const checkVersion = () => {
   const savedVersion = localStorage.getItem("buttonsVersion");
-  const installedVersion = app.plugins.plugins.buttons.manifest.version;
+  const installedVersion = (app.plugins.plugins as any).buttons.manifest.version;
   if (
     parseInt(savedVersion) < parseInt(installedVersion) ||
     savedVersion === null
@@ -13,7 +13,7 @@ export const checkVersion = () => {
 export const saveVersion = () => {
   localStorage.setItem(
     "buttonsVersion",
-    app.plugins.plugins.buttons.manifest.version
+    (app.plugins.plugins as any).buttons.manifest.version
   );
 };
 
