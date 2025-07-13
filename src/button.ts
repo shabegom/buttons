@@ -81,9 +81,10 @@ const clickHandler = async (
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
   
-  // Process templater commands for inline buttons
-  if (args.templater && args.action && args.action.includes("<%")) {
+  // Process templater commands for inline buttons only
+  if (inline && args.templater && args.action && args.action.includes("<%")) {
     try {
+      // Both template and target are activeFile since we're processing templater commands within the same file
       const runTemplater = await templater(app, activeFile, activeFile);
       if (runTemplater) {
         args.action = await runTemplater(args.action);
