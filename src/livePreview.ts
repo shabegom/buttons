@@ -22,6 +22,7 @@ import {
   remove,
   replace
 } from "./buttonTypes";
+import templater from "./templater";
 
 // Check if selection and range overlap (from DataView plugin)
 export function selectionAndRangeOverlap(
@@ -168,9 +169,22 @@ class ButtonWidget extends WidgetType {
       return;
     }
     
+    // Process templater commands for inline buttons only
+    if (args.templater && args.action && args.action.includes("<%")) {
+      try {
+        // Both template and target are activeFile since we're processing templater commands within the same file
+        const runTemplater = await templater(this.app, activeFile, activeFile);
+        if (runTemplater) {
+          args.action = await runTemplater(args.action);
+        }
+      } catch (error) {
+        console.error('Error processing templater in inline button:', error);
+        new Notice("Error processing templater in inline button. Check console for details.", 2000);
+      }
+    }
+    
     const buttonStart = await getInlineButtonPosition(this.app, this.id);
     let position = await getInlineButtonPosition(this.app, this.id);
-    let content: string;
     
     if (args.replace) {
       await replace(this.app, args);
@@ -188,7 +202,6 @@ class ButtonWidget extends WidgetType {
     }
     // handle template buttons
     if (args.type && args.type.includes("template")) {
-      content = await this.app.vault.read(activeFile);
       position = await getInlineButtonPosition(this.app, this.id);
       await template(this.app, args, position);
     }
@@ -196,7 +209,6 @@ class ButtonWidget extends WidgetType {
       await calculate(this.app, args, position);
     }
     if (args.type && args.type.includes("text")) {
-      content = await this.app.vault.read(activeFile);
       position = await getInlineButtonPosition(this.app, this.id);
       await text(this.app, args, position);
     }
@@ -205,7 +217,6 @@ class ButtonWidget extends WidgetType {
     }
     // handle removing the button
     if (args.remove) {
-      content = await this.app.vault.read(activeFile);
       position = await getInlineButtonPosition(this.app, this.id);
       await remove(this.app, args, position);
     }
