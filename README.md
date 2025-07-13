@@ -3,7 +3,11 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 ---
 
-**last updated:** February 9th, 2024
+**last updated:** July 13, 2025
+
+0.6.0
+- Enhancement: Inline Buttons now work in Live Preview!
+- Various bugfixes
 
 0.5.1 - fixed all those templater issues
 
