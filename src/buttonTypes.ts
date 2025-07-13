@@ -78,7 +78,7 @@ export const text = async (
 ): Promise<void> => {
   // prepend template above the button
   if (args.type.includes("prepend")) {
-    await prependContent(app, args.action, position.lineStart, false);
+    await prependContent(app, args.action, false);
   }
   // append template below the button
   if (args.type.includes("append")) {
@@ -139,7 +139,7 @@ export const template = async (
     if (file) {
       // prepend template above the button
       if (args.type.includes("prepend")) {
-        await prependContent(app, file, position.lineStart, isTemplater);
+        await prependContent(app, file, isTemplater);
       }
       // append template below the button
       if (args.type.includes("append")) {
