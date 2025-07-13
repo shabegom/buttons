@@ -94,13 +94,16 @@ export const prependContent = async (
     } else {
       if (isTemplater) {
         const runTemplater = await templater(app, insert, file);
-        const content = await app.vault.read(insert);
-        const processed = await runTemplater(content);
+        const templateContent = await app.vault.read(insert);
+        const processed = await runTemplater(templateContent);
         contentArray.splice(lineStart, 0, `${processed}`);
       } else {
-        activeView.editor.setCursor(lineStart)
+        // For core Templates plugin, just use insertTemplate directly
+        // Set cursor to the insertion point and let insertTemplate handle everything
+        activeView.editor.setCursor(lineStart);
         await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
+        return; // Don't modify the file again, insertTemplate already did the work
       }
     }
     content = contentArray.join("\n");
@@ -139,9 +142,12 @@ export const appendContent = async (
         const processed = await runTemplater(content);
         contentArray.splice(insertionPoint, 0, `${processed}`);
       } else {
-        activeView.editor.setCursor(insertionPoint)
+        // For core Templates plugin, just use insertTemplate directly
+        // Set cursor to the insertion point and let insertTemplate handle everything
+        activeView.editor.setCursor(insertionPoint);
         await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
+        return; // Don't modify the file again, insertTemplate already did the work
       }
     }
     content = contentArray.join("\n");
@@ -174,9 +180,12 @@ export const addContentAtLine = async (
           const processed = await runTemplater(content);
           contentArray.splice(insertionPoint, 0, `${processed}`);
         } else {
-        activeView.editor.setCursor(insertionPoint)
+          // For core Templates plugin, just use insertTemplate directly
+          // Set cursor to the insertion point and let insertTemplate handle everything
+          activeView.editor.setCursor(insertionPoint);
           await app.internalPlugins?.plugins["templates"].instance
             .insertTemplate(insert);
+          return; // Don't modify the file again, insertTemplate already did the work
         }
       }
       content = contentArray.join("\n");
