@@ -98,23 +98,12 @@ export const prependContent = async (
         const processed = await runTemplater(templateContent);
         contentArray.splice(lineStart, 0, `${processed}`);
       } else {
-        // For core Templates plugin, we need to process the template variables
-        // Set cursor to the insertion point temporarily
+        // For core Templates plugin, just use insertTemplate directly
+        // Set cursor to the insertion point and let insertTemplate handle everything
         activeView.editor.setCursor(lineStart);
-        
-        // Insert template (this will process template variables)
         await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
-        
-        // Get the updated content after template processing
-        const updatedContent = activeView.editor.getValue();
-        const updatedArray = updatedContent.split("\n");
-        
-        // Find the processed template content by comparing arrays
-        const insertedLines = updatedArray.slice(lineStart, lineStart + (updatedArray.length - contentArray.length));
-        
-        // Restore original content and insert processed template at correct position
-        contentArray.splice(lineStart, 0, ...insertedLines);
+        return; // Don't modify the file again, insertTemplate already did the work
       }
     }
     content = contentArray.join("\n");
@@ -153,23 +142,12 @@ export const appendContent = async (
         const processed = await runTemplater(content);
         contentArray.splice(insertionPoint, 0, `${processed}`);
       } else {
-        // For core Templates plugin, we need to process the template variables
-        // Set cursor to the insertion point temporarily
+        // For core Templates plugin, just use insertTemplate directly
+        // Set cursor to the insertion point and let insertTemplate handle everything
         activeView.editor.setCursor(insertionPoint);
-        
-        // Insert template (this will process template variables)
         await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
-        
-        // Get the updated content after template processing
-        const updatedContent = activeView.editor.getValue();
-        const updatedArray = updatedContent.split("\n");
-        
-        // Find the processed template content by comparing arrays
-        const insertedLines = updatedArray.slice(insertionPoint, insertionPoint + (updatedArray.length - contentArray.length));
-        
-        // Restore original content and insert processed template at correct position
-        contentArray.splice(insertionPoint, 0, ...insertedLines);
+        return; // Don't modify the file again, insertTemplate already did the work
       }
     }
     content = contentArray.join("\n");
@@ -202,23 +180,12 @@ export const addContentAtLine = async (
           const processed = await runTemplater(content);
           contentArray.splice(insertionPoint, 0, `${processed}`);
         } else {
-          // For core Templates plugin, we need to process the template variables
-          // Set cursor to the insertion point temporarily
+          // For core Templates plugin, just use insertTemplate directly
+          // Set cursor to the insertion point and let insertTemplate handle everything
           activeView.editor.setCursor(insertionPoint);
-          
-          // Insert template (this will process template variables)
           await app.internalPlugins?.plugins["templates"].instance
             .insertTemplate(insert);
-          
-          // Get the updated content after template processing
-          const updatedContent = activeView.editor.getValue();
-          const updatedArray = updatedContent.split("\n");
-          
-          // Find the processed template content by comparing arrays
-          const insertedLines = updatedArray.slice(insertionPoint, insertionPoint + (updatedArray.length - contentArray.length));
-          
-          // Restore original content and insert processed template at correct position
-          contentArray.splice(insertionPoint, 0, ...insertedLines);
+          return; // Don't modify the file again, insertTemplate already did the work
         }
       }
       content = contentArray.join("\n");
