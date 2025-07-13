@@ -81,6 +81,7 @@ export const removeSection = async (
 export const prependContent = async (
   app: App,
   insert: string | TFile,
+  lineStart: number,
   isTemplater: boolean,
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
@@ -89,18 +90,17 @@ export const prependContent = async (
     let content = await app.vault.read(file);
     const contentArray = content.split("\n");
     if (typeof insert === "string") {
-      contentArray.splice(0, 0, `${insert}`);
+      contentArray.splice(lineStart, 0, `${insert}`);
     } else {
       if (isTemplater) {
         const runTemplater = await templater(app, insert, file);
-        const content = await app.vault.read(insert);
-        const processed = await runTemplater(content);
-        contentArray.splice(0, 0, `${processed}`);
+        const templateContent = await app.vault.read(insert);
+        const processed = await runTemplater(templateContent);
+        contentArray.splice(lineStart, 0, `${processed}`);
       } else {
-        activeView.editor.setCursor(0, 0);
-        await app.internalPlugins?.plugins["templates"].instance
-          .insertTemplate(insert);
-        return; // Exit early since insertTemplate handles the insertion
+        // For core Templates plugin, read the template content and use array-based insertion
+        const templateContent = await app.vault.read(insert);
+        contentArray.splice(lineStart, 0, `${templateContent}`);
       }
     }
     content = contentArray.join("\n");
@@ -139,9 +139,9 @@ export const appendContent = async (
         const processed = await runTemplater(content);
         contentArray.splice(insertionPoint, 0, `${processed}`);
       } else {
-        activeView.editor.setCursor(insertionPoint)
-        await app.internalPlugins?.plugins["templates"].instance
-          .insertTemplate(insert);
+        // For core Templates plugin, read the template content and use array-based insertion
+        const templateContent = await app.vault.read(insert);
+        contentArray.splice(insertionPoint, 0, `${templateContent}`);
       }
     }
     content = contentArray.join("\n");
