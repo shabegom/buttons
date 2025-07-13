@@ -110,84 +110,105 @@ class ButtonWidget extends WidgetType {
   }
 
   toDOM(): HTMLElement {
-    // Asynchronously get the button data and set up the button
-    getButtonById(this.app, this.id).then((args) => {
+    // Initialize the button element with default state immediately
+    this.el.innerText = "Loading...";
+    this.el.addClass("button-default");
+    
+    // Asynchronously get the button data and update the element content
+    this.loadButtonData();
+    
+    return this.el;
+  }
+
+  private async loadButtonData(): Promise<void> {
+    try {
+      const args = await getButtonById(this.app, this.id);
+      
       if (args) {
         const name = args.name;
         const className = args.class;
         const color = args.color;
         
-        // Update the button element with the proper styling
+        // Update the button element content (not structure)
         this.el.innerText = name || "";
+        
+        // Update classes - remove default and add custom classes
         if (className) {
-          this.el.addClass(className);
           this.el.removeClass("button-default");
+          this.el.addClass(className);
         }
         if (color) {
           this.el.addClass(color);
         }
         
-        // Set up the click handler by directly implementing the click handler logic
+        // Set up the click handler
         this.el.onclick = async () => {
-          // Replicate the clickHandler logic from button.ts
-          const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-          const activeFile = activeView?.file || this.app.workspace.getActiveFile();
-          
-          if (!activeFile) {
-            new Notice("No active file found. Buttons can only be used with files.");
-            return;
-          }
-          
-          let content = await this.app.vault.read(activeFile);
-          const buttonStart = getButtonPosition(content, args);
-          let position = await getInlineButtonPosition(this.app, this.id);
-          
-          if (args.replace) {
-            replace(this.app, args);
-          }
-
-          if (args.type && args.type.includes("command")) {
-            command(this.app, args, buttonStart);
-          }
-          if (args.type === "copy") {
-            copy(args);
-          }
-          // handle link buttons
-          if (args.type === "link") {
-            link(args);
-          }
-          // handle template buttons
-          if (args.type && args.type.includes("template")) {
-            content = await this.app.vault.read(activeFile);
-            position = await getInlineButtonPosition(this.app, this.id);
-            await template(this.app, args, position);
-          }
-          if (args.type === "calculate") {
-            await calculate(this.app, args, position);
-          }
-          if (args.type && args.type.includes("text")) {
-            content = await this.app.vault.read(activeFile);
-            position = await getInlineButtonPosition(this.app, this.id);
-            await text(this.app, args, position);
-          }
-          if (args.swap) {
-            await swap(this.app, args.swap, this.id, true, activeFile, buttonStart);
-          }
-          // handle removing the button
-          if (args.remove) {
-            content = await this.app.vault.read(activeFile);
-            position = await getInlineButtonPosition(this.app, this.id);
-            await remove(this.app, args, position);
-          }
+          await this.handleButtonClick(args);
         };
       } else {
         this.el.innerText = "button not found. check button ID";
         this.el.removeClass("button-default");
         this.el.addClass("button-error");
       }
-    });
+    } catch (error) {
+      // Handle any errors in loading button data
+      this.el.innerText = "Error loading button";
+      this.el.removeClass("button-default");
+      this.el.addClass("button-error");
+    }
+  }
+
+  private async handleButtonClick(args: any): Promise<void> {
+    // Replicate the clickHandler logic from button.ts
+    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    const activeFile = activeView?.file || this.app.workspace.getActiveFile();
     
-    return this.el;
+    if (!activeFile) {
+      new Notice("No active file found. Buttons can only be used with files.");
+      return;
+    }
+    
+    let content = await this.app.vault.read(activeFile);
+    const buttonStart = getButtonPosition(content, args);
+    let position = await getInlineButtonPosition(this.app, this.id);
+    
+    if (args.replace) {
+      replace(this.app, args);
+    }
+
+    if (args.type && args.type.includes("command")) {
+      command(this.app, args, buttonStart);
+    }
+    if (args.type === "copy") {
+      copy(args);
+    }
+    // handle link buttons
+    if (args.type === "link") {
+      link(args);
+    }
+    // handle template buttons
+    if (args.type && args.type.includes("template")) {
+      content = await this.app.vault.read(activeFile);
+      position = await getInlineButtonPosition(this.app, this.id);
+      await template(this.app, args, position);
+    }
+    if (args.type === "calculate") {
+      await calculate(this.app, args, position);
+    }
+    if (args.type && args.type.includes("text")) {
+      content = await this.app.vault.read(activeFile);
+      position = await getInlineButtonPosition(this.app, this.id);
+      await text(this.app, args, position);
+    }
+    if (args.swap) {
+      await swap(this.app, args.swap, this.id, true, activeFile, buttonStart);
+    }
+    // handle removing the button
+    if (args.remove) {
+      content = await this.app.vault.read(activeFile);
+      position = await getInlineButtonPosition(this.app, this.id);
+      await remove(this.app, args, position);
+    }
   }
 }
 
