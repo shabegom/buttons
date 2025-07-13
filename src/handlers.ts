@@ -131,7 +131,7 @@ export const appendContent = async (
       insertionPoint = lineEnd + 1;
     }
     if (typeof insert === "string") {
-      contentArray.splice(insertionPoint, 0, `\n${insert}`);
+      contentArray.splice(insertionPoint, 0, `${insert}`);
     } else {
       if (isTemplater) {
         const runTemplater = await templater(app, insert, file);
