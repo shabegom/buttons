@@ -3,7 +3,6 @@ import {
   EventRef,
   Events,
   MarkdownRenderChild,
-  MarkdownView,
   Plugin,
 } from "obsidian";
 import { createArgumentObject } from "./utils";
@@ -11,13 +10,13 @@ import {
   addButtonToStore,
   getButtonById,
   getButtonFromStore,
-  getStore,
   initializeButtonStore,
 } from "./buttonStore";
 import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { Button, createButton } from "./button";
+import buttonPlugin from "./livePreview";
 // import { updateWarning } from "./version";
 import templater from "./templater"
 
@@ -30,47 +29,18 @@ export default class ButtonsPlugin extends Plugin {
   private indexCount = 0;
   private storeEventsRef: EventRef;
 
-  private async addButtonInEdit(app: App) {
-    let widget: CodeMirror.LineWidget;
-    if (widget) {
-      widget.clear();
-    }
-    const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-    if (activeView) {
-      const store = getStore(app.isMobile);
-      const buttonsInFile = store.filter(
-        (button) => button.path === activeView.file.path
-      );
-      this.registerCodeMirror((cm: CodeMirror.Editor) => {
-        buttonsInFile.forEach(async (button) => {
-          const widgetEl = document.createElement("div");
-          const storeButton = await getButtonFromStore(app, {
-            id: button.id.split("-")[1],
-          });
-          if (
-            !app.isMobile &&
-            storeButton &&
-            storeButton?.args.editview === "true"
-          ) {
-            widget = cm.addLineWidget(
-              button.position.end.line + 1,
-              createButton({
-                app,
-                el: widgetEl,
-                args: storeButton.args,
-                inline: false,
-                id: button.id,
-              })
-            );
-          }
-        });
-      });
-    }
+  private async addButtonInEdit(_app: App) {
+    // CM6 extension handles inline button rendering in edit mode
+    // This method is kept for compatibility but CM6 handles it now
   }
   async onload(): Promise<void> {
     this.app.workspace.onLayoutReady(async () => {
       // await updateWarning();
     });
+    
+    // Register CM6 extension for inline button rendering in edit mode
+    this.registerEditorExtension(buttonPlugin(this.app));
+    
     this.buttonEvents = buttonEventListener(this.app, addButtonToStore);
     this.closedFile = openFileListener(
       this.app,

@@ -366,7 +366,7 @@ export class ButtonModal extends Modal {
                 .addText((textEl) => {
                   textEl.inputEl.replaceWith(this.removeSuggestEl);
                 });
-                this.outputObject.remove = value;
+                this.outputObject.remove = "true";
             }
             if (!value) {
               this.outputObject.remove = "";
