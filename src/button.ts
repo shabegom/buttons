@@ -12,6 +12,7 @@ import {
   text,
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
+import templater from "./templater";
 
 export interface Button {
   app?: App;
@@ -79,12 +80,21 @@ const clickHandler = async (
   let position = inline
     ? await getInlineButtonPosition(app, id)
     : getButtonPosition(content, args);
-  // if (args.templater) {
-  //   args = await templater(app, position);
-  //   if (inline) {
-  //     new Notice("templater args don't work with inline buttons yet", 2000);
-  //   }
-  // }
+  
+  // Process templater commands for inline buttons only
+  if (inline && args.templater && args.action && args.action.includes("<%")) {
+    try {
+      // Both template and target are activeFile since we're processing templater commands within the same file
+      const runTemplater = await templater(app, activeFile, activeFile);
+      if (runTemplater) {
+        args.action = await runTemplater(args.action);
+      }
+    } catch (error) {
+      console.error('Error processing templater in inline button:', error);
+      new Notice("Error processing templater in inline button. Check console for details.", 2000);
+    }
+  }
+  
   if (args.replace) {
     replace(app, args);
   }
