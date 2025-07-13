@@ -20,8 +20,8 @@ export interface Button {
   inline?: boolean;
   id?: string;
   clickOverride?: {
-    params: any[];
-    click: (...params: any[]) => void;
+    params: unknown[];
+    click: (...params: unknown[]) => void;
   };
 }
 
@@ -65,8 +65,16 @@ const clickHandler = async (
   inline: boolean,
   id: string,
 ) => {
+  // First try to get MarkdownView, then fallback to active file
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-  let content = await app.vault.read(activeView.file);
+  const activeFile = activeView?.file || app.workspace.getActiveFile();
+  
+  if (!activeFile) {
+    new Notice("No active file found. Buttons can only be used with files.");
+    return;
+  }
+  
+  let content = await app.vault.read(activeFile);
   const buttonStart = getButtonPosition(content, args);
   let position = inline
     ? await getInlineButtonPosition(app, id)
@@ -93,7 +101,7 @@ const clickHandler = async (
   }
   // handle template buttons
   if (args.type && args.type.includes("template")) {
-    content = await app.vault.read(activeView.file);
+    content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);
@@ -103,7 +111,7 @@ const clickHandler = async (
     await calculate(app, args, position);
   }
   if (args.type && args.type.includes("text")) {
-    content = await app.vault.read(activeView.file);
+    content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);
@@ -113,12 +121,12 @@ const clickHandler = async (
     if (!inline) {
       new Notice("swap args only work in inline buttons for now", 2000);
     } else {
-      await swap(app, args.swap, id, inline, activeView.file, buttonStart);
+      await swap(app, args.swap, id, inline, activeFile, buttonStart);
     }
   }
   // handle removing the button
   if (args.remove) {
-    content = await app.vault.read(activeView.file);
+    content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);

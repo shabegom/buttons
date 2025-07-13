@@ -99,7 +99,7 @@ export const prependContent = async (
         contentArray.splice(lineStart, 0, `${processed}`);
       } else {
         activeView.editor.setCursor(lineStart)
-        await (app as any).internalPlugins?.plugins["templates"].instance
+        await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
       }
     }
@@ -140,7 +140,7 @@ export const appendContent = async (
         contentArray.splice(insertionPoint, 0, `${processed}`);
       } else {
         activeView.editor.setCursor(insertionPoint)
-        await (app as any).internalPlugins?.plugins["templates"].instance
+        await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(insert);
       }
     }
@@ -175,7 +175,7 @@ export const addContentAtLine = async (
           contentArray.splice(insertionPoint, 0, `${processed}`);
         } else {
         activeView.editor.setCursor(insertionPoint)
-          await (app as any).internalPlugins?.plugins["templates"].instance
+          await app.internalPlugins?.plugins["templates"].instance
             .insertTemplate(insert);
         }
       }
@@ -231,8 +231,8 @@ export const createNote = async (
       const templateContent = await app.vault.read(filePath as TFile);
       if (isTemplater) {
         file = await app.vault.create(fullPath, templateContent);
-        const runTemplater = await templater(filePath, file);
-        const content = await app.vault.read(filePath);
+        const runTemplater = await templater(filePath as TFile, file);
+        const content = await app.vault.read(filePath as TFile);
         const processed = await runTemplater(content);
         await app.vault.modify(file, processed);
       }
@@ -248,7 +248,7 @@ export const createNote = async (
         await app.workspace.getLeaf().openFile(file);
       }
       if (!isTemplater && typeof filePath !== "string") {
-        await (app as any).internalPlugins?.plugins["templates"].instance
+        await app.internalPlugins?.plugins["templates"].instance
           .insertTemplate(filePath);
       }
     } catch (e) {

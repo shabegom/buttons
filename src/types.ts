@@ -22,6 +22,7 @@ declare module "obsidian" {
             options: {
               folder: string;
             };
+            insertTemplate: (template: TFile) => Promise<void>;
           };
         };
       };
