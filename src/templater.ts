@@ -1,8 +1,9 @@
-import { Notice, TFile } from "obsidian";
+import { App, Notice, TFile } from "obsidian";
 
 type RunTemplater = (command: string) => Promise<string>;
 
 async function templater(
+  app: App,
   template: TFile,
   target: TFile,
 ): Promise<RunTemplater | undefined> {
@@ -43,10 +44,10 @@ async function templater(
   };
 }
 
-export async function processTemplate(file: TFile) {
+export async function processTemplate(app: App, file: TFile) {
   try {
     const content = await app.vault.read(file);
-    const runTemplater = await templater(file, file);
+    const runTemplater = await templater(app, file, file);
     if (runTemplater) {
       const processed = await runTemplater(content);
       return processed;
