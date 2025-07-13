@@ -2,12 +2,6 @@ import { Notice, TFile } from "obsidian";
 
 type RunTemplater = (command: string) => Promise<string>;
 
-interface Item {
-  name: string;
-  static_functions: Array<[string, () => unknown]>;
-  dynamic_functions: Array<[string, () => unknown]>;
-}
-
 async function templater(
   template: TFile,
   target: TFile,
