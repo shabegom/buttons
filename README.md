@@ -107,7 +107,7 @@ A **Chain Button** allows you to run multiple actions in sequence with a single 
 name Manage Field
 type chain
 actions [
-  {"type": "text", "action": "exercise::"},
+  {"type": "append text", "action": "exercise::"},
   {"type": "command", "action": "Metadata Menu: Manage field at cursor"}
 ]
 ```
@@ -124,7 +124,7 @@ name Daily Setup
 type chain
 actions [
   {"type": "command", "action": "Periodic Notes: Open today's daily note"},
-  {"type": "text", "action": "## Tasks for Today"},
+  {"type": "append text", "action": "## Tasks for Today"},
   {"type": "template", "action": "Daily Task Template"}
 ]
 ```
@@ -137,6 +137,7 @@ actions [
 **Notes:**
 - If any action fails, the rest will still attempt to run.
 - The `actions` field must be valid JSON. If you edit by hand, use a JSON validator if you run into issues.
+- For text actions, the `type` must be one of the supported text button types: `append text`, `prepend text`, `line(1) text`, or `note text`.
 
 ### Inherit Button Args
 If you are using the same (or similar) Buttons across many notes, you can create one parent Button and have other Buttons inherit from the parent.
@@ -476,20 +477,4 @@ Note: swap count is reset if you close the note.
 - prepend or append a specified template into a note
 
 ### 0.0.5: Add remove feature
-- Added a `remove` argument. If `remove true` is the last argument in a button the button will be removed from the note after it is clicked.
-
-### 0.0.4: Updated Styling
-**This release includes a breaking change from the previous release (0.0.3)**  
-- customClass argument is now class
-- customId argument is now id
-- Adding a class argument will remove default button styling. You can add that styling back by including the class names as values to the class argument:  
-`class button-default button-shine`  
-
-### 0.0.3: Add `customId` argument
-- Added `customId` to further customize button styles
-
-### 0.0.2: Add `customClass` argument
-- Added `customClass` to define your own class for button stylinh
-
-### 0.0.1: Initial Release
-- The first release of Buttons!
+- Added a `

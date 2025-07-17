@@ -136,41 +136,72 @@ export class ButtonModal extends Modal {
               this.outputObject.actions = [];
             }
             const actionsList = action.createEl("div", { cls: "chain-actions-list" });
+            actionsList.setAttribute("style", "margin-top: 10px;");
+            const actionsTitle = actionsList.createEl("h4", { text: "Chain Actions" });
+            actionsTitle.setAttribute("style", "margin: 0 0 10px 0; color: var(--text-normal);");
+            const actionsDesc = actionsTitle.createEl("div", { text: "Add actions to be executed in sequence" });
+            actionsDesc.setAttribute("style", "font-size: 12px; color: var(--text-muted); font-weight: normal;");
             const renderActions = () => {
               actionsList.empty();
+              actionsList.appendChild(actionsTitle);
               this.outputObject.actions.forEach((act, idx) => {
                 const actionRow = actionsList.createEl("div", { cls: "chain-action-row" });
+                actionRow.setAttribute("style", "border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 12px; margin-bottom: 8px; background: var(--background-secondary);");
+                const actionHeader = actionRow.createEl("div");
+                actionHeader.setAttribute("style", "display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;");
+                const actionNumber = actionHeader.createEl("span", { text: `Action ${idx + 1}` });
+                actionNumber.setAttribute("style", "font-weight: 600; color: var(--text-normal);");
                 // Type dropdown
                 const typeSelect = actionRow.createEl("select");
-                ["command","text","template","link","calculate","copy"].forEach(opt => {
+                typeSelect.setAttribute("style", "margin-right: 8px; flex: 1;");
+                // Add all the button type options
+                const typeOptions = [
+                  { value: "command", text: "Command" },
+                  { value: "append text", text: "Append Text" },
+                  { value: "prepend text", text: "Prepend Text" },
+                  { value: "line text", text: "Line Text" },
+                  { value: "note text", text: "Note Text" },
+                  { value: "append template", text: "Append Template" },
+                  { value: "prepend template", text: "Prepend Template" },
+                  { value: "line template", text: "Line Template" },
+                  { value: "note template", text: "Note Template" },
+                  { value: "link", text: "Link" },
+                  { value: "calculate", text: "Calculate" },
+                  { value: "copy", text: "Copy" }
+                ];
+                typeOptions.forEach(opt => {
                   const option = typeSelect.createEl("option");
-                  option.value = opt;
-                  option.text = opt.charAt(0).toUpperCase() + opt.slice(1);
-                  if (act.type === opt) option.selected = true;
+                  option.value = opt.value;
+                  option.text = opt.text;
+                  if (act.type === opt.value) option.selected = true;
                 });
                 typeSelect.onchange = () => {
                   this.outputObject.actions[idx].type = typeSelect.value;
+                  // Clear and rebuild the action input based on type
+                  actionInputContainer.empty();
+                  this.renderActionInput(actionInputContainer, idx, typeSelect.value);
                 };
-                // Action input
-                const actionInput = actionRow.createEl("input", { type: "text" });
-                actionInput.value = act.action || "";
-                actionInput.placeholder = "Action value";
-                actionInput.oninput = () => {
-                  this.outputObject.actions[idx].action = actionInput.value;
-                };
+                // Action input container
+                const actionInputContainer = actionRow.createEl("div", { cls: "action-input-container" });
+                actionInputContainer.setAttribute("style", "margin-top: 8px;");
+                this.renderActionInput(actionInputContainer, idx, act.type);
                 // Remove button
-                const removeBtn = actionRow.createEl("button");
-                removeBtn.textContent = "Remove";
-                removeBtn.onclick = () => {
+                const removeBtn = actionRow.createEl("button", { type: "button" });
+                removeBtn.setAttribute("style", "background: var(--background-modifier-error); color: var(--text-on-accent); border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;");
+                removeBtn.textContent = "× Remove";
+                removeBtn.onclick = (event) => {
+                  event.preventDefault();
                   this.outputObject.actions.splice(idx, 1);
                   renderActions();
                 };
               });
             };
             // Add action button
-            const addActionBtn = action.createEl("button");
-            addActionBtn.textContent = "Add Action";
-            addActionBtn.onclick = () => {
+            const addActionBtn = action.createEl("button", { type: "button" });
+            addActionBtn.setAttribute("style", "background: var(--interactive-accent); color: var(--text-on-accent); border: none; border-radius: 6px; padding: 8px 16px; font-size: 14px; cursor: pointer; margin-top: 8px;");
+            addActionBtn.textContent = "+ Add Action";
+            addActionBtn.onclick = (event) => {
+              event.preventDefault();
               this.outputObject.actions.push({ type: "command", action: "" });
               renderActions();
             };
@@ -593,6 +624,152 @@ export class ButtonModal extends Modal {
       el: contentEl,
       args: { name: "My Awesome Button" },
     });
+  }
+
+  private renderActionInput(container: HTMLElement, actionIndex: number, actionType: string): void {
+    
+    if (actionType.includes("line text") || actionType.includes("line template")) {
+      // Line number input
+      new Setting(container)
+        .setName("Line Number")
+        .setDesc("At which line should this be inserted?")
+        .addText((textEl) => {
+          textEl.setPlaceholder("69");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].type = `line(${value}) ${actionType.includes("text") ? "text" : "template"}`;
+          });
+        });
+      // Content input
+      new Setting(container)
+        .setName("Content")
+        .setDesc(actionType.includes("text") ? "Text to insert" : "Template to insert")
+        .addText((textEl) => {
+          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert" : "My Template");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].action = value;
+          });
+        });
+    } else if (actionType.includes("note text") || actionType.includes("note template")) {
+      // Note name input
+      new Setting(container)
+        .setName("Note Name")
+        .setDesc("What should the new note be named?")
+        .addText((textEl) => {
+          textEl.setPlaceholder("My New Note");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].type = `note(${value}) ${actionType.includes("text") ? "text" : "template"}`;
+          });
+        });
+      // Split toggle
+      new Setting(container)
+        .setName("Split")
+        .setDesc("Should the new note open in a split pane?")
+        .addToggle((toggleEl) => {
+          const currentType = this.outputObject.actions[actionIndex].type;
+          const noteName = currentType.match(/note\(([^)]*)\)/)?.[1] || "My New Note";
+          if (toggleEl.getValue()) {
+            this.outputObject.actions[actionIndex].type = `note(${noteName}, split) ${actionType.includes("text") ? "text" : "template"}`;
+          } else {
+            this.outputObject.actions[actionIndex].type = `note(${noteName}) ${actionType.includes("text") ? "text" : "template"}`;
+          }
+        });
+      // Content input
+      new Setting(container)
+        .setName("Content")
+        .setDesc(actionType.includes("text") ? "Text to insert" : "Template to insert")
+        .addText((textEl) => {
+          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert" : "My Template");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].action = value;
+          });
+        });
+    } else if (actionType === "command") {
+      // Command input with dropdown and suggestions (same as regular command button)
+      const commandSuggestEl = createEl("input", { type: "text" });
+      new CommandSuggest(this.app, commandSuggestEl);
+      commandSuggestEl.placeholder = "Toggle Pin";
+      commandSuggestEl.addEventListener("change", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
+      });
+      commandSuggestEl.addEventListener("blur", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
+      });
+      new Setting(container)
+        .setName("Command")
+        .setDesc("Enter a command to run")
+        .addDropdown((drop) => {
+          drop.addOption("command", "Default");
+          drop.addOption("prepend command", "Prepend");
+          drop.addOption("append command", "Append");
+          drop.onChange((value) => {
+            this.outputObject.actions[actionIndex].type = value;
+          });
+        })
+        .addText((textEl) => {
+          textEl.inputEl.replaceWith(commandSuggestEl);
+        });
+    } else if (actionType.includes("template")) {
+      // Template input with suggestions (same as regular template button)
+      const fileSuggestEl = createEl("input", { type: "text" });
+      new TemplateSuggest(this.app, fileSuggestEl);
+      fileSuggestEl.placeholder = "My Template";
+      fileSuggestEl.addEventListener("change", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
+      });
+      fileSuggestEl.addEventListener("blur", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
+      });
+      new Setting(container)
+        .setName("Template")
+        .setDesc("Select a template")
+        .addText((textEl) => {
+          textEl.inputEl.replaceWith(fileSuggestEl);
+        });
+    } else if (actionType === "link") {
+      // Link input
+      new Setting(container)
+        .setName("Link")
+        .setDesc("Enter a link to open")
+        .addText((textEl) => {
+          textEl.setPlaceholder("https://obsidian.md");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].action = value;
+          });
+        });
+    } else if (actionType === "calculate") {
+      // Calculate input
+      new Setting(container)
+        .setName("Calculate")
+        .setDesc("Enter a calculation, you can reference a line number with $LineNumber")
+        .addText((textEl) => {
+          textEl.setPlaceholder("2+$10");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].action = value;
+          });
+        });
+    } else if (actionType === "copy") {
+      // Copy input
+      new Setting(container)
+        .setName("Text")
+        .setDesc("Text to copy for clipboard")
+        .addText((textEl) => {
+          textEl.setPlaceholder("Text to copy");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].action = value;
+          });
+        });
+    } else {
+      // Default text input for append/prepend text
+      new Setting(container)
+        .setName("Text")
+        .setDesc("Text to insert")
+        .addText((textEl) => {
+          textEl.setPlaceholder("My Text to Insert");
+          textEl.onChange((value) => {
+            this.outputObject.actions[actionIndex].action = value;
+          });
+        });
+    }
   }
 
   onClose() {

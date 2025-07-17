@@ -28,6 +28,7 @@ interface OutputObject {
   blockId: string;
   folder: string;
   prompt: boolean;
+  actions?: { type: string; action: string }[]; // Add actions field for chain buttons
 }
 
 export const insertButton = (app: App, outputObject: OutputObject): void => {
@@ -48,6 +49,10 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   outputObject.class && buttonArr.push(`class ${outputObject.class}`);
   outputObject.folder && buttonArr.push(`folder ${outputObject.folder}`);
   outputObject.folder && buttonArr.push(`prompt ${outputObject.prompt}`);
+  // Handle actions array for chain buttons
+  if (outputObject.actions && Array.isArray(outputObject.actions) && outputObject.actions.length > 0) {
+    buttonArr.push(`actions ${JSON.stringify(outputObject.actions)}`);
+  }
   buttonArr.push("```");
   outputObject.blockId
     ? buttonArr.push(`^button-${outputObject.blockId}`)
@@ -64,18 +69,28 @@ export const insertInlineButton = (app: App, id: string): void => {
   editor.replaceSelection(`\`button-${id}\``);
 };
 
-export const createArgumentObject = (source: string): Arguments =>
-  source.split("\n").reduce((acc: Arguments, i: string) => {
-    const split: string[] = i.split(" ");
-    const key: string = split[0].toLowerCase();
-    const value = split
-      .filter((item) => item !== split[0])
-      .join(" ")
-      .trim();
+export const createArgumentObject = (source: string): Arguments => {
+  const lines = source.split("\n");
+  const acc: Arguments = {};
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const split: string[] = line.split(" ");
+    const key: string = split[0]?.toLowerCase();
+    if (!key) continue;
     if (key === "actions") {
+      // Collect all lines for the JSON array
+      const jsonLines = [line.replace(/^actions\s*/, "")];
+      let openBrackets = (jsonLines[0].match(/\[/g) || []).length;
+      let closeBrackets = (jsonLines[0].match(/\]/g) || []).length;
+      while (openBrackets > closeBrackets && i + 1 < lines.length) {
+        i++;
+        jsonLines.push(lines[i]);
+        openBrackets += (lines[i].match(/\[/g) || []).length;
+        closeBrackets += (lines[i].match(/\]/g) || []).length;
+      }
+      const jsonString = jsonLines.join("\n").trim();
       try {
-        // Support both single-line and multi-line JSON arrays
-        acc[key] = JSON.parse(value);
+        acc[key] = JSON.parse(jsonString);
       } catch (e) {
         new Notice(
           "Error: Malformed JSON in actions field. Please check your chain button syntax.",
@@ -84,10 +99,12 @@ export const createArgumentObject = (source: string): Arguments =>
         acc[key] = [];
       }
     } else {
+      const value = split.slice(1).join(" ").trim();
       acc[key] = value;
     }
-    return acc;
-  }, {});
+  }
+  return acc;
+};
 
 export const createContentArray = async (
   app: App
