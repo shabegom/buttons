@@ -477,4 +477,4 @@ Note: swap count is reset if you close the note.
 - prepend or append a specified template into a note
 
 ### 0.0.5: Add remove feature
-- Added a `
+- Added a `remove` argument that removes the button after it is clicked
