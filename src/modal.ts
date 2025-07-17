@@ -79,6 +79,7 @@ export class ButtonModal extends Modal {
     blockId: "",
     folder: "",
     prompt: false,
+    actions: [] as { type: string; action: string }[], // Add type annotation
   };
 
   onOpen(): void {
@@ -124,9 +125,57 @@ export class ButtonModal extends Modal {
           "Swap - Create a multi-purpose Inline Button from other Buttons"
         );
         drop.addOption("copy", "Text - Copy text to clipboard");
+        drop.addOption("chain", "Chain - Run multiple actions in sequence");
         const action = formEl.createEl("div");
         drop.onChange((value) => {
           this.outputObject.type = value;
+          if (value === "chain") {
+            action.empty();
+            // Chain actions UI
+            if (!Array.isArray(this.outputObject.actions)) {
+              this.outputObject.actions = [];
+            }
+            const actionsList = action.createEl("div", { cls: "chain-actions-list" });
+            const renderActions = () => {
+              actionsList.empty();
+              this.outputObject.actions.forEach((act, idx) => {
+                const actionRow = actionsList.createEl("div", { cls: "chain-action-row" });
+                // Type dropdown
+                const typeSelect = actionRow.createEl("select");
+                ["command","text","template","link","calculate","copy"].forEach(opt => {
+                  const option = typeSelect.createEl("option");
+                  option.value = opt;
+                  option.text = opt.charAt(0).toUpperCase() + opt.slice(1);
+                  if (act.type === opt) option.selected = true;
+                });
+                typeSelect.onchange = () => {
+                  this.outputObject.actions[idx].type = typeSelect.value;
+                };
+                // Action input
+                const actionInput = actionRow.createEl("input", { type: "text" });
+                actionInput.value = act.action || "";
+                actionInput.placeholder = "Action value";
+                actionInput.oninput = () => {
+                  this.outputObject.actions[idx].action = actionInput.value;
+                };
+                // Remove button
+                const removeBtn = actionRow.createEl("button");
+                removeBtn.textContent = "Remove";
+                removeBtn.onclick = () => {
+                  this.outputObject.actions.splice(idx, 1);
+                  renderActions();
+                };
+              });
+            };
+            // Add action button
+            const addActionBtn = action.createEl("button");
+            addActionBtn.textContent = "Add Action";
+            addActionBtn.onclick = () => {
+              this.outputObject.actions.push({ type: "command", action: "" });
+              renderActions();
+            };
+            renderActions();
+          }
           if (value === "link") {
             action.empty();
             new Setting(action)

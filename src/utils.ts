@@ -68,10 +68,24 @@ export const createArgumentObject = (source: string): Arguments =>
   source.split("\n").reduce((acc: Arguments, i: string) => {
     const split: string[] = i.split(" ");
     const key: string = split[0].toLowerCase();
-    acc[key] = split
+    const value = split
       .filter((item) => item !== split[0])
       .join(" ")
       .trim();
+    if (key === "actions") {
+      try {
+        // Support both single-line and multi-line JSON arrays
+        acc[key] = JSON.parse(value);
+      } catch (e) {
+        new Notice(
+          "Error: Malformed JSON in actions field. Please check your chain button syntax.",
+          4000
+        );
+        acc[key] = [];
+      }
+    } else {
+      acc[key] = value;
+    }
     return acc;
   }, {});
 

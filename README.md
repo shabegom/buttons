@@ -52,6 +52,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
     - **Template:** Click the Button to prepend, append, insert, or create a new note from a template note.
     - **Text:** Click the Button to prepend, append, insert, or create a new note with specified text.
     - **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click.
+    - **Chain:** A Chain Button lets you run multiple actions in sequence with a single click. See below for details.
 - **Action:** Depending on what **Button Type** you choose, you will choose an Action to perform:
     - **Command:** Choose the Command Palette Command to run.
     - **Link:** Write the URL or URI.
@@ -96,6 +97,46 @@ A Swap Button is a special type of Inline Button. When you click a Swap Button i
 3. Insert the Swap Button as an Inline Button using the Insert Inline Button Command.
 
 Swap Buttons can currently only be used as Inline Buttons.
+
+### Chain Button
+
+A **Chain Button** allows you to run multiple actions in sequence with a single click. Each action can be any supported button type (command, text, template, link, calculate, copy, or even another chain).
+
+**Syntax:**
+```button
+name Manage Field
+type chain
+actions [
+  {"type": "text", "action": "exercise::"},
+  {"type": "command", "action": "Metadata Menu: Manage field at cursor"}
+]
+```
+^button-manage-field
+
+- The `actions` field must be a valid JSON array of objects, each with a `type` and `action`.
+- Actions are executed in order, top to bottom.
+- You can mix and match any supported action types.
+- You can nest chain actions for advanced workflows.
+
+**Example:**
+```button
+name Daily Setup
+type chain
+actions [
+  {"type": "command", "action": "Periodic Notes: Open today's daily note"},
+  {"type": "text", "action": "## Tasks for Today"},
+  {"type": "template", "action": "Daily Task Template"}
+]
+```
+^button-daily-setup
+
+**How to Create:**
+- Use the Button Maker and select "Chain" as the button type.
+- Add as many actions as you need, specifying the type and action for each.
+
+**Notes:**
+- If any action fails, the rest will still attempt to run.
+- The `actions` field must be valid JSON. If you edit by hand, use a JSON validator if you run into issues.
 
 ### Inherit Button Args
 If you are using the same (or similar) Buttons across many notes, you can create one parent Button and have other Buttons inherit from the parent.
