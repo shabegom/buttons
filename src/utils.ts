@@ -80,14 +80,64 @@ export const createArgumentObject = (source: string): Arguments => {
     if (key === "actions") {
       // Collect all lines for the JSON array
       const jsonLines = [line.replace(/^actions\s*/, "")];
-      let openBrackets = (jsonLines[0].match(/\[/g) || []).length;
-      let closeBrackets = (jsonLines[0].match(/\]/g) || []).length;
-      while (openBrackets > closeBrackets && i + 1 < lines.length) {
-        i++;
-        jsonLines.push(lines[i]);
-        openBrackets += (lines[i].match(/\[/g) || []).length;
-        closeBrackets += (lines[i].match(/\]/g) || []).length;
+      
+      // Robust JSON parsing that handles all bracket types and string literals
+      let bracketCount = 0;
+      let braceCount = 0;
+      let inString = false;
+      let escaped = false;
+      
+      // Count brackets in the first line
+      for (const char of jsonLines[0]) {
+        if (escaped) {
+          escaped = false;
+          continue;
+        }
+        if (char === '\\') {
+          escaped = true;
+          continue;
+        }
+        if (char === '"' && !escaped) {
+          inString = !inString;
+          continue;
+        }
+        if (!inString) {
+          if (char === '[') bracketCount++;
+          else if (char === ']') bracketCount--;
+          else if (char === '{') braceCount++;
+          else if (char === '}') braceCount--;
+        }
       }
+      
+      // Continue reading lines until all brackets and braces are balanced
+      while ((bracketCount > 0 || braceCount > 0) && i + 1 < lines.length) {
+        i++;
+        const nextLine = lines[i];
+        jsonLines.push(nextLine);
+        
+        // Count brackets in the new line
+        for (const char of nextLine) {
+          if (escaped) {
+            escaped = false;
+            continue;
+          }
+          if (char === '\\') {
+            escaped = true;
+            continue;
+          }
+          if (char === '"' && !escaped) {
+            inString = !inString;
+            continue;
+          }
+          if (!inString) {
+            if (char === '[') bracketCount++;
+            else if (char === ']') bracketCount--;
+            else if (char === '{') braceCount++;
+            else if (char === '}') braceCount--;
+          }
+        }
+      }
+      
       const jsonString = jsonLines.join("\n").trim();
       try {
         acc[key] = JSON.parse(jsonString);
