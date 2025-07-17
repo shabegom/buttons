@@ -52,6 +52,7 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
     - **Template:** Click the Button to prepend, append, insert, or create a new note from a template note.
     - **Text:** Click the Button to prepend, append, insert, or create a new note with specified text.
     - **Swap:** A Swap Button is a special type of Inline Button. With a Swap Button you can run a different type of Button on each click.
+    - **Chain:** A Chain Button lets you run multiple actions in sequence with a single click. See below for details.
 - **Action:** Depending on what **Button Type** you choose, you will choose an Action to perform:
     - **Command:** Choose the Command Palette Command to run.
     - **Link:** Write the URL or URI.
@@ -96,6 +97,47 @@ A Swap Button is a special type of Inline Button. When you click a Swap Button i
 3. Insert the Swap Button as an Inline Button using the Insert Inline Button Command.
 
 Swap Buttons can currently only be used as Inline Buttons.
+
+### Chain Button
+
+A **Chain Button** allows you to run multiple actions in sequence with a single click. Each action can be any supported button type (command, text, template, link, calculate, copy, or even another chain).
+
+**Syntax:**
+```button
+name Manage Field
+type chain
+actions [
+  {"type": "append text", "action": "exercise::"},
+  {"type": "command", "action": "Metadata Menu: Manage field at cursor"}
+]
+```
+^button-manage-field
+
+- The `actions` field must be a valid JSON array of objects, each with a `type` and `action`.
+- Actions are executed in order, top to bottom.
+- You can mix and match any supported action types.
+- You can nest chain actions for advanced workflows.
+
+**Example:**
+```button
+name Daily Setup
+type chain
+actions [
+  {"type": "command", "action": "Periodic Notes: Open today's daily note"},
+  {"type": "append text", "action": "## Tasks for Today"},
+  {"type": "template", "action": "Daily Task Template"}
+]
+```
+^button-daily-setup
+
+**How to Create:**
+- Use the Button Maker and select "Chain" as the button type.
+- Add as many actions as you need, specifying the type and action for each.
+
+**Notes:**
+- If any action fails, the rest will still attempt to run.
+- The `actions` field must be valid JSON. If you edit by hand, use a JSON validator if you run into issues.
+- For text actions, the `type` must be one of the supported text button types: `append text`, `prepend text`, `line(1) text`, or `note text`.
 
 ### Inherit Button Args
 If you are using the same (or similar) Buttons across many notes, you can create one parent Button and have other Buttons inherit from the parent.
@@ -435,20 +477,4 @@ Note: swap count is reset if you close the note.
 - prepend or append a specified template into a note
 
 ### 0.0.5: Add remove feature
-- Added a `remove` argument. If `remove true` is the last argument in a button the button will be removed from the note after it is clicked.
-
-### 0.0.4: Updated Styling
-**This release includes a breaking change from the previous release (0.0.3)**  
-- customClass argument is now class
-- customId argument is now id
-- Adding a class argument will remove default button styling. You can add that styling back by including the class names as values to the class argument:  
-`class button-default button-shine`  
-
-### 0.0.3: Add `customId` argument
-- Added `customId` to further customize button styles
-
-### 0.0.2: Add `customClass` argument
-- Added `customClass` to define your own class for button stylinh
-
-### 0.0.1: Initial Release
-- The first release of Buttons!
+- Added a `remove` argument that removes the button after it is clicked

@@ -40,6 +40,12 @@ export interface ExtendedBlockCache extends BlockCache {
   swap?: number;
 }
 
+export interface ChainAction {
+  type: string;
+  action: string;
+  [key: string]: any; // For future extensibility (e.g., delay, condition)
+}
+
 export interface Arguments {
   name?: string;
   type?: string;
@@ -53,8 +59,9 @@ export interface Arguments {
   remove?: string;
   replace?: string;
   folder?: string;
+  actions?: ChainAction[]; // Optional array of chain actions
   // prompt?: string;
-  [key: string]: string;
+  [key: string]: any; // Allow any key for extensibility
 }
 
 export interface Position {

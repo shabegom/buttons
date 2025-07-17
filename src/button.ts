@@ -10,6 +10,7 @@ import {
   swap,
   template,
   text,
+  chain, // <-- Add chain import
 } from "./buttonTypes";
 import { getButtonPosition, getInlineButtonPosition } from "./parser";
 import templater from "./templater";
@@ -141,5 +142,9 @@ const clickHandler = async (
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);
     await remove(app, args, position);
+  }
+  if (args.type === "chain") {
+    await chain(app, args, position, inline, id, activeFile);
+    return;
   }
 };

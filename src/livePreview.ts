@@ -20,7 +20,8 @@ import {
   text, 
   swap, 
   remove,
-  replace
+  replace,
+  chain
 } from "./buttonTypes";
 import templater from "./templater";
 
@@ -219,6 +220,10 @@ class ButtonWidget extends WidgetType {
     if (args.remove) {
       position = await getInlineButtonPosition(this.app, this.id);
       await remove(this.app, args, position);
+    }
+    if (args.type === "chain") {
+      await chain(this.app, args, position, true, this.id, activeFile);
+      return;
     }
   }
 }

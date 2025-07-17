@@ -28,6 +28,7 @@ interface OutputObject {
   blockId: string;
   folder: string;
   prompt: boolean;
+  actions?: { type: string; action: string }[]; // Add actions field for chain buttons
 }
 
 export const insertButton = (app: App, outputObject: OutputObject): void => {
@@ -48,6 +49,10 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   outputObject.class && buttonArr.push(`class ${outputObject.class}`);
   outputObject.folder && buttonArr.push(`folder ${outputObject.folder}`);
   outputObject.folder && buttonArr.push(`prompt ${outputObject.prompt}`);
+  // Handle actions array for chain buttons
+  if (outputObject.actions && Array.isArray(outputObject.actions) && outputObject.actions.length > 0) {
+    buttonArr.push(`actions ${JSON.stringify(outputObject.actions)}`);
+  }
   buttonArr.push("```");
   outputObject.blockId
     ? buttonArr.push(`^button-${outputObject.blockId}`)
@@ -64,16 +69,92 @@ export const insertInlineButton = (app: App, id: string): void => {
   editor.replaceSelection(`\`button-${id}\``);
 };
 
-export const createArgumentObject = (source: string): Arguments =>
-  source.split("\n").reduce((acc: Arguments, i: string) => {
-    const split: string[] = i.split(" ");
-    const key: string = split[0].toLowerCase();
-    acc[key] = split
-      .filter((item) => item !== split[0])
-      .join(" ")
-      .trim();
-    return acc;
-  }, {});
+export const createArgumentObject = (source: string): Arguments => {
+  const lines = source.split("\n");
+  const acc: Arguments = {};
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const split: string[] = line.split(" ");
+    const key: string = split[0]?.toLowerCase();
+    if (!key) continue;
+    if (key === "actions") {
+      // Collect all lines for the JSON array
+      const jsonLines = [line.replace(/^actions\s*/, "")];
+      
+      // Robust JSON parsing that handles all bracket types and string literals
+      let bracketCount = 0;
+      let braceCount = 0;
+      let inString = false;
+      let escaped = false;
+      
+      // Count brackets in the first line
+      for (const char of jsonLines[0]) {
+        if (escaped) {
+          escaped = false;
+          continue;
+        }
+        if (char === '\\') {
+          escaped = true;
+          continue;
+        }
+        if (char === '"' && !escaped) {
+          inString = !inString;
+          continue;
+        }
+        if (!inString) {
+          if (char === '[') bracketCount++;
+          else if (char === ']') bracketCount--;
+          else if (char === '{') braceCount++;
+          else if (char === '}') braceCount--;
+        }
+      }
+      
+      // Continue reading lines until all brackets and braces are balanced
+      while ((bracketCount > 0 || braceCount > 0) && i + 1 < lines.length) {
+        i++;
+        const nextLine = lines[i];
+        jsonLines.push(nextLine);
+        
+        // Count brackets in the new line
+        for (const char of nextLine) {
+          if (escaped) {
+            escaped = false;
+            continue;
+          }
+          if (char === '\\') {
+            escaped = true;
+            continue;
+          }
+          if (char === '"' && !escaped) {
+            inString = !inString;
+            continue;
+          }
+          if (!inString) {
+            if (char === '[') bracketCount++;
+            else if (char === ']') bracketCount--;
+            else if (char === '{') braceCount++;
+            else if (char === '}') braceCount--;
+          }
+        }
+      }
+      
+      const jsonString = jsonLines.join("\n").trim();
+      try {
+        acc[key] = JSON.parse(jsonString);
+      } catch (e) {
+        new Notice(
+          "Error: Malformed JSON in actions field. Please check your chain button syntax.",
+          4000
+        );
+        acc[key] = [];
+      }
+    } else {
+      const value = split.slice(1).join(" ").trim();
+      acc[key] = value;
+    }
+  }
+  return acc;
+};
 
 export const createContentArray = async (
   app: App
