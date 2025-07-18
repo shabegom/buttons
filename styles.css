@@ -132,39 +132,39 @@ button.button-default.orange{
 }
 
 button.button-default.blue:hover {
-  background: #76b3fa !important;
+  background: #8bc4ff !important;
   color: black !important;
-  border-color: #76b3fa !important;
+  border-color: #8bc4ff !important;
 }
 
 button.button-default.red:hover {
-  background: red !important;
+  background: #ff4444 !important;
   color: black !important;
-  border-color: red !important;
+  border-color: #ff4444 !important;
 }
 
 button.button-default.green:hover {
-  background: green !important;
+  background: #44ff44 !important;
   color: black !important;
-  border-color: green !important;
+  border-color: #44ff44 !important;
 }
 
 button.button-default.yellow:hover {
-  background: yellow !important;
+  background: #ffff44 !important;
   color: black !important;
-  border-color: yellow !important;
+  border-color: #ffff44 !important;
 }
 
 button.button-default.purple:hover {
-  background: #725585 !important;
+  background: #8a6ba8 !important;
   color: white !important;
-  border-color: #725585 !important;
+  border-color: #8a6ba8 !important;
 }
 
 button.button-default.orange:hover {
-    background: #ff944c !important;
+    background: #ffb366 !important;
     color: black !important;
-    border-color: #ff944c !important;
+    border-color: #ffb366 !important;
 }
 
 .button-maker {
