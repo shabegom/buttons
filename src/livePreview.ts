@@ -134,9 +134,8 @@ class ButtonWidget extends WidgetType {
         // Update the button element content (not structure)
         this.el.innerText = name || "";
         
-        // Update classes - remove default and add custom classes
+        // Update classes - keep button-default and add custom classes
         if (className) {
-          this.el.removeClass("button-default");
           this.el.addClass(className);
         }
         if (color) {

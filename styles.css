@@ -95,58 +95,64 @@ button.button-inline {
   padding: 0 8px;
 }
 
-button.blue {
-  background: #76b3fa;
-  color: black;
+button.button-default.blue {
+  background: #76b3fa !important;
+  color: black !important;
 }
 
-button.red {
-  background-color: red;
+button.button-default.red {
+  background-color: red !important;
+  color: black !important;
 }
 
-button.green {
-  background: green;
+button.button-default.green {
+  background: green !important;
+  color: black !important;
 }
 
-button.yellow {
-  background: yellow;
-  color: black;
+button.button-default.yellow {
+  background: yellow !important;
+  color: black !important;
 }
 
-button.purple {
-  background: #725585;
+button.button-default.purple {
+  background: #725585 !important;
+  color: white !important;
 }
 
-button.orange{
-    background: #ff944c;
-    color: black;
+button.button-default.orange{
+    background: #ff944c !important;
+    color: black !important;
 }
 
-button.blue:hover {
-  background: #76b3fa;
-  color: black;
+button.button-default.blue:hover {
+  background: #76b3fa !important;
+  color: black !important;
 }
 
-button.red:hover {
-  background: red;
+button.button-default.red:hover {
+  background: red !important;
+  color: black !important;
 }
 
-button.green:hover {
-  background: green;
+button.button-default.green:hover {
+  background: green !important;
+  color: black !important;
 }
 
-button.yellow:hover {
-  background: yellow;
-  color: black;
+button.button-default.yellow:hover {
+  background: yellow !important;
+  color: black !important;
 }
 
-button.purple:hover {
-  background: #725585;
+button.button-default.purple:hover {
+  background: #725585 !important;
+  color: white !important;
 }
 
-button.orange:hover {
-    background: #ff944c;
-    color: black;
+button.button-default.orange:hover {
+    background: #ff944c !important;
+    color: black !important;
 }
 
 .button-maker {

@@ -565,30 +565,14 @@ export class ButtonModal extends Modal {
               return
             }
             this.outputObject.color = value;
-            const buttonClass = this.buttonPreviewEl
-              .getAttribute("class")
-              .replace(" blue", "")
-              .replace(" red", "")
-              .replace(" green", "")
-              .replace(" yellow", "")
-              .replace(" purple", "");
             if (value !== "default") {
               this.buttonPreviewEl.setAttribute(
                 "class",
-                `${buttonClass} ${value}`
+                `button-default ${value}`
               );
-              if (value === "blue") {
-                value = "#76b3fa";
-              }
-              if (value === "purple") {
-                value = "#725585";
-              }
-              this.buttonPreviewEl.setAttribute(
-                "style",
-                `background: ${value}`
-              );
+              this.buttonPreviewEl.removeAttribute("style");
             } else {
-              this.buttonPreviewEl.setAttribute("class", `${buttonClass}`);
+              this.buttonPreviewEl.setAttribute("class", "button-default");
               this.buttonPreviewEl.removeAttribute("style");
             }
           });
