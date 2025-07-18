@@ -55,22 +55,22 @@ settings:
 }
 
 button.button-default {
-  background: var(--interactive-normal);
+  background: var(--interactive-normal, #f5f6f8);
   border-radius: 5px;
-  border: 1px solid var(--interactive-accent);
-  color: var(--text-accent);
+  border: 1px solid var(--interactive-accent, #ccc);
+  color: var(--text-accent, #333);
   padding: 10px 30px;
   text-decoration: none;
-  font-size: var(--button-size);
+  font-size: var(--button-size, 1em);
   margin: 0;
   box-shadow: none;
   transform: none;
 }
 
 button.button-default:hover {
-  background: var(--interactive-hover);
-  border: 1px solid var(--interactive-accent-hover);
-  color: var(--text-accent-hover);
+  background: var(--interactive-hover, #e8e9ea);
+  border: 1px solid var(--interactive-accent-hover, #999);
+  color: var(--text-accent-hover, #222);
   box-shadow: none;
   transform: none;
 }
@@ -82,9 +82,9 @@ button.button-default:hover {
 }
 
 .theme-dark button.button-default:hover {
-  background: var(--interactive-hover);
-  border: 1px solid var(--interactive-accent-hover);
-  color: var(--text-accent-hover);
+  background: var(--interactive-hover, #222);
+  border: 1px solid var(--interactive-accent-hover, #84a83a);
+  color: var(--text-accent-hover, #f5f6f8);
   box-shadow: none;
   transform: none;
 }
