@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     // "inlineSourceMap": true,
     // "inlineSources": true,
     "jsx": "preserve",
