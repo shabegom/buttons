@@ -8,8 +8,14 @@ import {
   setButtonSwapById,
   getButtonById,
 } from "../buttonStore";
-
-import { getButtonHandler, getTemplaterHandler } from "./registry";
+import { templater } from "./templater";
+import { replace } from "./replace";
+import { command } from "./command";
+import { link } from "./link";
+import { template } from "./template";
+import { calculate } from "./calculate";
+import { text } from "./text";
+import { remove } from "./remove";
 
 export const swap = async (
   app: App,
@@ -28,33 +34,20 @@ export const swap = async (
     let content;
     if (args) {
       if (args.templater) {
-        // Handle templater separately
-        const templaterHandler = getTemplaterHandler();
-        if (templaterHandler) {
-          args = await templaterHandler(app, position);
-        }
+        args = await templater(app, position);
         if (inline) {
           new Notice("templater args don't work with inline buttons yet", 2000);
         }
       }
       if (args.replace) {
-        const replaceHandler = getButtonHandler("replace");
-        if (replaceHandler) {
-          await replaceHandler(app, args, position);
-        }
+        await replace(app, args);
       }
       if (args.type === "command") {
-        const commandHandler = getButtonHandler("command");
-        if (commandHandler) {
-          commandHandler(app, args, buttonStart);
-        }
+        command(app, args, buttonStart);
       }
       // handle link buttons
       if (args.type === "link") {
-        const linkHandler = getButtonHandler("link");
-        if (linkHandler) {
-          linkHandler(app, args, position);
-        }
+        link(args);
       }
       // handle template buttons
       if (args.type && args.type.includes("template")) {
@@ -62,26 +55,17 @@ export const swap = async (
         position = inline
           ? await getInlineButtonPosition(app, id)
           : getButtonPosition(content, args);
-        const templateHandler = getButtonHandler("template");
-        if (templateHandler) {
-          await templateHandler(app, args, position);
-        }
+        await template(app, args, position);
       }
       if (args.type === "calculate") {
-        const calculateHandler = getButtonHandler("calculate");
-        if (calculateHandler) {
-          await calculateHandler(app, args, position);
-        }
+        await calculate(app, args, position);
       }
       if (args.type && args.type.includes("text")) {
         content = await app.vault.read(file);
         position = inline
           ? await getInlineButtonPosition(app, id)
           : getButtonPosition(content, args);
-        const textHandler = getButtonHandler("text");
-        if (textHandler) {
-          await textHandler(app, args, position);
-        }
+        await text(app, args, position);
       }
       // handle removing the button
       if (args.remove) {
@@ -89,16 +73,10 @@ export const swap = async (
         position = inline
           ? await getInlineButtonPosition(app, id)
           : getButtonPosition(content, args);
-        const removeHandler = getButtonHandler("remove");
-        if (removeHandler) {
-          await removeHandler(app, args, position);
-        }
+        await remove(app, args, position);
       }
       if (args.replace) {
-        const replaceHandler = getButtonHandler("replace");
-        if (replaceHandler) {
-          await replaceHandler(app, args, position);
-        }
+        await replace(app, args);
       }
     }
   });

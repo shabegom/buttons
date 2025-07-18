@@ -8,6 +8,4 @@ export { copy } from "./copy";
 export { command } from "./command";
 export { swap } from "./swap";
 export { templater } from "./templater";
-export { chain } from "./chain";
-export * from "./registry";
-export { setupButtonHandlers } from "./setup"; 
+export { chain } from "./chain"; 
