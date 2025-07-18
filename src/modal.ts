@@ -547,7 +547,11 @@ export class ButtonModal extends Modal {
                 .addText((el) => {
                   el.setPlaceholder("#FFFFFF");
                   el.onChange((value: string) => {
-                    this.buttonPreviewEl.className = "";
+                    // Preserve custom classes when setting custom background
+                    const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                      cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+                    );
+                    this.buttonPreviewEl.className = currentClasses.join(' ');
                     this.buttonPreviewEl.style.background = value;
                     this.outputObject.customColor = value;
                   });
@@ -557,7 +561,11 @@ export class ButtonModal extends Modal {
                 .addText((el) => {
                   el.setPlaceholder("#000000");
                   el.onChange((value: string) => {
-                    this.buttonPreviewEl.className = "";
+                    // Preserve custom classes when setting custom text color
+                    const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                      cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+                    );
+                    this.buttonPreviewEl.className = currentClasses.join(' ');
                     this.buttonPreviewEl.style.color = value;
                     this.outputObject.customTextColor = value;
                   });
@@ -565,30 +573,22 @@ export class ButtonModal extends Modal {
               return
             }
             this.outputObject.color = value;
-            const buttonClass = this.buttonPreviewEl
-              .getAttribute("class")
-              .replace(" blue", "")
-              .replace(" red", "")
-              .replace(" green", "")
-              .replace(" yellow", "")
-              .replace(" purple", "");
             if (value !== "default") {
+              // Preserve custom classes when setting color
+              const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+              );
               this.buttonPreviewEl.setAttribute(
                 "class",
-                `${buttonClass} ${value}`
+                `button-default ${value} ${currentClasses.join(' ')}`.trim()
               );
-              if (value === "blue") {
-                value = "#76b3fa";
-              }
-              if (value === "purple") {
-                value = "#725585";
-              }
-              this.buttonPreviewEl.setAttribute(
-                "style",
-                `background: ${value}`
-              );
+              this.buttonPreviewEl.removeAttribute("style");
             } else {
-              this.buttonPreviewEl.setAttribute("class", `${buttonClass}`);
+              // Preserve custom classes when setting default color
+              const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+              );
+              this.buttonPreviewEl.setAttribute("class", `button-default ${currentClasses.join(' ')}`.trim());
               this.buttonPreviewEl.removeAttribute("style");
             }
           });
