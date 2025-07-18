@@ -547,7 +547,11 @@ export class ButtonModal extends Modal {
                 .addText((el) => {
                   el.setPlaceholder("#FFFFFF");
                   el.onChange((value: string) => {
-                    this.buttonPreviewEl.className = "";
+                    // Preserve custom classes when setting custom background
+                    const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                      cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+                    );
+                    this.buttonPreviewEl.className = currentClasses.join(' ');
                     this.buttonPreviewEl.style.background = value;
                     this.outputObject.customColor = value;
                   });
@@ -557,7 +561,11 @@ export class ButtonModal extends Modal {
                 .addText((el) => {
                   el.setPlaceholder("#000000");
                   el.onChange((value: string) => {
-                    this.buttonPreviewEl.className = "";
+                    // Preserve custom classes when setting custom text color
+                    const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                      cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+                    );
+                    this.buttonPreviewEl.className = currentClasses.join(' ');
                     this.buttonPreviewEl.style.color = value;
                     this.outputObject.customTextColor = value;
                   });
@@ -566,13 +574,21 @@ export class ButtonModal extends Modal {
             }
             this.outputObject.color = value;
             if (value !== "default") {
+              // Preserve custom classes when setting color
+              const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+              );
               this.buttonPreviewEl.setAttribute(
                 "class",
-                `button-default ${value}`
+                `button-default ${value} ${currentClasses.join(' ')}`.trim()
               );
               this.buttonPreviewEl.removeAttribute("style");
             } else {
-              this.buttonPreviewEl.setAttribute("class", "button-default");
+              // Preserve custom classes when setting default color
+              const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
+                cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
+              );
+              this.buttonPreviewEl.setAttribute("class", `button-default ${currentClasses.join(' ')}`.trim());
               this.buttonPreviewEl.removeAttribute("style");
             }
           });
