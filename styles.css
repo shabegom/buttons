@@ -98,61 +98,73 @@ button.button-inline {
 button.button-default.blue {
   background: #76b3fa !important;
   color: black !important;
+  border-color: #76b3fa !important;
 }
 
 button.button-default.red {
   background-color: red !important;
   color: black !important;
+  border-color: red !important;
 }
 
 button.button-default.green {
   background: green !important;
   color: black !important;
+  border-color: green !important;
 }
 
 button.button-default.yellow {
   background: yellow !important;
   color: black !important;
+  border-color: yellow !important;
 }
 
 button.button-default.purple {
   background: #725585 !important;
   color: white !important;
+  border-color: #725585 !important;
 }
 
 button.button-default.orange{
     background: #ff944c !important;
     color: black !important;
+    border-color: #ff944c !important;
 }
 
 button.button-default.blue:hover {
   background: #76b3fa !important;
   color: black !important;
+  border-color: #76b3fa !important;
 }
 
 button.button-default.red:hover {
   background: red !important;
   color: black !important;
+  border-color: red !important;
 }
 
 button.button-default.green:hover {
   background: green !important;
   color: black !important;
+  border-color: green !important;
 }
 
 button.button-default.yellow:hover {
   background: yellow !important;
   color: black !important;
+  border-color: yellow !important;
 }
 
 button.button-default.purple:hover {
   background: #725585 !important;
   color: white !important;
+  border-color: #725585 !important;
 }
 
 button.button-default.orange:hover {
     background: #ff944c !important;
     color: black !important;
+    border-color: #ff944c !important;
 }
 
 .button-maker {
