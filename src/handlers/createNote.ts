@@ -36,34 +36,42 @@ export const createNote = async (
           ? `${directoryPath}/${promptedName}.md`
           : fullPath;
       }
+      
       let file: TFile;
 
+      // Case 1: filePath is a string (file content)
       if (typeof filePath === "string") {
         file = await app.vault.create(fullPath, filePath);
       }
-
-      const templateContent = await app.vault.read(filePath as TFile);
-      if (isTemplater) {
-        file = await app.vault.create(fullPath, templateContent);
-        const runTemplater = await templater(app, filePath as TFile, file);
-        const content = await app.vault.read(filePath as TFile);
-        const processed = await runTemplater(content);
-        await app.vault.modify(file, processed);
+      // Case 2: filePath is a TFile (template file)
+      else {
+        if (isTemplater) {
+          // For templater, create file with template content first
+          const templateContent = await app.vault.read(filePath);
+          file = await app.vault.create(fullPath, templateContent);
+          
+          // Then process with templater
+          const runTemplater = await templater(app, filePath, file);
+          const content = await app.vault.read(filePath);
+          const processed = await runTemplater(content);
+          await app.vault.modify(file, processed);
+        } else {
+          // For regular templates, create empty file first
+          file = await app.vault.create(fullPath, "");
+          
+          // Then insert template content
+          await app.internalPlugins?.plugins["templates"].instance
+            .insertTemplate(filePath);
+        }
       }
-      if (!isTemplater && typeof filePath !== "string") {
-        file = await app.vault.create(fullPath, "");
-      }
 
+      // Open the file in the appropriate view
       if (path[2] === "split") {
-        await app.workspace.splitActiveLeaf().openFile(file);
+        await app.workspace.getLeaf(true).openFile(file);
       } else if (path[2] === "tab") {
         await app.workspace.getLeaf(!0).openFile(file);
       } else {
         await app.workspace.getLeaf().openFile(file);
-      }
-      if (!isTemplater && typeof filePath !== "string") {
-        await app.internalPlugins?.plugins["templates"].instance
-          .insertTemplate(filePath);
       }
     } catch (e) {
       console.error("Error in Buttons: ", e);
