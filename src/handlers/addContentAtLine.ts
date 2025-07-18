@@ -8,7 +8,7 @@ export const addContentAtLine = async (
   isTemplater: boolean,
 ): Promise<void> => {
   const lineNumber = type.match(/(\d+)/g);
-  if (lineNumber[0]) {
+  if (lineNumber && lineNumber[0]) {
     const insertionPoint = parseInt(lineNumber[0]) - 1;
     const activeView = app.workspace.getActiveViewOfType(MarkdownView);
     if (activeView) {
