@@ -153,14 +153,4 @@ color blue
 
 You can always edit this code by hand after generation to add advanced features or fine-tune the configuration.
 
-## Troubleshooting
-
-**Button doesn't appear**: Make sure you have a unique button ID and that you're not in edit mode.
-
-**Command not working**: Verify the command name matches exactly what appears in the Command Palette.
-
-**Template not found**: Check that your template is in the configured templates directory and has the correct file extension.
-
-**Chain button fails**: Ensure each action in your chain uses valid syntax and references existing resources.
-
 The Button Maker is designed to make button creation accessible to everyone, regardless of technical experience. It handles the syntax and formatting automatically, letting you focus on what you want your buttons to do.

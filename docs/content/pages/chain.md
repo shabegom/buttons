@@ -74,8 +74,6 @@ The `actions` field must be a valid JSON array of objects. Each action object re
 ## Advanced Chain Examples
 
 ### Project Setup Chain
-This chain creates a new project note and sets up the basic structure:
-
 <pre>
 ```button
 name New Project Setup
@@ -92,8 +90,6 @@ actions [
 </pre>
 
 ### Weekly Review Chain
-Automate your weekly review process:
-
 <pre>
 ```button
 name Weekly Review
@@ -106,24 +102,6 @@ actions [
 ]
 ```
 ^button-weekly-review  
-</pre>
-
-### Research Note Chain
-Create a research note with metadata and structure:
-
-<pre>
-```button
-name Research Note
-type chain  
-actions [
-  {"type": "note(Research - Topic, tab) template", "action": "Research Template"},
-  {"type": "line(1) text", "action": "created:: [[<% tp.date.now() %>]]"},
-  {"type": "append text", "action": "## Summary"},
-  {"type": "append text", "action": "## Key Points"},
-  {"type": "append text", "action": "## References"}
-]
-```
-^button-research-note
 </pre>
 
 ## Using Chain Buttons with [Templater](/usage/templater)
@@ -143,14 +121,6 @@ actions [
 ^button-timestamped
 </pre>
 
-## Tips for Chain Buttons
-
-1. **Order matters**: Actions execute from top to bottom
-2. **JSON formatting**: The actions array must be valid JSON
-3. **Error handling**: If one action fails, the rest will still attempt to run
-4. **Testing**: Start with simple chains and build complexity gradually
-5. **Performance**: Very long chains might feel slow - consider breaking them up
-
 ## Creating Chain Buttons
 
 **Using the [Button Maker](/maker):**
@@ -162,5 +132,12 @@ actions [
 - Use a JSON validator if you run into formatting issues
 - Each action object needs both `type` and `action` fields
 - Remember to escape quotes inside action strings if needed
+
+## Tips for Chain Buttons
+
+1. **Order matters**: Actions execute from top to bottom
+2. **JSON formatting**: The actions array must be valid JSON
+3. **Error handling**: If one action fails, the rest will still attempt to run
+4. **Testing**: Start with simple chains and build complexity gradually
 
 Chain buttons are incredibly powerful for automating complex workflows. Start simple and gradually build more sophisticated automation as you get comfortable with the syntax.

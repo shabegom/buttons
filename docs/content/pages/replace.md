@@ -52,22 +52,6 @@ replace [2,4]
 
 This replaces the weather data (lines 2-4) with fresh content from the Weather Template.
 
-### Replace Meeting Notes
-<pre>
-# Meeting Notes
-Attendees: TBD
-Topics: TBD
-Action Items: TBD
-
-```button
-name Load Meeting Template
-type prepend template  
-action Meeting Template
-replace [2,4]
-```
-^button-meeting-template
-</pre>
-
 ## Replace with Text Buttons
 
 ### Update Status Line
@@ -147,90 +131,6 @@ templater true
 ^button-daily-plan
 </pre>
 
-## Advanced Replace Patterns
-
-### Replace Multiple Sections
-<pre>
-## Project Info
-Name: TBD
-Status: Unknown
-Owner: Unassigned
-
-## Timeline
-Start: TBD
-End: TBD
-Milestones: None
-
-```button
-name Initialize Project
-type prepend template
-action Project Init Template  
-replace [2,4]
-```
-^button-init-project
-
-```button
-name Set Timeline
-type line(7) template
-action Timeline Template
-replace [7,9]
-```
-^button-set-timeline
-</pre>
-
-### Conditional Replace
-<pre>
-Current Mode: Development
-
-```button
-name Switch to Production
-type line(1) text
-action Current Mode: Production
-replace [1,1]
-```
-^button-production
-
-```button  
-name Switch to Development
-type line(1) text
-action Current Mode: Development
-replace [1,1]
-```
-^button-development
-</pre>
-
-### Progressive Updates
-<pre>
-Setup Progress:
-- [ ] Step 1: Planning
-- [ ] Step 2: Design
-- [ ] Step 3: Implementation
-
-```button
-name Complete Step 1
-type line(2) text
-action - [x] Step 1: Planning ✅
-replace [2,2]
-```
-^button-step1
-
-```button
-name Complete Step 2  
-type line(3) text
-action - [x] Step 2: Design ✅
-replace [3,3]
-```
-^button-step2
-
-```button
-name Complete Step 3
-type line(4) text
-action - [x] Step 3: Implementation ✅
-replace [4,4]  
-```
-^button-step3
-</pre>
-
 ## Replace with Chain Buttons
 
 Combine replace functionality with [Chain Buttons](/usage/types/chain):
@@ -295,40 +195,5 @@ templater true
 - **Dedicated sections**: Create sections specifically for replaced content
 - **Clear boundaries**: Use headers or separators to mark replaceable areas
 - **Consistent formatting**: Maintain consistent line structure for reliable replacement
-
-### Error Prevention
-- **Count twice**: Double-check line numbers before deployment
-- **Use comments**: Add invisible comments to mark line boundaries
-- **Test incrementally**: Start with small replace ranges and expand
-
-## Common Replace Use Cases
-
-### Status Dashboards
-- Project status updates
-- Task completion tracking  
-- System health monitoring
-- Progress indicators
-
-### Dynamic Content
-- Weather information
-- Date/time stamps
-- Calculated values
-- External data integration
-
-### Configuration Management
-- Settings updates
-- Environment switching
-- Feature flags
-- Parameter adjustment
-
-## Troubleshooting Replace
-
-**Wrong lines replaced**: Verify line counting - empty lines and button blocks count as lines.
-
-**Replace not working**: Check that the line numbers exist and are within the note bounds.
-
-**Content corruption**: Always test replace operations on copies first.
-
-**Line numbers change**: When content is added/removed above your replace section, line numbers shift.
 
 Replace mutations provide precise control over content updates, enabling sophisticated workflows where specific sections of your notes can be dynamically refreshed while preserving the surrounding context and structure.

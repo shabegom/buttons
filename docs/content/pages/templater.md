@@ -56,24 +56,6 @@ templater true
 ^button-daily-note
 </pre>
 
-### Project Notes with Date
-<pre>
-```button
-name New Project Note
-type note(Project - <% tp.date.now("YYYY-MM-DD") %>, split) text
-action # Project Started <% tp.date.now("MMMM Do, YYYY") %>
-
-## Project Overview
-
-## Goals
-
-## Timeline
-
-templater true
-```
-^button-project-note
-</pre>
-
 ## Text Insertion with Templater
 
 ### Dynamic Text Append
@@ -92,22 +74,6 @@ Action items:
 templater true
 ```
 ^button-meeting-log
-</pre>
-
-### Prepend with Metadata
-<pre>
-```button
-name Add Metadata Header
-type prepend text
-action ---
-created: <% tp.date.now("YYYY-MM-DD") %>
-modified: <% tp.date.now("YYYY-MM-DD HH:mm") %>
-tags: []
----
-
-templater true
-```
-^button-metadata
 </pre>
 
 ### Line Replacement with Time
@@ -135,17 +101,6 @@ templater true
 ^button-weekly-review
 </pre>
 
-### Monthly Planning
-<pre>
-```button
-name Monthly Planning
-type note(<% tp.date.now("YYYY-MM") %> Planning, tab) template  
-action Monthly Template
-templater true
-```
-^button-monthly
-</pre>
-
 ## Advanced Templater Examples
 
 ### Context-Aware Buttons
@@ -157,23 +112,6 @@ action Referenced from: [[<% tp.file.title %>]] on <% tp.date.now("YYYY-MM-DD") 
 templater true
 ```
 ^button-reference
-</pre>
-
-### Dynamic File Paths
-<pre>
-```button
-name Create Sub-note
-type note(<% tp.file.folder() %>/<% tp.file.title %> - Details) text
-action # Details for <% tp.file.title %>
-
-Created: <% tp.date.now() %>
-Parent: [[<% tp.file.title %>]]
-
-## Content
-
-templater true
-```
-^button-sub-note
 </pre>
 
 ### Conditional Content
@@ -254,25 +192,6 @@ actions [
 
 This means each click processes fresh dynamic content while preserving the template for future use.
 
-## Best Practices
-
-### Format Consistency
-Use consistent date formats throughout your vault:
-- `YYYY-MM-DD` for dates
-- `HH:mm` for times  
-- `YYYY-MM-DD HH:mm` for timestamps
-
-### Error Handling
-Test Templater commands in regular templates before using them in buttons:
-- Verify syntax is correct
-- Check that functions are available
-- Test edge cases (weekends, month boundaries, etc.)
-
-### Performance Considerations
-- Complex Templater scripts may slow button execution
-- Test performance with your typical use patterns
-- Consider breaking complex operations into multiple buttons
-
 ## Templater Requirements
 
 To use Templater with buttons:
@@ -280,15 +199,5 @@ To use Templater with buttons:
 2. Enable Templater in Community Plugins
 3. Configure your templates folder in Templater settings
 4. Add `templater true` to your button configuration
-
-## Troubleshooting
-
-**Templater command not processing**: Ensure the Templater plugin is installed and enabled.
-
-**Syntax errors**: Test Templater commands in a regular template file first.
-
-**Date formatting issues**: Check Templater documentation for correct format strings.
-
-**Button reverts incorrectly**: Verify there are no conflicting characters in your template commands.
 
 Templater integration makes buttons incredibly powerful for creating dynamic, context-aware workflows that adapt to your current environment and needs.

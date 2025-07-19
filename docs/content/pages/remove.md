@@ -95,41 +95,6 @@ remove true
 ^button-evening-setup
 </pre>
 
-### Project Workflow Buttons
-Create a sequence of buttons that clean up as you progress:
-
-<pre>
-```button
-name Initialize Project
-type note(New Project) template
-action Project Template
-remove true
-```
-^button-init-project
-</pre>
-
-<pre>
-```button
-name Setup Complete
-type append text
-action ## Setup Phase Complete ✅
-
-Ready for development phase.
-remove [init-project, config-project]
-```
-^button-setup-complete
-</pre>
-
-<pre>
-```button
-name Configure Project
-type append template
-action Config Template
-remove [init-project]
-```
-^button-config-project
-</pre>
-
 ### Weekly Planning Cleanup
 Remove planning buttons after making decisions:
 
@@ -186,17 +151,6 @@ remove true
 ^button-docs-once
 </pre>
 
-### Template Buttons
-<pre>
-```button
-name Create Meeting Note
-type note(Team Meeting) template
-action Meeting Template
-remove [meeting-prep, agenda-setup]
-```
-^button-meeting-note
-</pre>
-
 ### Chain Buttons with Remove
 <pre>
 ```button
@@ -210,90 +164,6 @@ actions [
 ]
 ```
 ^button-complete-workflow
-</pre>
-
-## Advanced Remove Patterns
-
-### Conditional Removal
-Create buttons that remove others based on the action taken:
-
-<pre>
-```button
-name Accept Proposal
-type append text
-action ## Proposal Accepted ✅
-
-Moving forward with implementation.
-remove [accept, reject, review]
-```
-^button-accept
-</pre>
-
-<pre>
-```button
-name Reject Proposal
-type append text
-action ## Proposal Rejected ❌
-
-Looking for alternatives.
-remove [accept, reject, review]
-```
-^button-reject
-</pre>
-
-<pre>
-```button
-name Request Review
-type append text
-action ## Proposal Under Review
-
-Waiting for feedback.
-remove [review]
-```
-^button-review
-</pre>
-
-### Progressive Removal
-Remove buttons as you complete steps in a process:
-
-<pre>
-```button
-name Step 1: Planning
-type append text
-action ## Step 1 Complete: Planning ✅
-remove [step1]
-```
-^button-step1
-</pre>
-
-<pre>
-```button
-name Step 2: Design
-type append text
-action ## Step 2 Complete: Design ✅
-remove [step2]
-```
-^button-step2
-</pre>
-
-<pre>
-```button
-name Step 3: Implementation
-type append text
-action ## Step 3 Complete: Implementation ✅
-remove [step3, all-complete]
-```
-^button-step3
-</pre>
-
-<pre>
-```button
-name Mark All Complete
-type append text
-action ## All Steps Complete! 🎉
-remove [step1, step2, step3]
-```
-^button-all-complete
 </pre>
 
 ## Remove with [Inline Buttons](/usage/inline)
@@ -340,20 +210,5 @@ remove true
 - Use descriptive IDs for buttons you'll reference
 - Group related buttons with similar ID prefixes
 - Keep a mental map of which buttons remove which
-
-### User Experience
-- Make it clear which buttons will disappear
-- Don't remove buttons that users might need again
-- Consider using [button styling](/usage/styling) to indicate temporary buttons
-
-## Troubleshooting Remove
-
-**Button not removing**: Check that the button ID exists and matches exactly (case-sensitive).
-
-**Wrong buttons removed**: Verify the IDs in your remove array are correct.
-
-**Remove not working with inline buttons**: The remove functionality affects the original button codeblock, not the inline reference.
-
-**Undo removed buttons**: Unfortunately, removed buttons can't be undone - you'll need to recreate them manually.
 
 Remove mutations are powerful for creating clean, progressive workflows where buttons serve their purpose and then get out of the way, keeping your notes uncluttered and focused on current actions.

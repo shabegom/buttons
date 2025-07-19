@@ -81,76 +81,6 @@ LinkedIn: linkedin.com/in/johnsmith
 ^button-copy-contact
 </pre>
 
-## Advanced Copy Examples
-
-### Copy Markdown Templates
-<pre>
-```button
-name Copy Meeting Notes Template
-type copy
-action # Meeting Notes - [Date]
-
-**Attendees:** 
-**Date:** 
-**Time:** 
-
-## Agenda
-1. 
-2. 
-3. 
-
-## Discussion
-
-## Action Items
-- [ ] 
-- [ ] 
-- [ ] 
-
-## Next Meeting
-**Date:** 
-**Time:** 
-```
-^button-copy-meeting-template
-</pre>
-
-### Copy Social Media Post
-<pre>
-```button
-name Copy Twitter Post
-type copy
-action 🚀 Just published a new blog post about productivity tips! 
-
-Key takeaways:
-✅ Use time-blocking
-✅ Limit notifications  
-✅ Take regular breaks
-
-What's your best productivity tip? 👇
-
-#productivity #tips #workflow
-```
-^button-copy-social
-</pre>
-
-### Copy Multi-line Code Block
-<pre>
-```button
-name Copy Python Function
-type copy
-action def calculate_average(numbers):
-    """Calculate the average of a list of numbers."""
-    if not numbers:
-        return 0
-    return sum(numbers) / len(numbers)
-
-# Example usage
-scores = [85, 92, 78, 96, 88]
-average = calculate_average(scores)
-print(f"Average score: {average}")
-```
-^button-copy-python
-</pre>
-
 ## Using Copy Buttons with [Templater](/usage/templater)
 
 Make your copy buttons dynamic with Templater commands:
@@ -256,13 +186,5 @@ class important-copy
 - Project planning structures
 - Habit tracking formats
 - Goal setting templates
-
-## Tips for Copy Buttons
-
-1. **Test your content**: Click the button to verify it copies correctly
-2. **Format for destination**: Consider where you'll paste the content
-3. **Use Templater**: Add dynamic elements like dates and file names
-4. **Visual feedback**: Use colors to distinguish different types of copy buttons
-5. **Organization**: Group related copy buttons in dedicated notes or sections
 
 Copy Buttons are incredibly useful for streamlining repetitive tasks and ensuring consistency in your text snippets. They're perfect for anyone who frequently copies and pastes similar content across different applications and contexts.

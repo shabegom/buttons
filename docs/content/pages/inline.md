@@ -86,29 +86,6 @@ This creates multiple buttons side by side for quick access.
 When you're ready to begin, click `button-start` and the workflow will begin automatically.
 </pre>
 
-## Advanced Inline Button Examples
-
-### Navigation Menu
-Create a navigation section with multiple inline buttons:
-
-<pre>
-## Quick Navigation
-`button-home` `button-projects` `button-archive` `button-settings`
-</pre>
-
-### Task Management
-<pre>
-**Today's Focus:**
-- Review emails `button-email-review`
-- Update project status `button-status-update`
-- Prepare meeting notes `button-meeting-prep`
-</pre>
-
-### Template Shortcuts
-<pre>
-**Templates:** `button-meeting` `button-project` `button-daily` `button-weekly`
-</pre>
-
 ## Inline Button Features
 
 ### Live Preview Support
@@ -174,20 +151,5 @@ Use `button-archive` to clean up completed tasks.
 - Use descriptive IDs: `button-meeting-setup` not `button1`
 - Group related buttons: `button-project-start`, `button-project-update`, `button-project-complete`
 - Keep IDs short but meaningful: `button-save` not `button-save-current-document`
-
-### Performance Tips
-- Inline buttons are lightweight and don't slow down note rendering
-- You can have many inline button references without performance issues
-- Button codeblocks are only processed once, regardless of how many inline references exist
-
-## Troubleshooting Inline Buttons
-
-**Button doesn't render:** Check that the Button ID starts with `button` and matches the codeblock ID exactly.
-
-**Wrong button appears:** Ensure Button IDs are unique across your vault.
-
-**Button ID not found:** Verify the source codeblock exists and has the correct Button ID.
-
-**Styling issues:** Make sure any custom classes or colors are defined in the source codeblock, not the inline reference.
 
 Inline Buttons are incredibly powerful for creating clean, functional interfaces within your notes. They let you maintain the power of buttons while keeping your content readable and organized.

@@ -20,7 +20,7 @@ Buttons is easy to install and works great out of the box. You can find it in [C
 
 That's it! You're ready to start creating buttons.
 
-## What's New in Version 0.7.1
+## What's New in Version 0.7.0
 
 **Latest Features:**
 - **[Chain Buttons](/usage/types/chain)**: Run multiple actions in sequence with one click
@@ -85,16 +85,6 @@ Buttons doesn't require any initial configuration and works immediately after in
 **Templates Setup**: If you plan to use [Template Buttons](/usage/types/template), ensure you have either:
 - Obsidian's core Templates plugin enabled with a templates folder configured
 - The Templater plugin installed and configured
-
-## Troubleshooting Installation
-
-**Plugin not appearing in search**: Make sure you have Community Plugins enabled in Settings → Community Plugins.
-
-**Installation fails**: Check your internet connection and try again. You can also try installing manually from GitHub.
-
-**Buttons not rendering**: Ensure the plugin is enabled in Settings → Community Plugins → Installed Plugins.
-
-**Missing functionality**: Make sure you have the latest version installed. Check for updates in Community Plugins.
 
 ## What's Next?
 

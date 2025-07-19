@@ -9,11 +9,9 @@ eleventyNavigation:
   title: "Mutations"
 ---
 
-Mutations are additional arguments added to a button to modify the note the
-button is in.
+Mutations are additional arguments added to a button to modify the note the button is in. They allow you to control what happens to the button and surrounding content when the button is clicked.
 
 The mutations available are:
 
-- [Replace](/usage/mutations/replace)
-- [Remove](/usage/mutations/remove)
-- [Swap](/usage/mutations/swap)
+- [Remove](/usage/mutations/remove) - Remove buttons after clicking
+- [Replace](/usage/mutations/replace) - Replace specific lines in the note
