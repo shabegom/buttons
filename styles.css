@@ -253,9 +253,9 @@ button.button-default.orange:hover {
   box-sizing: border-box;
 }
 
-.field-input,
-.field-select,
-.field-textarea {
+.button-maker .field-input,
+.button-maker .field-select,
+.button-maker .field-textarea {
   width: 100%;
   max-width: 100%;
   padding: 0.75rem;
@@ -268,23 +268,23 @@ button.button-default.orange:hover {
   box-sizing: border-box;
 }
 
-.field-input:focus,
-.field-select:focus,
-.field-textarea:focus {
+.button-maker .field-input:focus,
+.button-maker .field-select:focus,
+.button-maker .field-textarea:focus {
   outline: none;
   border-color: var(--interactive-accent);
   box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
 }
 
-/* Ensure dropdown options are visible in dark theme */
-.field-select option {
+/* Ensure dropdown options are visible in dark theme - specific to button maker */
+.button-maker .field-select option {
   background: var(--background-primary);
   color: var(--text-normal);
   padding: 0.5rem;
 }
 
-/* Style for selected option in dropdown */
-.field-select option:checked {
+/* Style for selected option in dropdown - specific to button maker */
+.button-maker .field-select option:checked {
   background: var(--interactive-accent);
   color: var(--text-on-accent);
 }
@@ -443,7 +443,7 @@ button.button-default.orange:hover {
   background: var(--background-modifier-error-hover);
 }
 
-.action-type-select {
+.button-maker .action-type-select {
   width: 100%;
   max-width: 100%;
   margin-bottom: 0.75rem;
@@ -456,14 +456,14 @@ button.button-default.orange:hover {
   font-size: 0.9rem;
 }
 
-/* Ensure action type dropdown options are visible */
-.action-type-select option {
+/* Ensure action type dropdown options are visible - specific to button maker */
+.button-maker .action-type-select option {
   background: var(--background-primary);
   color: var(--text-normal);
   padding: 0.5rem;
 }
 
-.action-type-select option:checked {
+.button-maker .action-type-select option:checked {
   background: var(--interactive-accent);
   color: var(--text-on-accent);
 }
