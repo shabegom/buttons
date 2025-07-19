@@ -166,12 +166,13 @@ export const createArgumentObject = (source: string): Arguments => {
         const nextLine = lines[i + 1];
         
         // Check if this is the end of the button block
-        if (nextLine.trim() === "" || nextLine.startsWith("```")) {
+        if (nextLine.startsWith("```")) {
           break;
         }
         
         // Check if this line starts a new argument
-        if (nextLine.includes(" ") && !nextLine.startsWith(" ") && !nextLine.startsWith("\t")) {
+        // Skip empty lines (they're part of the action content)
+        if (nextLine.trim() !== "" && !nextLine.startsWith(" ") && !nextLine.startsWith("\t")) {
           const potentialKey = nextLine.split(" ")[0]?.toLowerCase();
           if (knownArguments.has(potentialKey)) {
             break; // This is a new argument
