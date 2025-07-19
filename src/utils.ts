@@ -72,11 +72,20 @@ export const insertInlineButton = (app: App, id: string): void => {
 export const createArgumentObject = (source: string): Arguments => {
   const lines = source.split("\n");
   const acc: Arguments = {};
+  
+  // Define known button argument keys for validation
+  const knownArguments = new Set([
+    "name", "type", "action", "id", "swap", "remove", "replace", 
+    "templater", "color", "customcolor", "customtextcolor", "class", 
+    "folder", "prompt", "actions"
+  ]);
+  
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const split: string[] = line.split(" ");
     const key: string = split[0]?.toLowerCase();
     if (!key) continue;
+    
     if (key === "actions") {
       // Collect all lines for the JSON array
       const jsonLines = [line.replace(/^actions\s*/, "")];
@@ -148,7 +157,38 @@ export const createArgumentObject = (source: string): Arguments => {
         );
         acc[key] = [];
       }
+    } else if (key === "action") {
+      // Handle multi-line actions
+      const actionLines = [line.replace(/^action\s*/, "")];
+      
+      // Continue reading lines until we hit another argument or end of button block
+      while (i + 1 < lines.length) {
+        const nextLine = lines[i + 1];
+        
+        // Check if this is the end of the button block
+        if (nextLine.startsWith("```")) {
+          break;
+        }
+        
+        // Check if this line starts a new argument
+        // Skip empty lines (they're part of the action content)
+        if (nextLine.trim() !== "" && !nextLine.startsWith(" ") && !nextLine.startsWith("\t")) {
+          const potentialKey = nextLine.split(" ")[0]?.toLowerCase();
+          if (knownArguments.has(potentialKey)) {
+            break; // This is a new argument
+          }
+        }
+        
+        // This line is part of the action content
+        i++;
+        actionLines.push(nextLine);
+      }
+      
+      // Join the lines and trim only trailing whitespace to preserve intentional formatting
+      const actionContent = actionLines.join("\n").replace(/\s+$/, "");
+      acc[key] = actionContent;
     } else {
+      // Handle all other single-line arguments (backward compatibility)
       const value = split.slice(1).join(" ").trim();
       acc[key] = value;
     }

@@ -378,8 +378,9 @@ export class ButtonModal extends Modal {
                   }
                 });
               })
-              .addText((textEl) => {
-                textEl.setPlaceholder("My Text to Insert");
+              .addTextArea((textEl) => {
+                textEl.setPlaceholder("My Text to Insert\nSupports multiple lines");
+                textEl.inputEl.rows = 5;
                 textEl.onChange((value) => {
                   this.outputObject.action = value;
                 });
@@ -414,8 +415,9 @@ export class ButtonModal extends Modal {
             new Setting(action)
               .setName("Text")
               .setDesc("Text to copy for clipboard")
-              .addText((textEl) => {
-                textEl.setPlaceholder("Text to copy");
+              .addTextArea((textEl) => {
+                textEl.setPlaceholder("Text to copy\nSupports multiple lines");
+                textEl.inputEl.rows = 5;
                 textEl.onChange((value) => (this.outputObject.action = value));
               })
           }
@@ -643,8 +645,11 @@ export class ButtonModal extends Modal {
       new Setting(container)
         .setName("Content")
         .setDesc(actionType.includes("text") ? "Text to insert" : "Template to insert")
-        .addText((textEl) => {
-          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert" : "My Template");
+        .addTextArea((textEl) => {
+          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert\nSupports multiple lines" : "My Template");
+          if (actionType.includes("text")) {
+            textEl.inputEl.rows = 3;
+          }
           textEl.onChange((value) => {
             this.outputObject.actions[actionIndex].action = value;
           });
@@ -677,8 +682,11 @@ export class ButtonModal extends Modal {
       new Setting(container)
         .setName("Content")
         .setDesc(actionType.includes("text") ? "Text to insert" : "Template to insert")
-        .addText((textEl) => {
-          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert" : "My Template");
+        .addTextArea((textEl) => {
+          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert\nSupports multiple lines" : "My Template");
+          if (actionType.includes("text")) {
+            textEl.inputEl.rows = 3;
+          }
           textEl.onChange((value) => {
             this.outputObject.actions[actionIndex].action = value;
           });
@@ -752,8 +760,9 @@ export class ButtonModal extends Modal {
       new Setting(container)
         .setName("Text")
         .setDesc("Text to copy for clipboard")
-        .addText((textEl) => {
-          textEl.setPlaceholder("Text to copy");
+        .addTextArea((textEl) => {
+          textEl.setPlaceholder("Text to copy\nSupports multiple lines");
+          textEl.inputEl.rows = 3;
           textEl.onChange((value) => {
             this.outputObject.actions[actionIndex].action = value;
           });
@@ -763,8 +772,9 @@ export class ButtonModal extends Modal {
       new Setting(container)
         .setName("Text")
         .setDesc("Text to insert")
-        .addText((textEl) => {
-          textEl.setPlaceholder("My Text to Insert");
+        .addTextArea((textEl) => {
+          textEl.setPlaceholder("My Text to Insert\nSupports multiple lines");
+          textEl.inputEl.rows = 3;
           textEl.onChange((value) => {
             this.outputObject.actions[actionIndex].action = value;
           });
