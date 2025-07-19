@@ -175,9 +175,9 @@ button.button-default.orange:hover {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0;
-  background: var(--background-primary);
-  border-radius: 12px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
   box-sizing: border-box;
 }
 
