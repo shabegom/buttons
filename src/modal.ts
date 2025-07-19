@@ -88,6 +88,10 @@ export class ButtonModal extends Modal {
     titleEl.addClass("button-maker-title");
     contentEl.addClass("button-maker");
     
+    // Set modal width to be wider
+    this.containerEl.style.width = "60rem";
+    this.containerEl.style.maxWidth = "90vw";
+    
     // Create main container with modern styling
     const mainContainer = contentEl.createEl("div", { cls: "button-maker-container" });
     

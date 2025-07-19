@@ -169,8 +169,8 @@ button.button-default.orange:hover {
 
 /* Modern Button Maker Styles */
 .button-maker {
-  max-width: 40rem;
-  width: 40rem;
+  max-width: 100%;
+  width: 100%;
   max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
