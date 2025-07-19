@@ -1,5 +1,5 @@
 const elasticlunr = require("elasticlunr");
-const emojiRegex = require('emoji-regex/RGI_Emoji.js')
+const emojiRegex = require('emoji-regex')
 
 module.exports = function (collection) {
   // what fields we'd like our index to consist of
