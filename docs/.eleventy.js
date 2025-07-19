@@ -1,23 +1,18 @@
 const { DateTime } = require("luxon");
-const CleanCSS = require("clean-css");
-const UglifyJS = require("uglify-es");
-const htmlmin = require("html-minifier");
+const htmlmin = require("html-minifier-terser");
 const svgContents = require("eleventy-plugin-svg-contents");
 const mdIterator = require('markdown-it-for-inline')
-const embedEverything = require("eleventy-plugin-embed-everything");
-const pluginTOC = require('eleventy-plugin-nesting-toc');
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const Image = require("@11ty/eleventy-img");
 module.exports = function(eleventyConfig) {
   // eleventyConfig.addPlugin(pluginTOC);
-  eleventyConfig.addPlugin(svgContents); 
-  eleventyConfig.addPlugin(embedEverything);
+  eleventyConfig.addPlugin(svgContents);
   eleventyConfig.addShortcode("version", function () {
     return String(Date.now());
   });
 
   // Responsive image shortcode
-  eleventyConfig.addLiquidShortcode("image", async function(src, alt, sizes = "100vw") {
+  eleventyConfig.addShortcode("image", async function(src, alt, sizes = "100vw") {
     if(alt === undefined) {
       // You bet we throw an error on missing alt (alt="" works okay)
       throw new Error(`Missing \`alt\` on responsiveimage from: ${src}`);
@@ -47,7 +42,7 @@ module.exports = function(eleventyConfig) {
 
   });
 
-  eleventyConfig.addLiquidShortcode("icon", function(title,url) {
+  eleventyConfig.addShortcode("icon", function(title,url) {
     return '<img class="icon" src="'+url+'" alt="'+title+'" />';
   });
 
@@ -148,19 +143,19 @@ module.exports = function(eleventyConfig) {
     return DateTime.fromJSDate(dateObj).toFormat("yyyy-MM-dd");
   });
 
-  // Minify CSS
-  eleventyConfig.addFilter("cssmin", function(code) {
-    return new CleanCSS({}).minify(code).styles;
-  });
-
-  // Minify JS
+  // Minify JS with Terser
   eleventyConfig.addFilter("jsmin", function(code) {
-    let minified = UglifyJS.minify(code);
-    if (minified.error) {
-      console.log("UglifyJS error: ", minified.error);
+    const { minify } = require('terser');
+    try {
+      const result = minify(code, {
+        compress: true,
+        mangle: true
+      });
+      return result.code || code;
+    } catch (error) {
+      console.log("Terser error: ", error);
       return code;
     }
-    return minified.code;
   });
 
   // Minify HTML output
