@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+section: blog
+permalink: /blog/index.html
+---
+<div class="flex w-full justify-center">
+    <div class="mt-4 px-6 md:px-6 lg:px-8 xl:px-12 w-full max-w-5xl">
+        <div class="wrapper flex justify-between">
+             <div class="main  flex flex-col pr-0 prose sm:prose lg:prose-lg xl:prose-md">
+                <article>
+
+<h1>{{ title }}</h1>
+
+{{ layoutContent | safe }}
+
+{% set postslist = collections.post %}
+{% include "components/postslist.njk" %}
+ </article>
+               
+            </div>    
+            
+         
+        </div>
+    </div>
+</div>
+   
+

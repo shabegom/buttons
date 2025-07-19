@@ -1,0 +1,99 @@
+{% set navPages = collections.all | eleventyNavigation  %}
+
+{% macro renderNavListItem(entry,rel) -%}
+
+  {% if entry.url == page.url or entry.title == eleventyNavigation.parent or entry.title == eleventyComputed.key%}
+    {% if rel == "child" %}
+      {% set highlight = 'border-gray-600 font-semibold text-gray-500 focus:border-gray-700' %}
+    {% else %}
+      {% set highlight = 'border-gray-600 font-semibold focus:border-gray-700' %}
+    {% endif %}
+    {% set current = 'aria-current="page"' %}
+  {% else %}
+    {% set highlight = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-500 ' %}
+    {% set current = '' %}
+  {% endif %}
+ 
+{%- if not entry.children.length  -%}
+  {% if rel == "child" %}
+   <a class="w-max 
+    rounded  
+    px-4 py-2 
+    block
+    focus:text-gray-900 
+    text-sm bg-transparent 
+    dark:bg-transparent
+    dark:hover:text-gray-400 
+    md:mt-0 
+    m-0
+    hover:font-bold
+    focus:text-gray-900   
+    focus:outline-none focus:ring {{ highlight }} 
+    text-gray-500 
+    dark:text-gray-500" 
+    href="{{ entry.url | url }}">{{ entry.title }}</a>
+  {% else %}
+   <a class="w-max
+    px-4 py-3 
+    rounded 
+    block
+    text-sm 
+    bg-transparent 
+    rounded-lg 
+    dark:bg-transparent 
+    dark:focus:bg-gray-600 
+    dark:focus:text-white 
+    dark:hover:text-gray-500 
+    dark:text-gray-400 
+    md:mt-0 
+    hover:text-gray-900 
+    focus:text-gray-900 
+    focus:outline-none 
+    focus:ring {{ highlight }} 
+    text-gray-500" 
+    href="{{ entry.url | url }}">{{ entry.title }}</a>
+  {% endif %}
+ 
+  {%- else -%}
+   
+    {%- if entry.children.length -%}
+    
+    <div @click.away="open = false" class="relative" x-data="{ open: false }">
+        <button  @click="open = !open" 
+        class="whitespace-nowrap flex flex-row items-center w-full lg:mr-2 px-4 py-2 mt-2 text-sm text-left bg-transparent rounded-lg dark:bg-transparent dark:focus:text-white dark:hover:text-gray-400 md:w-auto md:inline md:mt-0 md:ml-4 hover:text-gray-900 hover:font-semibold focus:text-gray-900   focus:outline-none focus:ring {{ highlight }}">
+          <span>{{ entry.title }}</span>
+          <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        </button>
+        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95"  x-transition="bg-gray-100 bg-white" class="shadow bg-white absolute rounded-lg top-8 w-max ml-4 mt-2">
+          <div class="py-2 w-max pr-12 dark:bg-gray-800">
+          {%- for child in entry.children %}{{ renderNavListItem(child) }}{% endfor -%}
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro %}
+
+<div class="md:bg-white dark:bg-gray-900 p-0 mt-8 pb-8 mr-1  flex w-full justify-end">
+  <div x-data="{ open: false }" class="flex flex-col justify-start md:items-center  md:flex-row ">
+   
+    <nav x-ref="dropdown"  :class=" {'flex': open, 'hidden': !open}" class="hidden md:block mt-4 mr-2 justify-end flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:flex-row">
+    {%- for entry in navPages %}
+    {{ renderNavListItem(entry,'child') }}
+    {%- endfor -%}
+    </nav>
+
+    <nav id="navigation" class="md:hidden h-screen fixed inset-y-0 overflow-x-hidden overflow-y-auto  hidden w:64 lg:w-72 mt-20 md:block  dark:bg-gray-900  flex-none top-0  p-4 w-64 md:border-r border-b border-gray-100 dark:border-gray-800">
+        <button  name="Close navigation" onclick="closeNavigation()" class="float-right justify-end block md:hidden -mr-4 p-6">	<svg xmlns="http://www.w3.org/2000/svg" class="dark:bg-gray-500" width="18" height="18" viewBox="0 0 18 18"><path class="text-gray-100" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg></button>
+        <div class=" clear-right">
+          <a href="/">
+          <div class="block md:hidden pt-4 font-semibold text-gray-500">{{ site.name }}</div>
+          <div class="block md:hidden text-sm text-gray-500 mb-4">{{ site.subtitle }}</div>
+          </a>
+          {{ collections.all | eleventyNavigation | eleventyNavigationToHtml({anchorClass: "item",activeAnchorClass: "active",activeListItemClass: "active",activeKey: eleventyNavigation.key, listClass: "nav", listItemClass: "item"}) | safe }}
+        </div>
+      </nav>
+  </div>
+</div>
+
+
