@@ -254,7 +254,6 @@ button.button-default.orange:hover {
 }
 
 .button-maker .field-input,
-.button-maker .field-select,
 .button-maker .field-textarea {
   width: 100%;
   max-width: 100%;
@@ -262,42 +261,22 @@ button.button-default.orange:hover {
   border: 1px solid var(--background-modifier-border);
   border-radius: 6px;
   background: var(--background-primary);
-  color: var(--text-normal) !important;
+  color: var(--text-normal);
   font-size: 0.9rem;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
-/* Force text color for select elements specifically */
-.button-maker select.dropdown {
-  color: var(--text-normal) !important;
-  background-color: var(--background-primary) !important;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 6px;
-  padding: 0.75rem;
-  font-size: 0.9rem;
-}
+
 
 .button-maker .field-input:focus,
-.button-maker .field-select:focus,
 .button-maker .field-textarea:focus {
   outline: none;
   border-color: var(--interactive-accent);
   box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
 }
 
-/* Ensure dropdown options are visible in dark theme - specific to button maker */
-.button-maker .field-select option {
-  background: var(--background-primary);
-  color: var(--text-normal);
-  padding: 0.5rem;
-}
 
-/* Style for selected option in dropdown - specific to button maker */
-.button-maker .field-select option:checked {
-  background: var(--interactive-accent);
-  color: var(--text-on-accent);
-}
 
 .field-textarea {
   resize: vertical;
@@ -453,30 +432,9 @@ button.button-default.orange:hover {
   background: var(--background-modifier-error-hover);
 }
 
-.button-maker .action-type-select {
-  width: 100%;
-  max-width: 100%;
-  margin-bottom: 0.75rem;
-  box-sizing: border-box;
-  padding: 0.5rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 4px;
-  background: var(--background-primary);
-  color: var(--text-normal);
-  font-size: 0.9rem;
-}
 
-/* Ensure action type dropdown options are visible - specific to button maker */
-.button-maker .action-type-select option {
-  background: var(--background-primary);
-  color: var(--text-normal);
-  padding: 0.5rem;
-}
 
-.button-maker .action-type-select option:checked {
-  background: var(--interactive-accent);
-  color: var(--text-on-accent);
-}
+
 
 .action-input-container {
   margin-top: 0.75rem;
