@@ -1,7 +1,6 @@
 const { DateTime } = require("luxon");
 const htmlmin = require("html-minifier-terser");
 const svgContents = require("eleventy-plugin-svg-contents");
-const mdIterator = require('markdown-it-for-inline')
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 const Image = require("@11ty/eleventy-img");
 module.exports = function(eleventyConfig) {
@@ -158,6 +157,12 @@ module.exports = function(eleventyConfig) {
     }
   });
 
+  // Minify CSS
+  eleventyConfig.addFilter("cssmin", function(code) {
+    const CleanCSS = require('clean-css');
+    return new CleanCSS().minify(code).styles;
+  });
+
   // Minify HTML output
   eleventyConfig.addTransform("htmlmin", function(content, outputPath) {
     if (outputPath.indexOf(".html") > -1) {
@@ -202,32 +207,7 @@ module.exports = function(eleventyConfig) {
     // permalinkSymbol: "#"
   };
 
-  eleventyConfig.setLibrary("md", markdownIt(options)
-    .use(mdIterator, 'url_new_win', 'link_open', function (tokens, idx) {
-      const [attrName, href] = tokens[idx].attrs.find(attr => attr[0] === 'href')
-      if (href && (!href.includes('franknoirot.co') && !href.startsWith('/') && !href.startsWith('#'))) {
-        tokens[idx].attrPush([ 'target', '_blank' ])
-        tokens[idx].attrPush([ 'rel', 'noopener noreferrer' ])
-      }
-    })
-    .use(markdownItAnchor, opts)
-    .use(markdownItEmoji)
-    .use(markdownItFootnote)
-    .use(markdownItContainer, 'callout')
-    .use(markdownItContainer, 'callout-blue')
-    .use(markdownItContainer, 'callout-pink')
-    .use(markdownItContainer, 'callout-green')
-    .use(markdownItContainer, 'warning')
-    .use(markdownItTasks)
-    .use(markdownItCenterText)
-    .use(markdownLinkifyImages, {
-      imgClass: "p-4",
-    })
-    .use(markdownItAttrs, {
-      includeLevel: [2,3],
-      listType: "ol"
-    })
-  );
+  eleventyConfig.setLibrary("md", markdownIt(options));
 
   return {
     templateFormats: ["md", "njk", "html", "liquid"],
