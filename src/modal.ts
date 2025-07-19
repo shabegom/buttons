@@ -19,6 +19,12 @@ export class ButtonModal extends Modal {
   idSuggest;
   commandSuggest;
   fileSuggest;
+  
+  // Handler properties for event listeners
+  private handleCommandChange: (e: Event) => void;
+  private handleCommandBlur: (e: Event) => void;
+  private handleFileChange: (e: Event) => void;
+  private handleFileBlur: (e: Event) => void;
 
   constructor(app: App) {
     super(app);
@@ -122,6 +128,7 @@ export class ButtonModal extends Modal {
       
       // Add type options with better descriptions
       const typeOptions = [
+        { value: "pre", text: "Select a Button Type" },
         { value: "command", text: "Command - Run a command prompt command" },
         { value: "link", text: "Link - Open a URL or URI" },
         { value: "template", text: "Template - Insert or create notes from templates" },
@@ -136,7 +143,7 @@ export class ButtonModal extends Modal {
         const optionEl = typeSelect.createEl("option");
         optionEl.value = option.value;
         optionEl.textContent = option.text;
-        // Set the first option as selected by default
+        // Set the placeholder option as selected by default
         if (index === 0) {
           optionEl.selected = true;
           this.outputObject.type = option.value;
@@ -151,7 +158,11 @@ export class ButtonModal extends Modal {
         this.outputObject.type = value;
         actionContainer.empty();
         
-        if (value === "chain") {
+        // Only render action fields if a specific type is selected (not the placeholder)
+        if (value === "pre") {
+          // Don't render anything for the placeholder
+          return;
+        } else if (value === "chain") {
           this.renderChainActions(actionContainer);
         } else if (value === "link") {
           this.renderLinkAction(actionContainer);
@@ -278,8 +289,8 @@ export class ButtonModal extends Modal {
 
       // Color Selection
       const colorContainer = stylingSection.createEl("div", { cls: "form-field" });
-      const colorLabel = colorContainer.createEl("label", { cls: "field-label", text: "Color" });
-      const colorDesc = colorContainer.createEl("div", { cls: "field-description", text: "What color would you like your button to be?" });
+      colorContainer.createEl("label", { cls: "field-label", text: "Color" });
+      colorContainer.createEl("div", { cls: "field-description", text: "What color would you like your button to be?" });
       const colorSelect = colorContainer.createEl("select", { cls: "dropdown" });
       
       const colorOptions = [
@@ -321,7 +332,7 @@ export class ButtonModal extends Modal {
       });
       cancelBtn.addEventListener("click", () => this.close());
       
-      const insertBtn = buttonContainer.createEl("button", { 
+      buttonContainer.createEl("button", { 
         type: "submit", 
         cls: "btn btn-primary",
         text: "Insert Button"
@@ -424,8 +435,8 @@ export class ButtonModal extends Modal {
 
   private renderLinkAction(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Link" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Enter a link to open" });
+    field.createEl("label", { cls: "field-label", text: "Link" });
+    field.createEl("div", { cls: "field-description", text: "Enter a link to open" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input",
@@ -438,8 +449,8 @@ export class ButtonModal extends Modal {
 
   private renderCommandAction(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Command" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Select a command to run" });
+    field.createEl("label", { cls: "field-label", text: "Command" });
+    field.createEl("div", { cls: "field-description", text: "Select a command to run" });
     
     const commandTypeSelect = field.createEl("select", { cls: "dropdown" });
     const defaultOption = commandTypeSelect.createEl("option", { value: "command", text: "Default" });
@@ -460,11 +471,11 @@ export class ButtonModal extends Modal {
 
   private renderTemplateAction(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Template" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Select a template note and what should happen" });
+    field.createEl("label", { cls: "field-label", text: "Template" });
+    field.createEl("div", { cls: "field-description", text: "Select a template note and what should happen" });
     
     const templateTypeSelect = field.createEl("select", { cls: "dropdown" });
-    const templateDefaultOption = templateTypeSelect.createEl("option", { value: "", text: "Do this..." });
+    const templateDefaultOption = templateTypeSelect.createEl("option", { value: "template", text: "Do this..." });
     templateDefaultOption.selected = true;
     templateTypeSelect.createEl("option", { value: "prepend template", text: "Prepend" });
     templateTypeSelect.createEl("option", { value: "append template", text: "Append" });
@@ -479,7 +490,10 @@ export class ButtonModal extends Modal {
     
     templateTypeSelect.addEventListener("change", (e) => {
       const value = (e.target as HTMLSelectElement).value;
-      this.outputObject.type = value;
+      // Only update the type if a valid option is selected (not the placeholder)
+      if (value && value !== "template") {
+        this.outputObject.type = value;
+      }
       
       if (value === "line template") {
         this.renderLineNumberField(container);
@@ -491,11 +505,11 @@ export class ButtonModal extends Modal {
 
   private renderTextAction(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Text" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Enter the text content" });
+    field.createEl("label", { cls: "field-label", text: "Text" });
+    field.createEl("div", { cls: "field-description", text: "Enter the text content" });
     
     const textTypeSelect = field.createEl("select", { cls: "dropdown" });
-    const textDefaultOption = textTypeSelect.createEl("option", { value: "", text: "Do this..." });
+    const textDefaultOption = textTypeSelect.createEl("option", { value: "text", text: "Do this..." });
     textDefaultOption.selected = true;
     textTypeSelect.createEl("option", { value: "append text", text: "Append" });
     textTypeSelect.createEl("option", { value: "prepend text", text: "Prepend" });
@@ -512,7 +526,10 @@ export class ButtonModal extends Modal {
     
     textTypeSelect.addEventListener("change", (e) => {
       const value = (e.target as HTMLSelectElement).value;
-      this.outputObject.type = value;
+      // Only update the type if a valid option is selected (not the placeholder)
+      if (value && value !== "text") {
+        this.outputObject.type = value;
+      }
       
       if (value === "line text") {
         this.renderLineNumberField(container);
@@ -524,8 +541,8 @@ export class ButtonModal extends Modal {
 
   private renderCalculateAction(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Calculate" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Enter a calculation, you can reference a line number with $LineNumber" });
+    field.createEl("label", { cls: "field-label", text: "Calculate" });
+    field.createEl("div", { cls: "field-description", text: "Enter a calculation, you can reference a line number with $LineNumber" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input",
@@ -539,8 +556,8 @@ export class ButtonModal extends Modal {
   private renderSwapAction(container: HTMLElement): void {
     this.outputObject.type = "";
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Swap" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Choose buttons to be included in the Inline Swap Button" });
+    field.createEl("label", { cls: "field-label", text: "Swap" });
+    field.createEl("div", { cls: "field-description", text: "Choose buttons to be included in the Inline Swap Button" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input"
@@ -550,8 +567,8 @@ export class ButtonModal extends Modal {
 
   private renderCopyAction(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Text" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Text to copy for clipboard" });
+    field.createEl("label", { cls: "field-label", text: "Text" });
+    field.createEl("div", { cls: "field-description", text: "Text to copy for clipboard" });
     const textarea = field.createEl("textarea", { 
       cls: "field-textarea",
       attr: { 
@@ -567,8 +584,8 @@ export class ButtonModal extends Modal {
   private renderRemoveSettings(container: HTMLElement): void {
     const removeSettings = container.createEl("div", { cls: "remove-settings" });
     const field = removeSettings.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Select Remove" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Use true to remove this button, or supply an [array] of button block-ids" });
+    field.createEl("label", { cls: "field-label", text: "Select Remove" });
+    field.createEl("div", { cls: "field-description", text: "Use true to remove this button, or supply an [array] of button block-ids" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input"
@@ -579,8 +596,8 @@ export class ButtonModal extends Modal {
   private renderReplaceSettings(container: HTMLElement): void {
     const replaceSettings = container.createEl("div", { cls: "replace-settings" });
     const field = replaceSettings.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Select Lines" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Supply an array of [startingLine, endingLine] to be replaced" });
+    field.createEl("label", { cls: "field-label", text: "Select Lines" });
+    field.createEl("div", { cls: "field-description", text: "Supply an array of [startingLine, endingLine] to be replaced" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input",
@@ -594,8 +611,8 @@ export class ButtonModal extends Modal {
   private renderInheritSettings(container: HTMLElement): void {
     const inheritSettings = container.createEl("div", { cls: "inherit-settings" });
     const field = inheritSettings.createEl("div", { cls: "form-field" });
-    const label = field.createEl("label", { cls: "field-label", text: "Button ID" });
-    const desc = field.createEl("div", { cls: "field-description", text: "Inherit from other buttons by adding their button block-id" });
+    field.createEl("label", { cls: "field-label", text: "Button ID" });
+    field.createEl("div", { cls: "field-description", text: "Inherit from other buttons by adding their button block-id" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input"
@@ -653,9 +670,21 @@ export class ButtonModal extends Modal {
         attr: { placeholder: "Select a command..." }
       });
       input.replaceWith(this.commandSuggestEl);
-      input.addEventListener("input", (e) => {
+      
+      // Remove existing listeners to prevent conflicts
+      this.commandSuggestEl.removeEventListener("change", this.handleCommandChange);
+      this.commandSuggestEl.removeEventListener("blur", this.handleCommandBlur);
+      
+      // Create new handler functions for this specific action
+      this.handleCommandChange = (e: Event) => {
         this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
-      });
+      };
+      this.handleCommandBlur = (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      };
+      
+      this.commandSuggestEl.addEventListener("change", this.handleCommandChange);
+      this.commandSuggestEl.addEventListener("blur", this.handleCommandBlur);
     } else if (actionType.includes("template")) {
       const input = container.createEl("input", { 
         type: "text", 
@@ -663,9 +692,21 @@ export class ButtonModal extends Modal {
         attr: { placeholder: "Select a template..." }
       });
       input.replaceWith(this.fileSuggestEl);
-      input.addEventListener("input", (e) => {
+      
+      // Remove existing listeners to prevent conflicts
+      this.fileSuggestEl.removeEventListener("change", this.handleFileChange);
+      this.fileSuggestEl.removeEventListener("blur", this.handleFileBlur);
+      
+      // Create new handler functions for this specific action
+      this.handleFileChange = (e: Event) => {
         this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
-      });
+      };
+      this.handleFileBlur = (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      };
+      
+      this.fileSuggestEl.addEventListener("change", this.handleFileChange);
+      this.fileSuggestEl.addEventListener("blur", this.handleFileBlur);
     } else {
       const input = container.createEl("input", { 
         type: "text", 
@@ -673,6 +714,9 @@ export class ButtonModal extends Modal {
         attr: { placeholder: "Enter action..." }
       });
       input.addEventListener("input", (e) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+      input.addEventListener("blur", (e) => {
         this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
       });
     }
