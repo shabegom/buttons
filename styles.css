@@ -169,14 +169,16 @@ button.button-default.orange:hover {
 
 /* Modern Button Maker Styles */
 .button-maker {
-  max-width: 45rem;
-  width: 45rem;
+  max-width: 40rem;
+  width: 40rem;
   max-height: 80vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0;
   background: var(--background-primary);
   border-radius: 12px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
 }
 
 .button-maker-title {
@@ -185,16 +187,23 @@ button.button-default.orange:hover {
   color: var(--text-normal);
   margin-bottom: 1rem;
   padding: 1.5rem 1.5rem 0 1.5rem;
+  box-sizing: border-box;
 }
 
 .button-maker-container {
   padding: 0 1.5rem 1.5rem 1.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 .button-maker-form {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-section {
@@ -202,6 +211,9 @@ button.button-default.orange:hover {
   border-radius: 8px;
   padding: 1.5rem;
   border: 1px solid var(--background-modifier-border);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .section-title {
@@ -211,10 +223,15 @@ button.button-default.orange:hover {
   margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--interactive-accent);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-field {
   margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .field-label {
@@ -223,6 +240,8 @@ button.button-default.orange:hover {
   color: var(--text-normal);
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .field-description {
@@ -230,12 +249,15 @@ button.button-default.orange:hover {
   font-size: 0.8rem;
   margin-bottom: 0.75rem;
   line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .field-input,
 .field-select,
 .field-textarea {
   width: 100%;
+  max-width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--background-modifier-border);
   border-radius: 6px;
@@ -243,6 +265,7 @@ button.button-default.orange:hover {
   color: var(--text-normal);
   font-size: 0.9rem;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .field-input:focus,
@@ -262,6 +285,9 @@ button.button-default.orange:hover {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .toggle-field {
@@ -273,6 +299,9 @@ button.button-default.orange:hover {
   border-radius: 6px;
   border: 1px solid var(--background-modifier-border);
   transition: all 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .toggle-field:hover {
@@ -285,18 +314,22 @@ button.button-default.orange:hover {
   gap: 0.75rem;
   cursor: pointer;
   flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .toggle-input {
   width: 1.2rem;
   height: 1.2rem;
   accent-color: var(--interactive-accent);
+  flex-shrink: 0;
 }
 
 .toggle-text {
   font-weight: 600;
   color: var(--text-normal);
   font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
 .toggle-description {
@@ -304,26 +337,38 @@ button.button-default.orange:hover {
   font-size: 0.8rem;
   margin-top: 0.25rem;
   line-height: 1.4;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .action-container {
   margin-top: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .actions-header {
   margin-bottom: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .actions-header h4 {
   margin: 0 0 0.5rem 0;
   color: var(--text-normal);
   font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .actions-header p {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.8rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .actions-list {
@@ -331,6 +376,9 @@ button.button-default.orange:hover {
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .action-card {
@@ -339,6 +387,9 @@ button.button-default.orange:hover {
   border-radius: 8px;
   padding: 1rem;
   transition: all 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .action-card:hover {
@@ -351,12 +402,16 @@ button.button-default.orange:hover {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .action-number {
   font-weight: 600;
   color: var(--text-normal);
   font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
 .btn-remove {
@@ -368,6 +423,7 @@ button.button-default.orange:hover {
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .btn-remove:hover {
@@ -376,21 +432,28 @@ button.button-default.orange:hover {
 
 .action-type-select {
   width: 100%;
+  max-width: 100%;
   margin-bottom: 0.75rem;
+  box-sizing: border-box;
 }
 
 .action-input-container {
   margin-top: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .action-input {
   width: 100%;
+  max-width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--background-modifier-border);
   border-radius: 6px;
   background: var(--background-primary);
   color: var(--text-normal);
   font-size: 0.9rem;
+  box-sizing: border-box;
 }
 
 .btn {
@@ -405,6 +468,7 @@ button.button-default.orange:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .btn-primary {
@@ -446,6 +510,9 @@ button.button-default.orange:hover {
   justify-content: flex-end;
   padding-top: 1rem;
   border-top: 1px solid var(--background-modifier-border);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .preview-section {
@@ -454,6 +521,9 @@ button.button-default.orange:hover {
   padding: 1.5rem;
   border: 1px solid var(--background-modifier-border);
   margin-top: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .preview-container {
@@ -465,6 +535,9 @@ button.button-default.orange:hover {
   border-radius: 6px;
   border: 1px solid var(--background-modifier-border);
   padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .remove-settings,
@@ -475,6 +548,9 @@ button.button-default.orange:hover {
   background: var(--background-primary);
   border-radius: 6px;
   border: 1px solid var(--background-modifier-border);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .custom-color-container {
@@ -482,6 +558,9 @@ button.button-default.orange:hover {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Responsive Design */
