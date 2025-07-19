@@ -276,6 +276,19 @@ button.button-default.orange:hover {
   box-shadow: 0 0 0 2px rgba(var(--interactive-accent-rgb), 0.2);
 }
 
+/* Ensure dropdown options are visible in dark theme */
+.field-select option {
+  background: var(--background-primary);
+  color: var(--text-normal);
+  padding: 0.5rem;
+}
+
+/* Style for selected option in dropdown */
+.field-select option:checked {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
 .field-textarea {
   resize: vertical;
   min-height: 80px;
@@ -435,6 +448,24 @@ button.button-default.orange:hover {
   max-width: 100%;
   margin-bottom: 0.75rem;
   box-sizing: border-box;
+  padding: 0.5rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 0.9rem;
+}
+
+/* Ensure action type dropdown options are visible */
+.action-type-select option {
+  background: var(--background-primary);
+  color: var(--text-normal);
+  padding: 0.5rem;
+}
+
+.action-type-select option:checked {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
 }
 
 .action-input-container {
