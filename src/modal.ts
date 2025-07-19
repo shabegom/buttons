@@ -137,6 +137,10 @@ export class ButtonModal extends Modal {
         const optionEl = typeSelect.createEl("option");
         optionEl.value = option.value;
         optionEl.textContent = option.text;
+        // Set the first option as selected by default
+        if (option.value === "") {
+          optionEl.selected = true;
+        }
       });
 
       // Action container for dynamic content
@@ -292,6 +296,10 @@ export class ButtonModal extends Modal {
         const optionEl = colorSelect.createEl("option");
         optionEl.value = option.value;
         optionEl.textContent = option.text;
+        // Set default color as selected
+        if (option.value === "default") {
+          optionEl.selected = true;
+        }
       });
 
       colorSelect.addEventListener("change", (e) => {
@@ -434,7 +442,8 @@ export class ButtonModal extends Modal {
     const desc = field.createEl("div", { cls: "field-description", text: "Select a command to run" });
     
     const commandTypeSelect = field.createEl("select", { cls: "field-select" });
-    commandTypeSelect.createEl("option", { value: "command", text: "Default" });
+    const defaultOption = commandTypeSelect.createEl("option", { value: "command", text: "Default" });
+    defaultOption.selected = true;
     commandTypeSelect.createEl("option", { value: "prepend command", text: "Prepend" });
     commandTypeSelect.createEl("option", { value: "append command", text: "Append" });
     
@@ -455,7 +464,8 @@ export class ButtonModal extends Modal {
     const desc = field.createEl("div", { cls: "field-description", text: "Select a template note and what should happen" });
     
     const templateTypeSelect = field.createEl("select", { cls: "field-select" });
-    templateTypeSelect.createEl("option", { value: "", text: "Do this..." });
+    const templateDefaultOption = templateTypeSelect.createEl("option", { value: "", text: "Do this..." });
+    templateDefaultOption.selected = true;
     templateTypeSelect.createEl("option", { value: "prepend template", text: "Prepend" });
     templateTypeSelect.createEl("option", { value: "append template", text: "Append" });
     templateTypeSelect.createEl("option", { value: "line template", text: "Line" });
@@ -485,7 +495,8 @@ export class ButtonModal extends Modal {
     const desc = field.createEl("div", { cls: "field-description", text: "Enter the text content" });
     
     const textTypeSelect = field.createEl("select", { cls: "field-select" });
-    textTypeSelect.createEl("option", { value: "", text: "Do this..." });
+    const textDefaultOption = textTypeSelect.createEl("option", { value: "", text: "Do this..." });
+    textDefaultOption.selected = true;
     textTypeSelect.createEl("option", { value: "append text", text: "Append" });
     textTypeSelect.createEl("option", { value: "prepend text", text: "Prepend" });
     textTypeSelect.createEl("option", { value: "line text", text: "Line" });
