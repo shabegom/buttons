@@ -118,11 +118,10 @@ export class ButtonModal extends Modal {
       const typeContainer = basicSection.createEl("div", { cls: "form-field" });
       typeContainer.createEl("label", { cls: "field-label", text: "Button Type" });
       typeContainer.createEl("div", { cls: "field-description", text: "What type of button are you making?" });
-      const typeSelect = typeContainer.createEl("select", { cls: "field-select" });
+      const typeSelect = typeContainer.createEl("select", { cls: "dropdown" });
       
       // Add type options with better descriptions
       const typeOptions = [
-        { value: "", text: "Select a Button Type" },
         { value: "command", text: "Command - Run a command prompt command" },
         { value: "link", text: "Link - Open a URL or URI" },
         { value: "template", text: "Template - Insert or create notes from templates" },
@@ -133,13 +132,14 @@ export class ButtonModal extends Modal {
         { value: "chain", text: "Chain - Run multiple actions in sequence" }
       ];
       
-      typeOptions.forEach(option => {
+      typeOptions.forEach((option, index) => {
         const optionEl = typeSelect.createEl("option");
         optionEl.value = option.value;
         optionEl.textContent = option.text;
         // Set the first option as selected by default
-        if (option.value === "") {
+        if (index === 0) {
           optionEl.selected = true;
+          this.outputObject.type = option.value;
         }
       });
 
@@ -280,7 +280,7 @@ export class ButtonModal extends Modal {
       const colorContainer = stylingSection.createEl("div", { cls: "form-field" });
       const colorLabel = colorContainer.createEl("label", { cls: "field-label", text: "Color" });
       const colorDesc = colorContainer.createEl("div", { cls: "field-description", text: "What color would you like your button to be?" });
-      const colorSelect = colorContainer.createEl("select", { cls: "field-select" });
+      const colorSelect = colorContainer.createEl("select", { cls: "dropdown" });
       
       const colorOptions = [
         { value: "default", text: "Default Color" },
