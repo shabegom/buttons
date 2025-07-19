@@ -203,10 +203,11 @@ export class ButtonModal extends Modal {
       
       // Remove Toggle
       const removeContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
-      removeContainer.createEl("label", { cls: "toggle-label" });
-      const removeToggle = removeContainer.createEl("input", { type: "checkbox", cls: "toggle-input" });
-      removeContainer.createEl("span", { cls: "toggle-text", text: "Remove after click" });
-      removeContainer.createEl("div", { cls: "toggle-description", text: "Remove this button (or other buttons) after clicking?" });
+      const removeToggleRow = removeContainer.createEl("div", { cls: "toggle-row" });
+      removeToggleRow.createEl("label", { cls: "toggle-label" });
+      const removeToggle = removeToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      removeToggleRow.createEl("span", { cls: "toggle-text", text: "Remove after click" });
+      removeToggleRow.createEl("div", { cls: "toggle-description", text: "Remove this button (or other buttons) after clicking?" });
       
       removeToggle.addEventListener("change", (e) => {
         const checked = (e.target as HTMLInputElement).checked;
@@ -222,10 +223,11 @@ export class ButtonModal extends Modal {
 
       // Replace Toggle
       const replaceContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
-      replaceContainer.createEl("label", { cls: "toggle-label" });
-      const replaceToggle = replaceContainer.createEl("input", { type: "checkbox", cls: "toggle-input" });
-      replaceContainer.createEl("span", { cls: "toggle-text", text: "Replace content" });
-      replaceContainer.createEl("div", { cls: "toggle-description", text: "Replace lines in the note after clicking?" });
+      const replaceToggleRow = replaceContainer.createEl("div", { cls: "toggle-row" });
+      replaceToggleRow.createEl("label", { cls: "toggle-label" });
+      const replaceToggle = replaceToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      replaceToggleRow.createEl("span", { cls: "toggle-text", text: "Replace content" });
+      replaceToggleRow.createEl("div", { cls: "toggle-description", text: "Replace lines in the note after clicking?" });
       
       replaceToggle.addEventListener("change", (e) => {
         const checked = (e.target as HTMLInputElement).checked;
@@ -239,10 +241,11 @@ export class ButtonModal extends Modal {
 
       // Inherit Toggle
       const inheritContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
-      inheritContainer.createEl("label", { cls: "toggle-label" });
-      const inheritToggle = inheritContainer.createEl("input", { type: "checkbox", cls: "toggle-input" });
-      inheritContainer.createEl("span", { cls: "toggle-text", text: "Inherit from other button" });
-      inheritContainer.createEl("div", { cls: "toggle-description", text: "Inherit args by adding an existing button block-id?" });
+      const inheritToggleRow = inheritContainer.createEl("div", { cls: "toggle-row" });
+      inheritToggleRow.createEl("label", { cls: "toggle-label" });
+      const inheritToggle = inheritToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      inheritToggleRow.createEl("span", { cls: "toggle-text", text: "Inherit from other button" });
+      inheritToggleRow.createEl("div", { cls: "toggle-description", text: "Inherit args by adding an existing button block-id?" });
       
       inheritToggle.addEventListener("change", (e) => {
         const checked = (e.target as HTMLInputElement).checked;
@@ -257,10 +260,11 @@ export class ButtonModal extends Modal {
 
       // Templater Toggle
       const templaterContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
-      templaterContainer.createEl("label", { cls: "toggle-label" });
-      const templaterToggle = templaterContainer.createEl("input", { type: "checkbox", cls: "toggle-input" });
-      templaterContainer.createEl("span", { cls: "toggle-text", text: "Enable Templater" });
-      templaterContainer.createEl("div", { cls: "toggle-description", text: "Convert templater commands inside your button on each click?" });
+      const templaterToggleRow = templaterContainer.createEl("div", { cls: "toggle-row" });
+      templaterToggleRow.createEl("label", { cls: "toggle-label" });
+      const templaterToggle = templaterToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      templaterToggleRow.createEl("span", { cls: "toggle-text", text: "Enable Templater" });
+      templaterToggleRow.createEl("div", { cls: "toggle-description", text: "Convert templater commands inside your button on each click?" });
       
       templaterToggle.addEventListener("change", (e) => {
         this.outputObject.templater = (e.target as HTMLInputElement).checked;
@@ -381,7 +385,9 @@ export class ButtonModal extends Modal {
           cls: "btn-remove",
           text: "×"
         });
-        removeBtn.addEventListener("click", () => {
+        removeBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           this.outputObject.actions.splice(idx, 1);
           renderActions();
         });
@@ -425,7 +431,9 @@ export class ButtonModal extends Modal {
       cls: "btn btn-add-action",
       text: "+ Add Action"
     });
-    addActionBtn.addEventListener("click", () => {
+    addActionBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       this.outputObject.actions.push({ type: "command", action: "" });
       renderActions();
     });
