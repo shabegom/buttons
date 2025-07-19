@@ -12,11 +12,9 @@ The **Button Maker** is a user-friendly interface for creating buttons without w
 
 ## Opening the Button Maker
 
-You can open the Button Maker in several ways:
+You can open the Button Maker from the Command Palette:
 
 1. **Command Palette**: Search for "Button Maker" or "Insert Button"
-2. **Ribbon Icon**: Click the button icon in the left sidebar (if enabled)
-3. **Right-click menu**: Right-click in a note and select "Insert Button"
 
 ## Button Maker Interface
 
