@@ -13,13 +13,17 @@ export const prependContent = async (
     let content = await app.vault.read(file);
     const contentArray = content.split("\n");
     if (typeof insert === "string") {
-      contentArray.splice(lineStart, 0, `${insert}`);
+      // Handle multi-line content by splitting into individual lines
+      const lines = insert.split("\n");
+      contentArray.splice(lineStart, 0, ...lines);
     } else {
       if (isTemplater) {
         const runTemplater = await templater(app, insert, file);
         const templateContent = await app.vault.read(insert);
         const processed = await runTemplater(templateContent);
-        contentArray.splice(lineStart, 0, `${processed}`);
+        // Handle multi-line templated content
+        const lines = processed.split("\n");
+        contentArray.splice(lineStart, 0, ...lines);
       } else {
         // For core Templates plugin, just use insertTemplate directly
         // Set cursor to the insertion point and let insertTemplate handle everything
