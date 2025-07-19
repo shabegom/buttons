@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  
+  /* Set up some default image behavior for nicer images */
+  img {
+    @apply w-auto  shadow-md border-2 border-transparent !important
+  }
+  img:hover {
+    @apply border-2 border-gray-100
+  }
+  /* Overrides for Tailwind Typography prose class */
+  .prose a {
+    @apply dark:text-gray-400
+  }
+  .prose a:hover {
+    @apply dark:text-gray-500
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 .prose hr, .prose strong {
+    @apply dark:text-gray-400
+  }
+  .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    scroll-margin-top: 3.5em;
+  }
+  .prose pre code {
+    @apply overflow-x-auto !important 
+  }
+  .prose .footer-nav a {
+    @apply no-underline !important
+  }
+  .prose ul.contains-task-list,
+  .prose ul.spacelog  {
+    @apply list-none -ml-6 !important;
+  }
+  .prose ul.contains-task-list .task-list-item,
+  .prose ul.spacelog {
+    ::before {
+      @apply hidden !important;
+    }
+  }
+
+  /* Define blockquotes and some standard callout blocks */
+  blockquote {
+    @apply rounded-lg p-4 bg-gray-100 dark:bg-gray-500 border-gray-200 border-l-8 dark:border-gray-700;
+  }
+  .callout {
+    @apply px-8 py-4 mb-4 rounded-lg bg-yellow-50;
+  }
+  .callout, .callout strong, .callout em {
+    @apply dark:bg-gray-400 dark:text-gray-900;
+  }
+  .callout-blue {
+    @apply px-8 py-4 mb-4 rounded-lg bg-blue-50;
+  }
+  .callout-blue, .callout-blue strong, .callout-blue em {
+    @apply dark:text-gray-200 dark:bg-blue-900;
+  }
+  .callout-pink {
+    @apply px-8 py-4 mb-4 rounded-lg bg-pink-50;
+  }
+  .callout-pink, .callout-pink strong, .callout-pink em {
+    @apply dark:text-gray-200 dark:bg-pink-900;
+  }
+  .callout-green {
+    @apply px-8 py-4 mb-4 rounded-lg bg-green-50;
+  }
+  .callout-green, .callout-green strong, .callout-green em {
+    @apply dark:text-gray-200 dark:bg-green-900;
+  }
+  .warning {
+    @apply px-8 py-4 mb-4 rounded-lg bg-red-800 text-gray-50;
+  }
+  .warning, .warning strong, .warning em {
+    @apply text-gray-50 dark:bg-red-900  dark:text-gray-200;
+  }
+
+  /* Overrides for nav/Table of Contents block */
+  nav ul {
+    @apply ml-0 text-gray-500;
+   }
+  nav ul ul {
+   @apply ml-6 text-gray-500;
+  }
+  nav ul li a {
+    @apply mb-1 pt-2 pr-4 pb-1 pl-2 w-full block text-gray-500 dark:text-gray-500;
+  }
+  nav ul li a:hover {
+    @apply text-gray-900 dark:text-gray-400;
+  }
+  nav ul li a.active {
+    @apply font-semibold;
+  }
+  nav.toc ol li {
+    @apply pt-2 !important
+  }
+  nav.toc ol li li {
+    @apply pt-2 ml-4
+  }
+  nav.toc ol li a {
+    @apply text-gray-500
+  }
+  nav.toc ol li a:hover {
+    @apply text-gray-900
+  }
+  .prose .footer-nav a:hover {
+    @apply dark:text-gray-400 !important
+  }
+
+/* Utilities and misc */
+  .adjust  p img, .adjust img, .adjust p iframe, .adjust iframe, .twitter-tweet {
+    @apply shadow-md ml-auto mr-auto  p-2 !important
+  }
+  .adjust  p img:hover, .adjust img:hover {
+    @apply shadow-xl  
+  }
+  .adjust img.button {
+    @apply w-auto  shadow-none !important
+  }
+  .text-align-center {
+    @apply flex justify-center; 
+  }
+  .icon-spacer {
+    width: "24px";
+  }
+  input {
+   @apply dark:text-gray-400
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "buttons-docs",
+  "version": "1.0.0",
+  "description": "Documentation for the Obsidian Buttons plugin",
+  "scripts": {
+    "start": "eleventy --serve & postcss styles/tailwind.css --o _tmp/style.css --watch",
+    "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production postcss styles/tailwind.css --o _site/style.css && cleancss -o _site/style.css _site/style.css",
+    "watch": "npx eleventy --watch",
+    "debug": "DEBUG=* npx eleventy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shabegom/buttons.git"
+  },
+  "author": "shabegom",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shabegom/buttons/issues"
+  },
+  "homepage": "https://github.com/shabegom/buttons",
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "alpinejs": "^3.14.1",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.4"
+  },
+  "dependencies": {
+    "@11ty/eleventy-img": "^4.0.2",
+    "@11ty/eleventy-navigation": "^0.3.5",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.13",
+    "autoprefixer": "^10.4.19",
+    "clean-css-cli": "^5.6.3",
+    "elasticlunr": "^0.9.5",
+    "eleventy-plugin-svg-contents": "^0.7.0",
+    "emoji-regex": "^10.3.0",
+    "html-minifier-terser": "^7.2.0",
+    "luxon": "^3.4.4",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^8.6.7",
+    "markdown-it-attrs": "^4.1.6",
+    "markdown-it-center-text": "^1.0.4",
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-emoji": "^3.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-for-inline": "^2.0.1",
+    "markdown-it-linkify-images": "^3.0.0",
+    "markdown-it-table-of-contents": "^0.7.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "postcss": "^8.4.39",
+    "qs": "^6.12.2",
+    "staticrypt": "^3.3.0",
+    "terser": "^5.31.1",
+    "url-pattern": "^1.0.3"
+  },
+  "main": ".eleventy.js",
+  "engines": {
+    "node": ">=18"
+  }
+}

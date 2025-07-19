@@ -1,0 +1,231 @@
+<!doctype html><html data-current="page" lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chain Buttons</title><meta name="description" content="Buttons is a plugin for Obsidian that allows you to create buttons that can run commands, open files, or open URLs."><link rel="stylesheet" href="/style.css?v=1752956123259"><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔘</text></svg>"><a rel="me" href="https://pkm.social/@shabegom"><script>function applyThemeColor () {
+  if (localStorage.getItem('darkmode') === 'true' || (!(localStorage.getItem('darkmode')) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    localStorage.setItem('darkmode', 'true')
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}
+
+function activateDarkMode() {
+  const newDarkModeValue = localStorage.getItem('darkmode') === 'true'
+    ? 'false'
+    : 'true'
+
+  localStorage.setItem('darkmode', newDarkModeValue)
+  applyThemeColor()
+}
+
+applyThemeColor()</script><script defer="defer">if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", (user) => {
+    if (!user) {
+      window.netlifyIdentity.on("login", () => {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("main");
+  el.addEventListener("click", closeNavigation, false);
+});
+
+function heartClick() {
+  const color = document.getElementById("heart").style.color;
+  if (color !== "red") {
+    document.getElementById("heart").style.color = "red";
+  } else {
+    document.getElementById("heart").style.color = "rgb(139, 93, 246)";
+  }
+}
+
+function logout() {
+  localStorage.removeItem("passphrase");
+  window.location.href = "/";
+}
+
+function showNavigation() {
+  const navigation = document.getElementById("navigation");
+  navigation.classList.remove("hidden", "sticky", "pt-32");
+  navigation.classList.add(
+    "absolute",
+    "right-0",
+    "top-0",
+    "-mt-0",
+    "z-50",
+    "pt-0",
+    "bg-white",
+    "border-l",
+    "border-gray-200"
+  );
+}
+
+function closeNavigation() {
+  const navigation = document.getElementById("navigation");
+  navigation.classList.add("hidden");
+  navigation.classList.remove(
+    "absolute",
+    "right-0",
+    "z-50",
+    "bg-gray-100",
+    "border-r",
+    "border-gray-800"
+  );
+}
+
+function toggleLayout(state) {
+  if (localStorage.getItem("layout") === "horizontal") {
+    localStorage.setItem("layout", "vertical");
+  } else if (localStorage.getItem("layout") === "vertical") {
+    localStorage.setItem("layout", "horizontal");
+  } else if (!localStorage.getItem("layout")) {
+    if (state === "horizontal") {
+      localStorage.setItem("layout", "vertical");
+    } else {
+      localStorage.setItem("layout", "horizontal");
+    }
+  }
+
+  console.log(localStorage.getItem("layout"));
+}
+
+    (function (window, document) {
+    "use strict";
+    const search = (e) => {
+      const results = window.searchIndex.search(e.target.value, {
+        bool: "OR",
+        expand: true,
+      });
+      const searchBox = document.getElementById("searchField");
+      const resEl = document.getElementById("searchResults");
+      const noResultsEl = document.getElementById("noResultsFound");
+      const navigation = document.getElementById("navigation");
+
+      searchBox.addEventListener('focus', (event) => {
+        event.target.classList.remove("hidden"); 
+        resEl.classList.remove("hidden"); 
+      });
+
+    document.addEventListener('click', function(event) {
+        var isClickInside = searchBox.contains(event.target);
+        if (!isClickInside) {
+            console.log('hidden')
+            resEl.classList.add("hidden"),noResultsEl.classList.add("hidden")
+            noResultsEl.classList.add("hidden")
+        }
+      });
+
+    resEl.innerHTML = "";
+      if (e.target.value != "") {
+        if (results != "") {
+          noResultsEl.classList.add("hidden")
+          resEl.classList.add("p-4")
+          results.map((r) => {
+            const { id, title, description } = r.doc;
+            const el = document.createElement("li", { tabindex: '-1' });
+            resEl.appendChild(el);
+    
+            const h3 = document.createElement("h3");
+            el.appendChild(h3);
+    
+            const a = document.createElement("a");
+            a.setAttribute("href", id);
+            a.textContent = title;
+            h3.appendChild(a);
+    
+            const p = document.createElement("p");
+            p.textContent = description;
+            el.appendChild(p);
+          });
+        } else {
+          noResultsEl.classList.remove("hidden")
+        }
+      } else {
+        noResultsEl.classList.add("hidden")
+      }
+    };
+    fetch("/search-index.json").then((response) =>
+      response.json().then((rawIndex) => {
+        window.searchIndex = elasticlunr.Index.load(rawIndex);
+        document.getElementById("searchField").addEventListener("input", search);
+      })
+    );
+  })(window, document);</script><link rel="dns-prefetch" href="https://identity.netlify.com"><script async src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer="defer"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/elasticlunr/0.9.6/elasticlunr.min.js" defer="defer"></script></head><body><div id="app" class="h-screen bg-white dark:bg-gray-900"><div class="fixed w-full top-0 left-0 z-10"><nav class="flex h-16 md:h-20 items-center bg-white dark:bg-gray-900 z-20 fixed top-0 left-0 right-0 border-b border-gray-100 px-0 py-2 dark:bg-dark dark:border-gray-800 transition-colors duration-200"><div class="hidden md:block space-y-4 w-full p-4"><a class="no-underline text-gray-600 hover:text-gray-800 font-bold dark:text-gray-500 items-center" href="/"><span class="text-xl">Buttons Docs</span> <span class="block mt-1 text-sm text-gray-500 hover:text-gray-600 dark:text-gray-600 font-normal text-xs sm:text-xs md:text-sm lg:text-sm w-full">Documentation for the super popular Obsidian plugin Buttons</span></a></div><div class="mr-2 relative w-full md:w-64"><input aria-label="Search" x-data="{ isOpen: true }" x-bind:class="{ 'hidden': !isOpen }" type="search" placeholder="Search..." class="ml-2 w-60 bg-gray-50 dark:bg-gray-800 appearance-none border dark:border-gray-700 rounded py-2 px-2 placeholder-gray-300 leading-tight focus:ring-4 focus:ring-blue-200 dark:focus:ring-gray-700 ring-opacity-50 border-gray-200" id="searchField"><ul tabindex="0" class="bg-white dark:bg-gray-200 z-50 shadow-md p-0 w-full list-none m-0 absolute left-0 md:right-0 bg-white rounded mt-1 top-100 z-50" id="searchResults"></ul><div class="hidden shadow-md list-none p-4 m-0 absolute left-0 md:right-0 bg-white rounded mt-1 border top-100 divide-y divide-gray-300 z-2" id="noResultsFound"><p>No results found.</p></div></div><button aria-label="Show navigation" onclick="showNavigation()" class="block md:hidden mr-3"><svg fill="none" width="24" height="24" viewBox="0 0 24 24" class="text-gray-400 hover:text-gray-600" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button> <a aria-label="dark mode" rel="noopener noreferrer" class="mr-3 switch text-current cursor-pointer" onclick="activateDarkMode()"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="24" xmlns="http://www.w3.org/2000/svg"><path class="text-gray-400 hover:text-yellow-400 dark:text-yellow-400" fill-rule="evenodd" clip-rule="evenodd" d="M11.67 8.658a3.661 3.661 0 0 0-.781 1.114 3.28 3.28 0 0 0-.268 1.329v1.6a1.304 1.304 0 0 1-.794 1.197 1.282 1.282 0 0 1-.509.102H7.712a1.285 1.285 0 0 1-.922-.379 1.303 1.303 0 0 1-.38-.92v-1.6c0-.479-.092-.921-.274-1.329a3.556 3.556 0 0 0-.776-1.114 4.689 4.689 0 0 1-1.006-1.437A4.187 4.187 0 0 1 4 5.5a4.432 4.432 0 0 1 .616-2.27c.197-.336.432-.64.705-.914a4.6 4.6 0 0 1 .911-.702c.338-.196.7-.348 1.084-.454a4.45 4.45 0 0 1 1.2-.16 4.476 4.476 0 0 1 2.276.614 4.475 4.475 0 0 1 1.622 1.616 4.438 4.438 0 0 1 .616 2.27c0 .617-.117 1.191-.353 1.721a4.69 4.69 0 0 1-1.006 1.437zM9.623 10.5H7.409v2.201c0 .081.028.15.09.212a.29.29 0 0 0 .213.09h1.606a.289.289 0 0 0 .213-.09.286.286 0 0 0 .09-.212V10.5z"></path></svg></a></nav></div><nav id="navigation" class="fixed inset-y-0 overflow-x-hidden overflow-y-auto hidden w:64 lg:w-72 mt-20 md:block dark:bg-gray-900 flex-none top-0 p-4 w-64 md:border-r border-b border-gray-100 dark:border-gray-800"><button name="Close navigation" onclick="closeNavigation()" class="float-right justify-end block md:hidden -mr-4 p-6"><svg xmlns="http://www.w3.org/2000/svg" class="dark:bg-gray-500" width="18" height="18" viewBox="0 0 18 18"><path class="text-gray-100" d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/></svg></button><div class="clear-right"><a href="/"><div class="block md:hidden pt-4 font-semibold text-gray-500">Buttons Docs</div><div class="block md:hidden text-sm text-gray-500 mb-4">Documentation for the super popular Obsidian plugin Buttons</div></a><ul class="nav"><li class="item"><a href="/" class="item">Home</a></li><li class="item"><a href="/install.html" class="item">Install Buttons</a></li><li class="item"><a href="/usage.html" class="item">Usage</a><ul><li class="item"><a href="/usage/types.html" class="item">Button Types</a><ul><li class="item"><a href="/usage/types/text.html" class="item">Text</a></li><li class="item"><a href="/usage/types/command.html" class="item">Command Buttons</a></li><li class="item"><a href="/usage/types/calculate.html" class="item">Calculate</a></li><li class="item"><a href="/usage/types/link.html" class="item">Link Buttons</a></li><li class="item active"><a href="/usage/types/chain.html" class="item active">Chain</a></li><li class="item"><a href="/usage/template.html" class="item">Template Buttons</a></li><li class="item"><a href="/usage/types/copy.html" class="item">Copy</a></li><li class="item"><a href="/usage/types/swap.html" class="item">Swap Buttons</a></li></ul></li><li class="item"><a href="/usage/inline.html" class="item">Inline Buttons</a></li><li class="item"><a href="/usage/mutations.html" class="item">Mutations</a><ul><li class="item"><a href="/usage/mutations/remove.html" class="item">Remove Mutations</a></li><li class="item"><a href="/usage/mutations/replace.html" class="item">Replace Mutations</a></li></ul></li><li class="item"><a href="/usage/styling.html" class="item">Styling</a></li><li class="item"><a href="/usage/templater.html" class="item">Templater</a></li></ul></li><li class="item"><a href="/maker.html" class="item">Button Maker</a></li></ul></div></nav><main id="main" class="dark:bg-gray-900 pt-16 sm:pt-18 md:pt-20 md:pl-64 lg:pl-72"><div class="flex mt-4 justify-end mr-1"><div class="inline-block w-auto text-xs text-gray-500 pt-1 pb-1 pl-3 mr-2 rounded">Updated <time datetime="2024-07-18">Jul 18, 2024</time></div></div><div class="flex w-full justify-center"><div class="mt-4 px-6 md:px-6 lg:px-8 xl:px-12 w-full max-w-5xl"><div class="wrapper flex justify-between"><div class="main flex flex-col pr-0 prose sm:prose lg:prose-lg xl:prose-md"><article><h1><button onclick="heartClick()" class="text-purple-500 border border-purple-500 hover:bg-purple-500 hover:text-white active:bg-purple-600 font-bold px-8 py-3 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"><span id="heart">&#9829</span> Chain Buttons</button></h1><div class="self-center adjust dark:text-gray-400"><p>A <strong>Chain Button</strong> allows you to run multiple actions in sequence with a single click. Each action can be any supported button type (command, text, template, link, calculate, copy, or even another chain). This is perfect for creating complex workflows that automate multiple steps at once.</p><h2>Basic Chain Button</h2><pre>
+```button
+name Daily Setup
+type chain
+actions [
+  {"type": "command", "action": "Periodic Notes: Open today's daily note"},
+  {"type": "append text", "action": "## Tasks for Today"},
+  {"type": "template", "action": "Daily Task Template"}
+]
+```
+^button-daily-setup
+</pre><p>When clicked, this button will:</p><ol><li>Open today’s daily note</li><li>Append “## Tasks for Today” to the note</li><li>Append your Daily Task Template</li></ol><h2>Chain Button Syntax</h2><p>The <code>actions</code> field must be a valid JSON array of objects. Each action object requires:</p><ul><li><strong><code>type</code></strong>: The type of action to perform</li><li><strong><code>action</code></strong>: What the action should do (varies by type)</li></ul><h3>Supported Action Types</h3><p><strong>Command Actions:</strong></p><pre>
+{"type": "command", "action": "Toggle Pin"}
+</pre><p><strong>Text Actions:</strong></p><pre>
+{"type": "append text", "action": "## New Section"}
+{"type": "prepend text", "action": "Priority: High"}
+{"type": "line(1) text", "action": "Updated: Today"}
+{"type": "note(Meeting Notes) text", "action": "Agenda items go here"}
+</pre><p><strong>Template Actions:</strong></p><pre>
+{"type": "append template", "action": "Meeting Template"}
+{"type": "prepend template", "action": "Header Template"}
+{"type": "note(New Project) template", "action": "Project Template"}
+</pre><p><strong>Link Actions:</strong></p><pre>
+{"type": "link", "action": "https://obsidian.md"}
+{"type": "link", "action": "obsidian://show-plugin?id=buttons"}
+</pre><p><strong>Calculate Actions:</strong></p><pre>
+{"type": "calculate", "action": "2+2"}
+{"type": "calculate", "action": "$1+$2"}
+</pre><h2>Advanced Chain Examples</h2><h3>Project Setup Chain</h3><p>This chain creates a new project note and sets up the basic structure:</p><pre>
+```button
+name New Project Setup
+type chain
+actions [
+  {"type": "note(Project - Untitled, split) template", "action": "Project Template"},
+  {"type": "append text", "action": "## Goals"},
+  {"type": "append text", "action": "## Tasks"},
+  {"type": "append text", "action": "## Resources"},
+  {"type": "command", "action": "Focus on pane to the right"}
+]
+```
+^button-project-setup
+</pre><h3>Weekly Review Chain</h3><p>Automate your weekly review process:</p><pre>
+```button
+name Weekly Review
+type chain
+actions [
+  {"type": "command", "action": "Periodic Notes: Open this week's weekly note"},
+  {"type": "append template", "action": "Weekly Review Template"},
+  {"type": "command", "action": "Periodic Notes: Open next week's weekly note"},
+  {"type": "append template", "action": "Weekly Planning Template"}
+]
+```
+^button-weekly-review  
+</pre><h3>Research Note Chain</h3><p>Create a research note with metadata and structure:</p><pre>
+```button
+name Research Note
+type chain  
+actions [
+  {"type": "note(Research - Topic, tab) template", "action": "Research Template"},
+  {"type": "line(1) text", "action": "created:: [[<% tp.date.now() %>]]"},
+  {"type": "append text", "action": "## Summary"},
+  {"type": "append text", "action": "## Key Points"},
+  {"type": "append text", "action": "## References"}
+]
+```
+^button-research-note
+</pre><h2>Using Chain Buttons with <a href="/usage/templater">Templater</a></h2><p>You can use Templater commands within chain button actions for dynamic content:</p><pre>
+```button
+name Time-stamped Entry
+type chain
+templater true
+actions [
+  {"type": "append text", "action": "## <% tp.date.now('YYYY-MM-DD HH:mm') %>"},
+  {"type": "append template", "action": "Daily Log Template"}
+]
+```
+^button-timestamped
+</pre><h2>Tips for Chain Buttons</h2><ol><li><strong>Order matters</strong>: Actions execute from top to bottom</li><li><strong>JSON formatting</strong>: The actions array must be valid JSON</li><li><strong>Error handling</strong>: If one action fails, the rest will still attempt to run</li><li><strong>Testing</strong>: Start with simple chains and build complexity gradually</li><li><strong>Performance</strong>: Very long chains might feel slow - consider breaking them up</li></ol><h2>Creating Chain Buttons</h2><p><strong>Using the <a href="/maker">Button Maker</a>:</strong></p><ol><li>Select “Chain” as the button type</li><li>Add actions one by one, specifying type and action for each</li><li>The Button Maker will generate the proper JSON formatting</li></ol><p><strong>Writing by hand:</strong></p><ul><li>Use a JSON validator if you run into formatting issues</li><li>Each action object needs both <code>type</code> and <code>action</code> fields</li><li>Remember to escape quotes inside action strings if needed</li></ul><p>Chain buttons are incredibly powerful for automating complex workflows. Start simple and gradually build more sophisticated automation as you get comfortable with the syntax.</p><ul class="footer-nav pt-4 mb-8 ml-0 pl-0 flex flex-wrap flex-row-reverse justify-between mt-8 list-none"><li class="ml-0 pl-0"><a class="font-semibold text-gray-500 hover:text-gray-900" href="/usage/template.html">Template Buttons</a> <svg height="24" fill="none" viewBox="0 0 24 24" stroke="#6B7280" class="inline ml-1 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></li><li class="ml-0 pl-0"><svg height="24" fill="none" viewBox="0 0 24 24" stroke="#6B7280" class="transform rotate-180 inline mr-1 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg> <a class="font-semibold text-gray-500 hover:text-gray-900" href="/usage/types/link.html">Link Buttons</a></li></ul></div></article></div></div></div></div><div class="z-50 mt-12 h-12 flex dark:bg-gray-900 text-gray-500 dark:text-gray-400 justify-center p-2 border-t border-gray-100 dark:border-gray-800"><div class="flex w-full items-center"><div class="w-6 h-6 flex-none"></div><div class="text-gray-500 flex flex-grow justify-center text-align-center"><small>Made with ❤ by shabegom</small></div><div class="flex-none float-right"><a aria-label="Netlify CMS" href="/admin/" rel="noopener noreferrer" target="_blank"><svg width="24px" viewBox="0 0 16 16" class="bi bi-gear" class="text-gray-300 dark:text-gray-500" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path class="text-gray-300 dark:text-gray-500" fill-rule="evenodd" d="M8.837 1.626c-.246-.835-1.428-.835-1.674 0l-.094.319A1.873 1.873 0 0 1 4.377 3.06l-.292-.16c-.764-.415-1.6.42-1.184 1.185l.159.292a1.873 1.873 0 0 1-1.115 2.692l-.319.094c-.835.246-.835 1.428 0 1.674l.319.094a1.873 1.873 0 0 1 1.115 2.693l-.16.291c-.415.764.42 1.6 1.185 1.184l.292-.159a1.873 1.873 0 0 1 2.692 1.116l.094.318c.246.835 1.428.835 1.674 0l.094-.319a1.873 1.873 0 0 1 2.693-1.115l.291.16c.764.415 1.6-.42 1.184-1.185l-.159-.291a1.873 1.873 0 0 1 1.116-2.693l.318-.094c.835-.246.835-1.428 0-1.674l-.319-.094a1.873 1.873 0 0 1-1.115-2.692l.16-.292c.415-.764-.42-1.6-1.185-1.184l-.291.159A1.873 1.873 0 0 1 8.93 1.945l-.094-.319zm-2.633-.283c.527-1.79 3.065-1.79 3.592 0l.094.319a.873.873 0 0 0 1.255.52l.292-.16c1.64-.892 3.434.901 2.54 2.541l-.159.292a.873.873 0 0 0 .52 1.255l.319.094c1.79.527 1.79 3.065 0 3.592l-.319.094a.873.873 0 0 0-.52 1.255l.16.292c.893 1.64-.902 3.434-2.541 2.54l-.292-.159a.873.873 0 0 0-1.255.52l-.094.319c-.527 1.79-3.065 1.79-3.592 0l-.094-.319a.873.873 0 0 0-1.255-.52l-.292.16c-1.64.893-3.433-.902-2.54-2.541l.159-.292a.873.873 0 0 0-.52-1.255l-.319-.094c-1.79-.527-1.79-3.065 0-3.592l.319-.094a.873.873 0 0 0 .52-1.255l-.16-.292c-.892-1.64.902-3.433 2.541-2.54l.292.159a.873.873 0 0 0 1.255-.52l.094-.319z"/><path class="text-gray-300 dark:text-gray-500" fill-rule="evenodd" d="M8 5.754a2.246 2.246 0 1 0 0 4.492 2.246 2.246 0 0 0 0-4.492zM4.754 8a3.246 3.246 0 1 1 6.492 0 3.246 3.246 0 0 1-6.492 0z"/></svg></a></div><div class="flex-none ml-2 float-right"><a aria-label="github link" rel="noopener noreferrer" href="https://github.com/shabegom/buttons" target="_blank"><svg height="28" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" class="text-gray-400 dark:text-gray-400" d="M12 3C7.0275 3 3 7.12937 3 12.2276C3 16.3109 5.57625 19.7597 9.15374 20.9824C9.60374 21.0631 9.77249 20.7863 9.77249 20.5441C9.77249 20.3249 9.76125 19.5982 9.76125 18.8254C7.5 19.2522 6.915 18.2602 6.735 17.7412C6.63375 17.4759 6.19499 16.6569 5.8125 16.4378C5.4975 16.2647 5.0475 15.838 5.80124 15.8264C6.51 15.8149 7.01625 16.4954 7.18499 16.7723C7.99499 18.1679 9.28875 17.7758 9.80625 17.5335C9.885 16.9337 10.1212 16.53 10.38 16.2993C8.3775 16.0687 6.285 15.2728 6.285 11.7432C6.285 10.7397 6.63375 9.9092 7.20749 9.26326C7.1175 9.03257 6.8025 8.08674 7.2975 6.81794C7.2975 6.81794 8.05125 6.57571 9.77249 7.76377C10.4925 7.55615 11.2575 7.45234 12.0225 7.45234C12.7875 7.45234 13.5525 7.55615 14.2725 7.76377C15.9937 6.56418 16.7475 6.81794 16.7475 6.81794C17.2424 8.08674 16.9275 9.03257 16.8375 9.26326C17.4113 9.9092 17.76 10.7281 17.76 11.7432C17.76 15.2843 15.6563 16.0687 13.6537 16.2993C13.98 16.5877 14.2613 17.1414 14.2613 18.0065C14.2613 19.2407 14.25 20.2326 14.25 20.5441C14.25 20.7863 14.4188 21.0746 14.8688 20.9824C16.6554 20.364 18.2079 19.1866 19.3078 17.6162C20.4077 16.0457 20.9995 14.1611 21 12.2276C21 7.12937 16.9725 3 12 3Z" fill="currentColor"></path></svg></a></div></div></div></main></div></body></html>

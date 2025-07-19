@@ -1,0 +1,81 @@
+---
+layout: layouts/base.njk
+section: post
+---
+{% if site.navigationStyle == "vertical" %}
+    {% if site.enableEditButton == true or site.enableDatestamp == true %}
+    <div class="flex mt-4 justify-end mr-1">
+        {% if site.enableDatestamp == true %}
+        <div class="inline-block w-auto text-xs text-gray-500 pt-1 pb-1 pl-3 mr-2 rounded ">Updated <time datetime="{{ date | machineDate }}">{{ date | readableDate }}</time></div>
+        {% endif %}
+        {% if site.enableEditButton == true %}
+        <div class="inline-block w-auto text-xs  text-gray-500 hover:bg-gray-200 pt-1 pr-4 pb-1 pl-3 rounded "><a href="{{ site.githubUrl }}/edit/{{ site.githubBranch }}/{{ page.inputPath }}">Edit</a></div>
+        {% endif %}
+    </div>
+    {% endif %}
+{% endif %}
+ 
+<div class="flex w-full justify-center">
+    <div class="mt-4 px-6 md:px-6 lg:px-8 xl:px-12 w-full max-w-5xl">
+        <div class="wrapper flex justify-between">
+            {% if site.enableTOC and toc %} 
+            <div class="main flex flex-col pr-0 xl:pr-64 prose sm:prose lg:prose-lg xl:prose-md">
+            {% else %}
+             <div class="main  flex flex-col pr-0 prose sm:prose lg:prose-lg xl:prose-md">
+            {% endif %}    
+                <article>
+                <h1 class="dark:text-gray-500">{{ title }}</h1>
+                {% if site.navigationStyle == "horizontal" %}
+                    {% if site.enableEditButton == true or site.enableDatestamp == true %}
+                        <div class="flex mt-4 justify-end mr-1">
+                        {% if site.enableDatestamp == true %}
+                            <div class="inline-block w-auto text-xs text-gray-500 pt-1 pb-1 pl-3 mr-2 rounded ">Updated <time datetime="{{ date | machineDate }}">{{ date | readableDate }}</time></div>
+                        {% endif %}
+                        {% if site.enableEditButton == true %}
+                            <div class="inline-block w-auto text-xs  text-gray-500 hover:bg-gray-200 pt-1 pr-4 pb-1 pl-3 rounded "><a class="text-gray-500 no-underline font-normal !important" href="{{ site.githubUrl }}/edit/{{ site.githubBranch }}/{{ page.inputPath }}">Edit</a></div>
+                        {% endif %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <div class="adjust dark:text-gray-400">
+                    {{ layoutContent | safe }}
+                    {% if (site.enableComments) and (comments !== 0) %}
+                        <!-- Paste your comment code here! -->
+                    {% endif %}
+                    
+                   {% if tags %}
+    <p>
+    {% for tag in tags %}
+      {%- if tag != "post" -%}
+        {% set tagUrl %}/tags/{{ tag }}/{% endset %}
+        <a class="text-xs px-3 py-2 text-gray-600 bg-gray-200 no-underline rounded" href="{{ tagUrl | url }}" rel="tag">{{ tag }}</a>
+      {%- endif -%}
+    {% endfor %}
+    </p>
+  {% endif %}
+
+<hr />
+  {% if nextPost.url %}
+    <p class="ctr">
+      <strong>Next</strong>: 
+      <a class="next" href="{{ nextPost.url }}">{{ nextPost.data.title }}</a>
+    </p>
+  {% endif %}
+  {% if prevPost.url %}
+    <p class="ctr">
+      <strong>Previous</strong>: 
+      <a class="previous" href="{{ prevPost.url }}">{{ prevPost.data.title }}</a>
+    </p>
+  {% endif %}
+<nav>
+  <a href="{{ '/blog/' | url }}">← Spacelog</a>
+</nav>
+
+                </div>
+                </article>
+            </div>    
+            
+        </div>
+    </div>
+</div>
+ 

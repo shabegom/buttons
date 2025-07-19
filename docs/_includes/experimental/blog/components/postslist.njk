@@ -1,0 +1,42 @@
+<section>
+<ul class="spacelog">
+	{% for post in postslist | reverse %}
+	<li>
+		<time datetime="{{ post.date | machineDate }}">
+		<small>{{ post.date | readableDate }} — </small>
+		</time>  <a href="{{ post.url | url }}">
+		{% if post.data.title %}
+			{{ post.data.title }}
+		{% else %}
+			Untitled
+		{% endif %}
+			</a>
+			{% if post.data.tags %}
+					{% for tag in post.data.tags %}
+		  			{%- if tag != "post" -%}
+		  				{% set tagUrl %}/tags/{{ tag }}/{% endset %}
+		  			<a class="text-xs ml-1 px-2 py-1 text-gray-600 bg-gray-200 no-underline rounded" href="{{ tagUrl | url }}" rel="tag">{{ tag }}</a>
+		  			{%- endif -%}
+					{% endfor %}
+			{% endif %}
+			</li>
+	{% endfor %}
+	</ul>
+		{% if post.data.tags %}
+				<p>
+					{% for tag in post.data.tags %}
+		  			{%- if tag != "post" -%}
+		  				{% set tagUrl %}/tags/{{ tag }}/{% endset %}
+		  			<a href="{{ tagUrl | url }}" rel="tag">{{ tag }}</a>
+		  			{%- endif -%}
+					{% endfor %}
+				</p>
+			{% endif %}
+		</article>
+</section>
+{# 
+<h1>Foo</h1>
+{% set latest_posts = collections.posts %}
+{% for post in latest_posts.slice(0,2) | reverse %}
+{{ post.data.title}}
+{% endfor %} #}
