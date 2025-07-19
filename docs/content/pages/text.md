@@ -183,20 +183,6 @@ action
 ^button-divider
 </pre>
 
-### Insert Code Block Template
-<pre>
-```button
-name Add Code Block
-type append text
-action 
-```javascript
-// Your code here
-
-```
-
-```
-^button-code-block
-</pre>
 
 ### Task List Starter
 <pre>
