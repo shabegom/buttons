@@ -672,49 +672,35 @@ export class ButtonModal extends Modal {
 
   private renderActionInput(container: HTMLElement, actionIndex: number, actionType: string): void {
     if (actionType === "command") {
-      const input = container.createEl("input", { 
-        type: "text", 
-        cls: "action-input",
-        attr: { placeholder: "Select a command..." }
+      // Create a new command suggest element for this action
+      const commandInput = createEl("input", { type: "text" });
+      new CommandSuggest(this.app, commandInput);
+      commandInput.setAttribute("class", "action-input");
+      commandInput.setAttribute("placeholder", "Select a command...");
+      
+      container.appendChild(commandInput);
+      
+      commandInput.addEventListener("change", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
       });
-      input.replaceWith(this.commandSuggestEl);
-      
-      // Remove existing listeners to prevent conflicts
-      this.commandSuggestEl.removeEventListener("change", this.handleCommandChange);
-      this.commandSuggestEl.removeEventListener("blur", this.handleCommandBlur);
-      
-      // Create new handler functions for this specific action
-      this.handleCommandChange = (e: Event) => {
+      commandInput.addEventListener("blur", (e: Event) => {
         this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
-      };
-      this.handleCommandBlur = (e: Event) => {
-        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
-      };
-      
-      this.commandSuggestEl.addEventListener("change", this.handleCommandChange);
-      this.commandSuggestEl.addEventListener("blur", this.handleCommandBlur);
+      });
     } else if (actionType.includes("template")) {
-      const input = container.createEl("input", { 
-        type: "text", 
-        cls: "action-input",
-        attr: { placeholder: "Select a template..." }
+      // Create a new template suggest element for this action
+      const templateInput = createEl("input", { type: "text" });
+      new TemplateSuggest(this.app, templateInput);
+      templateInput.setAttribute("class", "action-input");
+      templateInput.setAttribute("placeholder", "Select a template...");
+      
+      container.appendChild(templateInput);
+      
+      templateInput.addEventListener("change", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
       });
-      input.replaceWith(this.fileSuggestEl);
-      
-      // Remove existing listeners to prevent conflicts
-      this.fileSuggestEl.removeEventListener("change", this.handleFileChange);
-      this.fileSuggestEl.removeEventListener("blur", this.handleFileBlur);
-      
-      // Create new handler functions for this specific action
-      this.handleFileChange = (e: Event) => {
+      templateInput.addEventListener("blur", (e: Event) => {
         this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
-      };
-      this.handleFileBlur = (e: Event) => {
-        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
-      };
-      
-      this.fileSuggestEl.addEventListener("change", this.handleFileChange);
-      this.fileSuggestEl.addEventListener("blur", this.handleFileBlur);
+      });
     } else {
       const input = container.createEl("input", { 
         type: "text", 
