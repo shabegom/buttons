@@ -511,7 +511,14 @@ export class ButtonModal extends Modal {
     });
     
     textTypeSelect.addEventListener("change", (e) => {
-      this.outputObject.type = (e.target as HTMLSelectElement).value;
+      const value = (e.target as HTMLSelectElement).value;
+      this.outputObject.type = value;
+      
+      if (value === "line text") {
+        this.renderLineNumberField(container);
+      } else if (value === "note text") {
+        this.renderNoteTextFields(container);
+      }
     });
   }
 
@@ -674,7 +681,7 @@ export class ButtonModal extends Modal {
   private renderLineNumberField(container: HTMLElement): void {
     const field = container.createEl("div", { cls: "form-field" });
     field.createEl("label", { cls: "field-label", text: "Line Number" });
-    field.createEl("div", { cls: "field-description", text: "At which line should the template be inserted?" });
+    field.createEl("div", { cls: "field-description", text: "At which line should the content be inserted?" });
     const input = field.createEl("input", { 
       type: "text", 
       cls: "field-input",
@@ -682,11 +689,50 @@ export class ButtonModal extends Modal {
     });
     input.addEventListener("input", (e) => {
       const value = (e.target as HTMLInputElement).value;
-      this.outputObject.type = `line(${value}) template`;
+      // Check if we're in template or text mode based on current type
+      if (this.outputObject.type.includes("template")) {
+        this.outputObject.type = `line(${value}) template`;
+      } else if (this.outputObject.type.includes("text")) {
+        this.outputObject.type = `line(${value}) text`;
+      }
     });
   }
 
   private renderNoteTemplateFields(container: HTMLElement): void {
+    const promptField = container.createEl("div", { cls: "form-field" });
+    promptField.createEl("label", { cls: "field-label", text: "Prompt" });
+    promptField.createEl("div", { cls: "field-description", text: "Should you be prompted to enter a name for the file on creation?" });
+    const promptToggle = promptField.createEl("input", { type: "checkbox", cls: "toggle-input" });
+    promptToggle.addEventListener("change", (e) => {
+      this.outputObject.prompt = (e.target as HTMLInputElement).checked;
+    });
+
+    const nameField = container.createEl("div", { cls: "form-field" });
+    nameField.createEl("label", { cls: "field-label", text: "Note Name" });
+    nameField.createEl("div", { cls: "field-description", text: "What should the new note be named? Note: if prompt is on, this will be the default name" });
+    const nameInput = nameField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "My New Note" }
+    });
+    nameInput.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLInputElement).value;
+    });
+
+    const folderField = container.createEl("div", { cls: "form-field" });
+    folderField.createEl("label", { cls: "field-label", text: "Default Folder" });
+    folderField.createEl("div", { cls: "field-description", text: "Enter a folder path to place the note in. Defaults to root" });
+    const folderInput = folderField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "My Folder" }
+    });
+    folderInput.addEventListener("input", (e) => {
+      this.outputObject.folder = (e.target as HTMLInputElement).value;
+    });
+  }
+
+  private renderNoteTextFields(container: HTMLElement): void {
     const promptField = container.createEl("div", { cls: "form-field" });
     promptField.createEl("label", { cls: "field-label", text: "Prompt" });
     promptField.createEl("div", { cls: "field-description", text: "Should you be prompted to enter a name for the file on creation?" });
