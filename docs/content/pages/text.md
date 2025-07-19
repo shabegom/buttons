@@ -219,25 +219,6 @@ templater true
 ^button-meeting-setup
 </pre>
 
-## Text Button Features
-
-### Multi-line Text Support
-Text Buttons support multi-line content. Each new line in your action becomes a new line in the inserted text.
-
-### Markdown Formatting
-All Markdown formatting is preserved:
-- **Bold** and *italic* text
-- Headers (##, ###, etc.)
-- Lists (-, *, numbered)
-- Links `[text](url)`
-- Code blocks and inline code
-
-### Special Characters
-Text Buttons handle special characters correctly:
-- Emoji: 🎯 ✅ 📝
-- Symbols: → ← ↑ ↓
-- Unicode characters
-
 ## Combining with [Button Mutations](/usage/mutations)
 
 ### Remove Button After Use
@@ -268,7 +249,6 @@ templater true
 1. **Line breaks**: Use actual line breaks in your action for multi-line text
 2. **Templater integration**: Add `templater true` for dynamic content
 3. **Positioning**: Use `line(number)` for precise placement
-4. **New note options**: Choose between same tab, split, or new tab
-5. **Content replacement**: Use `replace [start,end]` to update existing content
+4. **Content replacement**: Use `replace [start,end]` to update existing content
 
 Text Buttons are perfect for quickly inserting frequently used text patterns, creating structured notes, and building reusable content snippets. They're especially powerful when combined with Templater for dynamic, context-aware text insertion.
