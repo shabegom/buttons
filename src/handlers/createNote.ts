@@ -1,4 +1,4 @@
-import { App, Notice, TFile } from "obsidian";
+import { App, Notice, TFile, MarkdownView } from "obsidian";
 import { nameModal } from "../nameModal";
 import templater from "../templater";
 
@@ -38,6 +38,10 @@ export const createNote = async (
           : fullPath;
       }
       
+      // Capture the original active view/leaf before any temporary leaf operations
+      const originalActiveView = app.workspace.getActiveViewOfType(MarkdownView);
+      const originalActiveLeaf = originalActiveView?.leaf;
+      
       let file: TFile;
 
       // Case 1: filePath is a string (file content)
@@ -60,9 +64,18 @@ export const createNote = async (
           // For regular templates, create empty file first
           file = await app.vault.create(fullPath, "");
           
-          // Then insert template content
-          await app.internalPlugins?.plugins["templates"].instance
-            .insertTemplate(filePath);
+          // Open the file in a temporary leaf to make it active
+          const tempLeaf = app.workspace.getLeaf("tab");
+          try {
+            await tempLeaf.openFile(file);
+            
+            // Then insert template content into the active file
+            await app.internalPlugins?.plugins["templates"].instance
+              .insertTemplate(filePath);
+          } finally {
+            // Close the temporary leaf - ensure this always happens
+            tempLeaf.detach();
+          }
         }
       }
 
@@ -89,12 +102,17 @@ export const createNote = async (
         const leaf = app.workspace.getLeaf("tab");
         await leaf.openFile(file);
       } else if (openOption === "same") {
-        // Open in the same window replacing the currently active note
-        const activeLeaf = app.workspace.activeLeaf;
-        if (activeLeaf) {
-          await activeLeaf.openFile(file);
+        // Open in the same window replacing the originally active note
+        if (originalActiveLeaf && originalActiveLeaf.view) {
+          await originalActiveLeaf.openFile(file);
         } else {
-          await app.workspace.getLeaf().openFile(file);
+          // Fallback: use current active view/leaf or create new one
+          const currentActiveView = app.workspace.getActiveViewOfType(MarkdownView);
+          if (currentActiveView?.leaf) {
+            await currentActiveView.leaf.openFile(file);
+          } else {
+            await app.workspace.getLeaf().openFile(file);
+          }
         }
       } else {
         // Default behavior: open in the same pane
