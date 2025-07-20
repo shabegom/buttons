@@ -1,4 +1,4 @@
-import { App, Notice, TFile } from "obsidian";
+import { App, Notice, TFile, MarkdownView } from "obsidian";
 import { nameModal } from "../nameModal";
 import templater from "../templater";
 
@@ -37,6 +37,10 @@ export const createNote = async (
           ? `${directoryPath}/${promptedName}.md`
           : fullPath;
       }
+      
+      // Capture the original active view/leaf before any temporary leaf operations
+      const originalActiveView = app.workspace.getActiveViewOfType(MarkdownView);
+      const originalActiveLeaf = originalActiveView?.leaf;
       
       let file: TFile;
 
@@ -96,12 +100,17 @@ export const createNote = async (
         const leaf = app.workspace.getLeaf("tab");
         await leaf.openFile(file);
       } else if (openOption === "same") {
-        // Open in the same window replacing the currently active note
-        const activeLeaf = app.workspace.activeLeaf;
-        if (activeLeaf) {
-          await activeLeaf.openFile(file);
+        // Open in the same window replacing the originally active note
+        if (originalActiveLeaf && originalActiveLeaf.view) {
+          await originalActiveLeaf.openFile(file);
         } else {
-          await app.workspace.getLeaf().openFile(file);
+          // Fallback: use current active view/leaf or create new one
+          const currentActiveView = app.workspace.getActiveViewOfType(MarkdownView);
+          if (currentActiveView?.leaf) {
+            await currentActiveView.leaf.openFile(file);
+          } else {
+            await app.workspace.getLeaf().openFile(file);
+          }
         }
       } else {
         // Default behavior: open in the same pane
