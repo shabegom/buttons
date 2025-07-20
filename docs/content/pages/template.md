@@ -83,6 +83,7 @@ Create a note with today's date as the title and open it in the same window:
 name Date Note with the Time
 type note(<% tp.date.now() %>, same) template
 action Current Time
+templater true
 ```
 </pre>
 
