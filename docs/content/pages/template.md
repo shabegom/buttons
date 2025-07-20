@@ -8,7 +8,7 @@ eleventyNavigation:
   title: "Template Buttons"
 ---
 
-Template Buttons are the most powerful button type of all. They all you to run templater templates when the button is clicked. These templates could add content to the active note, create a new note, or run any advanced Templater command. For example, if I had a template note called _Current Time_ and inside that note there was a templater command: `<% tp.date.now(HH:mm) %>` I could create the following Template Button to append the current time:
+Template Buttons are the most powerful button type of all. They allow you to run templater templates when the button is clicked. These templates could add content to the active note, create a new note, or run any advanced Templater command. For example, if I had a template note called _Current Time_ and inside that note there was a templater command: `<% tp.date.now(HH:mm) %>` I could create the following Template Button to append the current time:
 
 <pre>
 ```button
