@@ -1,5 +1,7 @@
 # Obsidian Buttons
-Run commands and open links by clicking on ✨ Buttons ✨
+Run commands and open links by clicking on ✨ Buttons ✨  
+
+Read the [Documentation](https://buttonslovesyou.com) for more information
 
 ---
 
