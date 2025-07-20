@@ -20,14 +20,6 @@ Buttons is easy to install and works great out of the box. You can find it in [C
 
 That's it! You're ready to start creating buttons.
 
-## What's New in Version 0.7.0
-
-**Latest Features:**
-- **[Chain Buttons](/usage/types/chain)**: Run multiple actions in sequence with one click
-- **Improved Styling**: Better integration with default Obsidian themes
-- **Enhanced Live Preview**: Inline buttons now work seamlessly in Live Preview mode
-- **Bug fixes**: Various performance improvements and stability fixes
-
 ## Getting Started
 
 After installation, you have several ways to create your first button:
