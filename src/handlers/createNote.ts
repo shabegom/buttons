@@ -10,7 +10,8 @@ export const createNote = async (
   filePath: TFile | string,
   isTemplater?: boolean,
 ): Promise<void> => {
-  const path = type.match(/\(([\s\S]*?),?\s?(split|tab)?\)/);
+  // Updated regex to capture all opening options while maintaining backwards compatibility
+  const path = type.match(/\(([\s\S]*?),?\s?(vsplit|hsplit|split|tab|same|false)?\)/);
 
   if (path) {
     let fullPath = `${path[1]}.md`;
@@ -65,12 +66,38 @@ export const createNote = async (
         }
       }
 
-      // Open the file in the appropriate view
-      if (path[2] === "split") {
-        await app.workspace.getLeaf(true).openFile(file);
-      } else if (path[2] === "tab") {
-        await app.workspace.getLeaf(!0).openFile(file);
+      // Open the file in the appropriate view based on the specified option
+      const openOption = path[2];
+      
+      if (openOption === "false") {
+        // Don't open the file - just create it
+        return;
+      } else if (openOption === "vsplit") {
+        // Open in a vertical split (right side)
+        const leaf = app.workspace.getLeaf("split", "vertical");
+        await leaf.openFile(file);
+      } else if (openOption === "hsplit") {
+        // Open in a horizontal split (bottom)
+        const leaf = app.workspace.getLeaf("split", "horizontal");
+        await leaf.openFile(file);
+      } else if (openOption === "split") {
+        // Backwards compatibility: open in a split (vertical by default)
+        const leaf = app.workspace.getLeaf("split", "vertical");
+        await leaf.openFile(file);
+      } else if (openOption === "tab") {
+        // Open in a new tab
+        const leaf = app.workspace.getLeaf("tab");
+        await leaf.openFile(file);
+      } else if (openOption === "same") {
+        // Open in the same window replacing the currently active note
+        const activeLeaf = app.workspace.activeLeaf;
+        if (activeLeaf) {
+          await activeLeaf.openFile(file);
+        } else {
+          await app.workspace.getLeaf().openFile(file);
+        }
       } else {
+        // Default behavior: open in the same pane
         await app.workspace.getLeaf().openFile(file);
       }
     } catch (e) {

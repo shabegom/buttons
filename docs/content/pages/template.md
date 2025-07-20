@@ -65,7 +65,6 @@ There are a variety of options for `open`:
 - `hsplit`: open in a horizontal split
 - `tab`: open in a new tab
 - `same`: open in the same window replacing the currently active note
-- `window`: open in a new window
 - `false`: don't open the newly created note
 
 Create a note titled _Time Note_ and open it in a new tab:

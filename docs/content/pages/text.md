@@ -105,6 +105,15 @@ action # Daily Journal - Date
 ^button-journal-tab
 </pre>
 
+### New Note Opening Options
+When creating new notes with `type note(title, open)`, you can specify how to open the note:
+
+- `vsplit`: open in a vertical split
+- `hsplit`: open in a horizontal split  
+- `tab`: open in a new tab
+- `same`: open in the same window replacing the currently active note
+- `false`: don't open the newly created note
+
 ### Replace Content in Lines
 Use text buttons with the `replace` argument to replace existing content:
 
@@ -115,10 +124,29 @@ Progress: 0%
 ```button
 name Update Status
 type line(1) text
-action Status: Completed
+action Status: In Progress
+Progress: 25%
 replace [1,2]
 ```
 ^button-update-status
+</pre>
+
+### Dynamic Note Creation with Templater
+Create notes with dynamic titles using Templater:
+
+<pre>
+```button
+name Daily Note with Date
+type note(<% tp.date.now("YYYY-MM-DD") %> Daily) text
+action # Daily Note - <% tp.date.now("YYYY-MM-DD") %>
+
+## Today's Goals
+
+## Notes
+
+templater true
+```
+^button-daily-note
 </pre>
 
 ## Using Text Buttons with [Templater](/usage/templater)
