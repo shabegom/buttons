@@ -1,4 +1,4 @@
-import { Modal, App, Setting, MarkdownView, Editor } from "obsidian";
+import { Modal, App, MarkdownView, Editor } from "obsidian";
 import { createButton } from "./button";
 import { CommandSuggest, TemplateSuggest, ButtonSuggest } from "./suggest";
 import { insertButton, insertInlineButton } from "./utils";
@@ -19,6 +19,12 @@ export class ButtonModal extends Modal {
   idSuggest;
   commandSuggest;
   fileSuggest;
+  
+  // Handler properties for event listeners
+  private handleCommandChange: (e: Event) => void;
+  private handleCommandBlur: (e: Event) => void;
+  private handleFileChange: (e: Event) => void;
+  private handleFileBlur: (e: Event) => void;
 
   constructor(app: App) {
     super(app);
@@ -85,533 +91,255 @@ export class ButtonModal extends Modal {
   onOpen(): void {
     const { titleEl, contentEl } = this;
     titleEl.setText("Button Maker");
+    titleEl.addClass("button-maker-title");
     contentEl.addClass("button-maker");
-    contentEl.createEl("form", {}, (formEl) => {
-      new Setting(formEl)
-        .setName("Button Name")
-        .setDesc("What would you like to call this button?")
-        .addText((textEl) => {
-          textEl.setPlaceholder("My Awesome Button");
-          textEl.onChange((value) => {
-            this.buttonPreviewEl.setText(value);
-            this.outputObject.name = value;
-          });
-
-          window.setTimeout(() => textEl.inputEl.focus(), 10);
-        });
-      const typeContainer = createEl("div");
-      const typeTitle = createEl("span", { cls: "setting-item-title" });
-      typeTitle.setText("Button Type");
-      const typeDesc = createEl("div", { cls: "setting-item-description" });
-      typeDesc.setText("What type of button are you making?");
-      formEl.appendChild(typeContainer);
-      typeContainer.appendChild(typeTitle);
-      typeContainer.appendChild(typeDesc);
-      new Setting(typeDesc).addDropdown((drop) => {
-        drop.addOption("pre", "Select a Button Type");
-        drop.addOption("command", "Command - run a command prompt command");
-        drop.addOption("link", "Link - open a url or uri");
-        drop.addOption(
-          "template",
-          "Template - insert or create notes from templates"
-        );
-        drop.addOption("text", "Text - insert or create notes with text");
-        drop.addOption(
-          "calculate",
-          "Calculate - run a mathematical calculation"
-        );
-        drop.addOption(
-          "swap",
-          "Swap - Create a multi-purpose Inline Button from other Buttons"
-        );
-        drop.addOption("copy", "Text - Copy text to clipboard");
-        drop.addOption("chain", "Chain - Run multiple actions in sequence");
-        const action = formEl.createEl("div");
-        drop.onChange((value) => {
-          this.outputObject.type = value;
-          if (value === "chain") {
-            action.empty();
-            // Chain actions UI
-            if (!Array.isArray(this.outputObject.actions)) {
-              this.outputObject.actions = [];
-            }
-            const actionsList = action.createEl("div", { cls: "chain-actions-list" });
-            actionsList.setAttribute("style", "margin-top: 10px;");
-            const actionsTitle = actionsList.createEl("h4", { text: "Chain Actions" });
-            actionsTitle.setAttribute("style", "margin: 0 0 10px 0; color: var(--text-normal);");
-            const actionsDesc = actionsTitle.createEl("div", { text: "Add actions to be executed in sequence" });
-            actionsDesc.setAttribute("style", "font-size: 12px; color: var(--text-muted); font-weight: normal;");
-            const renderActions = () => {
-              actionsList.empty();
-              actionsList.appendChild(actionsTitle);
-              this.outputObject.actions.forEach((act, idx) => {
-                const actionRow = actionsList.createEl("div", { cls: "chain-action-row" });
-                actionRow.setAttribute("style", "border: 1px solid var(--background-modifier-border); border-radius: 6px; padding: 12px; margin-bottom: 8px; background: var(--background-secondary);");
-                const actionHeader = actionRow.createEl("div");
-                actionHeader.setAttribute("style", "display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;");
-                const actionNumber = actionHeader.createEl("span", { text: `Action ${idx + 1}` });
-                actionNumber.setAttribute("style", "font-weight: 600; color: var(--text-normal);");
-                // Type dropdown
-                const typeSelect = actionRow.createEl("select");
-                typeSelect.setAttribute("style", "margin-right: 8px; flex: 1;");
-                // Add all the button type options
-                const typeOptions = [
-                  { value: "command", text: "Command" },
-                  { value: "append text", text: "Append Text" },
-                  { value: "prepend text", text: "Prepend Text" },
-                  { value: "line text", text: "Line Text" },
-                  { value: "note text", text: "Note Text" },
-                  { value: "append template", text: "Append Template" },
-                  { value: "prepend template", text: "Prepend Template" },
-                  { value: "line template", text: "Line Template" },
-                  { value: "note template", text: "Note Template" },
-                  { value: "link", text: "Link" },
-                  { value: "calculate", text: "Calculate" },
-                  { value: "copy", text: "Copy" }
-                ];
-                typeOptions.forEach(opt => {
-                  const option = typeSelect.createEl("option");
-                  option.value = opt.value;
-                  option.text = opt.text;
-                  if (act.type === opt.value) option.selected = true;
-                });
-                typeSelect.onchange = () => {
-                  this.outputObject.actions[idx].type = typeSelect.value;
-                  // Clear and rebuild the action input based on type
-                  actionInputContainer.empty();
-                  this.renderActionInput(actionInputContainer, idx, typeSelect.value);
-                };
-                // Action input container
-                const actionInputContainer = actionRow.createEl("div", { cls: "action-input-container" });
-                actionInputContainer.setAttribute("style", "margin-top: 8px;");
-                this.renderActionInput(actionInputContainer, idx, act.type);
-                // Remove button
-                const removeBtn = actionRow.createEl("button", { type: "button" });
-                removeBtn.setAttribute("style", "background: var(--background-modifier-error); color: var(--text-on-accent); border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;");
-                removeBtn.textContent = "× Remove";
-                removeBtn.onclick = (event) => {
-                  event.preventDefault();
-                  this.outputObject.actions.splice(idx, 1);
-                  renderActions();
-                };
-              });
-            };
-            // Add action button
-            const addActionBtn = action.createEl("button", { type: "button" });
-            addActionBtn.setAttribute("style", "background: var(--interactive-accent); color: var(--text-on-accent); border: none; border-radius: 6px; padding: 8px 16px; font-size: 14px; cursor: pointer; margin-top: 8px;");
-            addActionBtn.textContent = "+ Add Action";
-            addActionBtn.onclick = (event) => {
-              event.preventDefault();
-              this.outputObject.actions.push({ type: "command", action: "" });
-              renderActions();
-            };
-            renderActions();
-          }
-          if (value === "link") {
-            action.empty();
-            new Setting(action)
-              .setName("Link")
-              .setDesc("Enter a link to open")
-              .addText((textEl) => {
-                textEl.setPlaceholder("https://obsidian.md");
-                textEl.onChange((value) => (this.outputObject.action = value));
-              });
-          }
-          if (value === "command") {
-            action.empty();
-            new Setting(action)
-              .setName("Command")
-              .setDesc("Enter a command to run")
-              .addDropdown((drop) => {
-              drop.addOption("command", "Default");
-              drop.addOption("prepend command", "Prepend");
-              drop.addOption("append command", "Append");
-              drop.onChange((value) => {
-                this.outputObject.type = value;
-              })
-              })
-              .addText((textEl) => {
-                textEl.inputEl.replaceWith(this.commandSuggestEl);
-              });
-          }
-          if (value.includes("template")) {
-            action.empty();
-            new Setting(action)
-              .setName("Template")
-              .setDesc("Select a template note and what should happen")
-              .addDropdown((drop) => {
-                drop.addOption("pre", "Do this...");
-                drop.addOption("prepend template", "Prepend");
-                drop.addOption("append template", "Append");
-                drop.addOption("line template", "Line");
-                drop.addOption("note template", "Note");
-                drop.onChange((value) => {
-                  this.outputObject.type = value;
-                  if (value == "line template") {
-                    new Setting(action)
-                      .setName("Line Number")
-                      .setDesc("At which line should the template be inserted?")
-                      .addText((textEl) => {
-                        textEl.setPlaceholder("69");
-                        textEl.onChange((value) => {
-                          this.outputObject.type = `line(${value}) template`;
-                        });
-                      });
-                  }
-                  if (value == "note template") {
-                    new Setting(action)
-                      .setName("Prompt")
-                      .setDesc(
-                        "Should you be prompted to enter a name for the file on creation?"
-                      )
-                      .addToggle((toggleEl) => {
-                        this.outputObject.prompt = false;
-                        toggleEl.onChange(
-                          (bool) => (this.outputObject.prompt = bool)
-                        );
-                      });
-                    new Setting(action)
-                      .setName("Note Name")
-                      .setDesc(
-                        "What should the new note be named? Note: if prompt is on, this will be the default name"
-                      )
-                      .addText((textEl) => {
-                        textEl.setPlaceholder("My New Note");
-                        new Setting(action)
-                          .setName("Default Folder")
-                          .setDesc(
-                            "Enter a folder path to place the note in. Defaults to root"
-                          )
-                          .addText((textEl) => {
-                            this.outputObject.folder = "";
-                            textEl.onChange((textVal) => {
-                              this.outputObject.folder = textVal;
-                            });
-                          });
-                        new Setting(action)
-                          .setName("Split")
-                          .setDesc("Should the new note open in a split pane?")
-                          .addToggle((toggleEl) => {
-                            this.outputObject.type = `note(${textEl.getValue}) template`;
-                            textEl.onChange((textVal) => {
-                              const toggleVal = toggleEl.getValue();
-                              if (toggleVal) {
-                                this.outputObject.type = `note(${textVal}, split) template`;
-                              }
-                              if (!toggleVal) {
-                                this.outputObject.type = `note(${textVal}) template`;
-                              }
-                            });
-                            toggleEl.onChange((toggleVal) => {
-                              const textVal = textEl.getValue();
-                              if (toggleVal) {
-                                this.outputObject.type = `note(${textVal}, split) template`;
-                              }
-                              if (!toggleVal) {
-                                this.outputObject.type = `note(${textVal}) template`;
-                              }
-                            });
-                          });
-                      });
-                  }
-                });
-              })
-              .addText((textEl) => {
-                textEl.inputEl.replaceWith(this.fileSuggestEl);
-              });
-          }
-          if (value.includes("text")) {
-            action.empty();
-            new Setting(action)
-              .setName("Text")
-              .setDesc("What text and where should it go?")
-              .addDropdown((drop) => {
-                drop.addOption("pre", "Do this...");
-                drop.addOption("prepend text", "Prepend");
-                drop.addOption("append text", "Append");
-                drop.addOption("line text", "Line");
-                drop.addOption("note text", "Note");
-                drop.onChange((value) => {
-                  this.outputObject.type = value;
-                  if (value == "line text") {
-                    new Setting(action)
-                      .setName("Line Number")
-                      .setDesc("At which line should the template be inserted?")
-                      .addText((textEl) => {
-                        textEl.setPlaceholder("69");
-                        textEl.onChange((value) => {
-                          this.outputObject.type = `line(${value}) text`;
-                        });
-                      });
-                  }
-                  if (value == "note text") {
-                    new Setting(action)
-                      .setName("Note Name")
-                      .setDesc("What should the new note be named?")
-                      .addText((textEl) => {
-                        textEl.setPlaceholder("My New Note");
-                        new Setting(action)
-                          .setName("Split")
-                          .setDesc("Should the new note open in a split pane?")
-                          .addToggle((toggleEl) => {
-                            this.outputObject.type = `note(${textEl.getValue}) text`;
-                            textEl.onChange((textVal) => {
-                              const toggleVal = toggleEl.getValue();
-                              if (toggleVal) {
-                                this.outputObject.type = `note(${textVal}, split) text`;
-                              }
-                              if (!toggleVal) {
-                                this.outputObject.type = `note(${textVal}) text`;
-                              }
-                            });
-                            toggleEl.onChange((toggleVal) => {
-                              const textVal = textEl.getValue();
-                              if (toggleVal) {
-                                this.outputObject.type = `note(${textVal}, split) text`;
-                              }
-                              if (!toggleVal) {
-                                this.outputObject.type = `note(${textVal}) text`;
-                              }
-                            });
-                          });
-                      });
-                  }
-                });
-              })
-              .addTextArea((textEl) => {
-                textEl.setPlaceholder("My Text to Insert\nSupports multiple lines");
-                textEl.inputEl.rows = 5;
-                textEl.onChange((value) => {
-                  this.outputObject.action = value;
-                });
-              });
-          }
-          if (value === "calculate") {
-            action.empty();
-            new Setting(action)
-              .setName("Calculate")
-              .setDesc(
-                "Enter a calculation, you can reference a line number with $LineNumber"
-              )
-              .addText((textEl) => {
-                textEl.setPlaceholder("2+$10");
-                textEl.onChange((value) => (this.outputObject.action = value));
-              });
-          }
-          if (value === "swap") {
-            this.outputObject.type = "";
-            action.empty();
-            new Setting(action)
-              .setName("Swap")
-              .setDesc(
-                "choose buttons to be included in the Inline Swap Button"
-              )
-              .addText((textEl) => {
-                textEl.inputEl.replaceWith(this.swapSuggestEl);
-              });
-          }
-          if(value === "copy") {
-            action.empty();
-            new Setting(action)
-              .setName("Text")
-              .setDesc("Text to copy for clipboard")
-              .addTextArea((textEl) => {
-                textEl.setPlaceholder("Text to copy\nSupports multiple lines");
-                textEl.inputEl.rows = 5;
-                textEl.onChange((value) => (this.outputObject.action = value));
-              })
-          }
-        });
+    
+    // Create main container with modern styling
+    const mainContainer = contentEl.createEl("div", { cls: "button-maker-container" });
+    
+    // Create form with improved layout
+    mainContainer.createEl("form", { cls: "button-maker-form" }, (formEl) => {
+      
+      // Basic Settings Section
+      const basicSection = formEl.createEl("div", { cls: "form-section" });
+      basicSection.createEl("h3", { cls: "section-title", text: "Basic Settings" });
+      
+      // Button Name with improved styling
+      const nameContainer = basicSection.createEl("div", { cls: "form-field" });
+      nameContainer.createEl("label", { cls: "field-label", text: "Button Name" });
+      nameContainer.createEl("div", { cls: "field-description", text: "What would you like to call this button?" });
+      const nameInput = nameContainer.createEl("input", { 
+        type: "text", 
+        cls: "field-input",
+        attr: { placeholder: "My Awesome Button" }
       });
-      new Setting(formEl)
-        .setName("Button Block ID")
-        .setDesc("Provide a custom button-block-id")
-        .addText((textEl) => {
-          textEl.setPlaceholder("buttonId");
-          textEl.onChange((value) => {
-            this.outputObject.blockId = value;
-          });
-        });
-      new Setting(formEl)
-        .setName("Remove")
-        .setDesc(
-          "Would you like to remove this button (or other buttons) after clicking?"
-        )
-        .addToggle((toggleEl) => {
-          toggleEl.onChange((value) => {
-            if (value) {
-              new Setting(remove)
-                .setName("Select Remove")
-                .setDesc(
-                  "Use true to remove this button, or supply an [array] of button block-ids"
-                )
-                .addText((textEl) => {
-                  textEl.inputEl.replaceWith(this.removeSuggestEl);
-                });
-                this.outputObject.remove = "true";
-            }
-            if (!value) {
-              this.outputObject.remove = "";
-              remove.empty();
-            }
-          });
-        });
-      const remove = formEl.createEl("div");
-      new Setting(formEl)
-        .setName("Replace")
-        .setDesc("Would you like to replace lines in the note after clicking?")
-        .addToggle((toggleEl) => {
-          toggleEl.onChange((value) => {
-            if (value) {
-              new Setting(replace)
-                .setName("Select Lines")
-                .setDesc(
-                  "Supply an array of [startingLine, endingLine] to be replaced"
-                )
-                .addText((textEl) => {
-                  textEl.setValue("[]");
-                  textEl.onChange(
-                    (value) => (this.outputObject.replace = value)
-                  );
-                });
-            }
-            if (!value) {
-              replace.empty();
-            }
-          });
-        });
-      const replace = formEl.createEl("div");
-      new Setting(formEl)
-        .setName("Inherit")
-        .setDesc(
-          "Would you like to inherit args by adding an existing button block-id?"
-        )
-        .addToggle((toggleEl) => {
-          toggleEl.onChange((value) => {
-            if (value) {
-              new Setting(id)
-                .setName("id")
-                .setDesc(
-                  "inherit from other Buttons by adding their button block-id"
-                )
-                .addText((textEl) => {
-                  textEl.inputEl.replaceWith(this.idSuggestEl);
-                });
-            }
-            if (!value) {
-              this.outputObject.replace = "";
-              id.empty();
-            }
-          });
-        });
-      const id = formEl.createEl("div");
-      new Setting(formEl)
-        .setName("Templater")
-        .setDesc(
-          "Do you want to convert a templater command inside your Button on each click?"
-        )
-        .addToggle((toggleEl) => {
-          toggleEl.setTooltip("Do not use for inline Button");
-          toggleEl.onChange((value) => {
-            this.outputObject.templater = value;
-          });
-        });
-      new Setting(formEl)
-        .setName("Custom Class")
-        .setDesc("Add a custom class for button styling")
-        .addText((textEl) => {
-          textEl.onChange((value) => {
-            this.buttonPreviewEl.setAttribute("class", value);
-            this.outputObject.class = value;
-            if (value === "") {
-              this.buttonPreviewEl.setAttribute("class", "button-default");
-            }
-          });
-        });
-      new Setting(formEl)
-        .setName("Color")
-        .setDesc("What color would you like your button to be?")
-        .addDropdown((drop) => {
-          drop.addOption("default", "Default Color");
-          drop.addOption("blue", "Blue");
-          drop.addOption("red", "Red");
-          drop.addOption("green", "Green");
-          drop.addOption("yellow", "Yellow");
-          drop.addOption("purple", "Purple");
-          drop.addOption("custom", "Custom")
-          drop.onChange((value) => {
-            customBackgroundColor.empty()
-            customTextColor.empty()
-            if(value === 'custom') {
-              this.outputObject.color = "";
-              new Setting(customBackgroundColor)
-                .setName("Background: ")
-                .addText((el) => {
-                  el.setPlaceholder("#FFFFFF");
-                  el.onChange((value: string) => {
-                    // Preserve custom classes when setting custom background
-                    const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
-                      cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
-                    );
-                    this.buttonPreviewEl.className = currentClasses.join(' ');
-                    this.buttonPreviewEl.style.background = value;
-                    this.outputObject.customColor = value;
-                  });
-              })
-              new Setting(customTextColor)
-              .setName("Text Color: ")
-                .addText((el) => {
-                  el.setPlaceholder("#000000");
-                  el.onChange((value: string) => {
-                    // Preserve custom classes when setting custom text color
-                    const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
-                      cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
-                    );
-                    this.buttonPreviewEl.className = currentClasses.join(' ');
-                    this.buttonPreviewEl.style.color = value;
-                    this.outputObject.customTextColor = value;
-                  });
-                });
-              return
-            }
-            this.outputObject.color = value;
-            if (value !== "default") {
-              // Preserve custom classes when setting color
-              const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
-                cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
-              );
-              this.buttonPreviewEl.setAttribute(
-                "class",
-                `button-default ${value} ${currentClasses.join(' ')}`.trim()
-              );
-              this.buttonPreviewEl.removeAttribute("style");
-            } else {
-              // Preserve custom classes when setting default color
-              const currentClasses = this.buttonPreviewEl.className.split(' ').filter(cls => 
-                cls !== 'button-default' && !['blue', 'red', 'green', 'yellow', 'purple'].includes(cls)
-              );
-              this.buttonPreviewEl.setAttribute("class", `button-default ${currentClasses.join(' ')}`.trim());
-              this.buttonPreviewEl.removeAttribute("style");
-            }
-          });
-        });
+      nameInput.addEventListener("input", (e) => {
+        const value = (e.target as HTMLInputElement).value;
+        this.buttonPreviewEl.setText(value);
+        this.outputObject.name = value;
+      });
+      window.setTimeout(() => nameInput.focus(), 10);
 
-      const customBackgroundColor = formEl.createEl("div");
-      const customTextColor = formEl.createEl("div");
+      // Button Type with improved dropdown
+      const typeContainer = basicSection.createEl("div", { cls: "form-field" });
+      typeContainer.createEl("label", { cls: "field-label", text: "Button Type" });
+      typeContainer.createEl("div", { cls: "field-description", text: "What type of button are you making?" });
+      const typeSelect = typeContainer.createEl("select", { cls: "dropdown" });
+      
+      // Add type options with better descriptions
+      const typeOptions = [
+        { value: "pre", text: "Select a Button Type" },
+        { value: "command", text: "Command - Run a command prompt command" },
+        { value: "link", text: "Link - Open a URL or URI" },
+        { value: "template", text: "Template - Insert or create notes from templates" },
+        { value: "text", text: "Text - Insert or create notes with text" },
+        { value: "calculate", text: "Calculate - Run a mathematical calculation" },
+        { value: "swap", text: "Swap - Create a multi-purpose Inline Button from other Buttons" },
+        { value: "copy", text: "Copy - Copy text to clipboard" },
+        { value: "chain", text: "Chain - Run multiple actions in sequence" }
+      ];
+      
+      typeOptions.forEach((option, index) => {
+        const optionEl = typeSelect.createEl("option");
+        optionEl.value = option.value;
+        optionEl.textContent = option.text;
+        // Set the placeholder option as selected by default
+        if (index === 0) {
+          optionEl.selected = true;
+          this.outputObject.type = option.value;
+        }
+      });
 
-      formEl.createDiv("modal-button-container", (buttonContainerEl) => {
-        buttonContainerEl
-          .createEl("button", {
-            attr: { type: "button" },
-            cls: "button-default",
-            text: "Cancel",
-          })
-          .addEventListener("click", () => this.close());
-        buttonContainerEl.createEl("button", {
-          attr: { type: "submit" },
-          cls: "button-default mod-cta",
-          text: "Insert Button",
-        });
+      // Action container for dynamic content
+      const actionContainer = formEl.createEl("div", { cls: "action-container" });
+      
+      typeSelect.addEventListener("change", (e) => {
+        const value = (e.target as HTMLSelectElement).value;
+        this.outputObject.type = value;
+        actionContainer.empty();
+        
+        // Only render action fields if a specific type is selected (not the placeholder)
+        if (value === "pre") {
+          // Don't render anything for the placeholder
+          return;
+        } else if (value === "chain") {
+          this.renderChainActions(actionContainer);
+        } else if (value === "link") {
+          this.renderLinkAction(actionContainer);
+        } else if (value === "command") {
+          this.renderCommandAction(actionContainer);
+        } else if (value.includes("template")) {
+          this.renderTemplateAction(actionContainer);
+        } else if (value === "text") {
+          this.renderTextAction(actionContainer);
+        } else if (value === "calculate") {
+          this.renderCalculateAction(actionContainer);
+        } else if (value === "swap") {
+          this.renderSwapAction(actionContainer);
+        } else if (value === "copy") {
+          this.renderCopyAction(actionContainer);
+        }
+      });
+
+      // Advanced Settings Section
+      const advancedSection = formEl.createEl("div", { cls: "form-section" });
+      advancedSection.createEl("h3", { cls: "section-title", text: "Advanced Settings" });
+      
+      // Button Block ID
+      const blockIdContainer = advancedSection.createEl("div", { cls: "form-field" });
+      blockIdContainer.createEl("label", { cls: "field-label", text: "Button Block ID" });
+      blockIdContainer.createEl("div", { cls: "field-description", text: "Provide a custom button-block-id" });
+      const blockIdInput = blockIdContainer.createEl("input", { 
+        type: "text", 
+        cls: "field-input",
+        attr: { placeholder: "buttonId" }
+      });
+      blockIdInput.addEventListener("input", (e) => {
+        this.outputObject.blockId = (e.target as HTMLInputElement).value;
+      });
+
+      // Toggle Settings
+      const toggleSettings = advancedSection.createEl("div", { cls: "toggle-settings" });
+      
+      // Remove Toggle
+      const removeContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
+      const removeToggleRow = removeContainer.createEl("div", { cls: "toggle-row" });
+      removeToggleRow.createEl("label", { cls: "toggle-label" });
+      const removeToggle = removeToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      removeToggleRow.createEl("span", { cls: "toggle-text", text: "Remove after click" });
+      removeToggleRow.createEl("div", { cls: "toggle-description", text: "Remove this button (or other buttons) after clicking?" });
+      
+      removeToggle.addEventListener("change", (e) => {
+        const checked = (e.target as HTMLInputElement).checked;
+        if (checked) {
+          this.renderRemoveSettings(removeContainer);
+          this.outputObject.remove = "true";
+        } else {
+          this.outputObject.remove = "";
+          const removeSettings = removeContainer.querySelector(".remove-settings");
+          if (removeSettings) removeSettings.remove();
+        }
+      });
+
+      // Replace Toggle
+      const replaceContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
+      const replaceToggleRow = replaceContainer.createEl("div", { cls: "toggle-row" });
+      replaceToggleRow.createEl("label", { cls: "toggle-label" });
+      const replaceToggle = replaceToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      replaceToggleRow.createEl("span", { cls: "toggle-text", text: "Replace content" });
+      replaceToggleRow.createEl("div", { cls: "toggle-description", text: "Replace lines in the note after clicking?" });
+      
+      replaceToggle.addEventListener("change", (e) => {
+        const checked = (e.target as HTMLInputElement).checked;
+        if (checked) {
+          this.renderReplaceSettings(replaceContainer);
+        } else {
+          const replaceSettings = replaceContainer.querySelector(".replace-settings");
+          if (replaceSettings) replaceSettings.remove();
+        }
+      });
+
+      // Inherit Toggle
+      const inheritContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
+      const inheritToggleRow = inheritContainer.createEl("div", { cls: "toggle-row" });
+      inheritToggleRow.createEl("label", { cls: "toggle-label" });
+      const inheritToggle = inheritToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      inheritToggleRow.createEl("span", { cls: "toggle-text", text: "Inherit from other button" });
+      inheritToggleRow.createEl("div", { cls: "toggle-description", text: "Inherit args by adding an existing button block-id?" });
+      
+      inheritToggle.addEventListener("change", (e) => {
+        const checked = (e.target as HTMLInputElement).checked;
+        if (checked) {
+          this.renderInheritSettings(inheritContainer);
+        } else {
+          this.outputObject.id = "";
+          const inheritSettings = inheritContainer.querySelector(".inherit-settings");
+          if (inheritSettings) inheritSettings.remove();
+        }
+      });
+
+      // Templater Toggle
+      const templaterContainer = toggleSettings.createEl("div", { cls: "toggle-field" });
+      const templaterToggleRow = templaterContainer.createEl("div", { cls: "toggle-row" });
+      templaterToggleRow.createEl("label", { cls: "toggle-label" });
+      const templaterToggle = templaterToggleRow.createEl("input", { type: "checkbox", cls: "toggle-input" });
+      templaterToggleRow.createEl("span", { cls: "toggle-text", text: "Enable Templater" });
+      templaterToggleRow.createEl("div", { cls: "toggle-description", text: "Convert templater commands inside your button on each click?" });
+      
+      templaterToggle.addEventListener("change", (e) => {
+        this.outputObject.templater = (e.target as HTMLInputElement).checked;
+      });
+
+      // Styling Section
+      const stylingSection = formEl.createEl("div", { cls: "form-section" });
+      stylingSection.createEl("h3", { cls: "section-title", text: "Styling" });
+      
+      // Custom Class
+      const classContainer = stylingSection.createEl("div", { cls: "form-field" });
+      classContainer.createEl("label", { cls: "field-label", text: "Custom Class" });
+      classContainer.createEl("div", { cls: "field-description", text: "Add a custom class for button styling" });
+      const classInput = classContainer.createEl("input", { 
+        type: "text", 
+        cls: "field-input"
+      });
+      classInput.addEventListener("input", (e) => {
+        const value = (e.target as HTMLInputElement).value;
+        this.buttonPreviewEl.setAttribute("class", value);
+        this.outputObject.class = value;
+        if (value === "") {
+          this.buttonPreviewEl.setAttribute("class", "button-default");
+        }
+      });
+
+      // Color Selection
+      const colorContainer = stylingSection.createEl("div", { cls: "form-field" });
+      colorContainer.createEl("label", { cls: "field-label", text: "Color" });
+      colorContainer.createEl("div", { cls: "field-description", text: "What color would you like your button to be?" });
+      const colorSelect = colorContainer.createEl("select", { cls: "dropdown" });
+      
+      const colorOptions = [
+        { value: "default", text: "Default Color" },
+        { value: "blue", text: "Blue" },
+        { value: "red", text: "Red" },
+        { value: "green", text: "Green" },
+        { value: "yellow", text: "Yellow" },
+        { value: "purple", text: "Purple" },
+        { value: "custom", text: "Custom" }
+      ];
+      
+      colorOptions.forEach(option => {
+        const optionEl = colorSelect.createEl("option");
+        optionEl.value = option.value;
+        optionEl.textContent = option.text;
+        // Set default color as selected
+        if (option.value === "default") {
+          optionEl.selected = true;
+        }
+      });
+
+      colorSelect.addEventListener("change", (e) => {
+        const value = (e.target as HTMLSelectElement).value;
+        if (value === "custom") {
+          this.renderCustomColorSettings(colorContainer);
+        } else {
+          this.outputObject.color = value;
+          this.updateButtonPreview();
+        }
+      });
+
+      // Action Buttons
+      const buttonContainer = formEl.createEl("div", { cls: "form-actions" });
+      const cancelBtn = buttonContainer.createEl("button", { 
+        type: "button", 
+        cls: "btn btn-secondary",
+        text: "Cancel"
+      });
+      cancelBtn.addEventListener("click", () => this.close());
+      
+      buttonContainer.createEl("button", { 
+        type: "submit", 
+        cls: "btn btn-primary",
+        text: "Insert Button"
       });
 
       formEl.addEventListener("submit", (e: Event) => {
@@ -620,166 +348,473 @@ export class ButtonModal extends Modal {
         this.close();
       });
     });
-    contentEl.createEl("p").setText("Button Preview");
+
+    // Button Preview Section
+    const previewSection = mainContainer.createEl("div", { cls: "preview-section" });
+    previewSection.createEl("h3", { cls: "section-title", text: "Button Preview" });
+    const previewContainer = previewSection.createEl("div", { cls: "preview-container" });
     this.buttonPreviewEl = createButton({
       app: this.app,
-      el: contentEl,
+      el: previewContainer,
       args: { name: "My Awesome Button" },
     });
   }
 
-  private renderActionInput(container: HTMLElement, actionIndex: number, actionType: string): void {
-    
-    if (actionType.includes("line text") || actionType.includes("line template")) {
-      // Line number input
-      new Setting(container)
-        .setName("Line Number")
-        .setDesc("At which line should this be inserted?")
-        .addText((textEl) => {
-          textEl.setPlaceholder("69");
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].type = `line(${value}) ${actionType.includes("text") ? "text" : "template"}`;
-          });
-        });
-      // Content input
-      new Setting(container)
-        .setName("Content")
-        .setDesc(actionType.includes("text") ? "Text to insert" : "Template to insert")
-        .addTextArea((textEl) => {
-          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert\nSupports multiple lines" : "My Template");
-          if (actionType.includes("text")) {
-            textEl.inputEl.rows = 3;
-          }
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].action = value;
-          });
-        });
-    } else if (actionType.includes("note text") || actionType.includes("note template")) {
-      // Note name input
-      new Setting(container)
-        .setName("Note Name")
-        .setDesc("What should the new note be named?")
-        .addText((textEl) => {
-          textEl.setPlaceholder("My New Note");
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].type = `note(${value}) ${actionType.includes("text") ? "text" : "template"}`;
-          });
-        });
-      // Split toggle
-      new Setting(container)
-        .setName("Split")
-        .setDesc("Should the new note open in a split pane?")
-        .addToggle((toggleEl) => {
-          const currentType = this.outputObject.actions[actionIndex].type;
-          const noteName = currentType.match(/note\(([^)]*)\)/)?.[1] || "My New Note";
-          if (toggleEl.getValue()) {
-            this.outputObject.actions[actionIndex].type = `note(${noteName}, split) ${actionType.includes("text") ? "text" : "template"}`;
-          } else {
-            this.outputObject.actions[actionIndex].type = `note(${noteName}) ${actionType.includes("text") ? "text" : "template"}`;
-          }
-        });
-      // Content input
-      new Setting(container)
-        .setName("Content")
-        .setDesc(actionType.includes("text") ? "Text to insert" : "Template to insert")
-        .addTextArea((textEl) => {
-          textEl.setPlaceholder(actionType.includes("text") ? "My Text to Insert\nSupports multiple lines" : "My Template");
-          if (actionType.includes("text")) {
-            textEl.inputEl.rows = 3;
-          }
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].action = value;
-          });
-        });
-    } else if (actionType === "command") {
-      // Command input with dropdown and suggestions (same as regular command button)
-      const commandSuggestEl = createEl("input", { type: "text" });
-      new CommandSuggest(this.app, commandSuggestEl);
-      commandSuggestEl.placeholder = "Toggle Pin";
-      commandSuggestEl.addEventListener("change", (e: Event) => {
-        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
-      });
-      commandSuggestEl.addEventListener("blur", (e: Event) => {
-        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
-      });
-      new Setting(container)
-        .setName("Command")
-        .setDesc("Enter a command to run")
-        .addDropdown((drop) => {
-          drop.addOption("command", "Default");
-          drop.addOption("prepend command", "Prepend");
-          drop.addOption("append command", "Append");
-          drop.onChange((value) => {
-            this.outputObject.actions[actionIndex].type = value;
-          });
-        })
-        .addText((textEl) => {
-          textEl.inputEl.replaceWith(commandSuggestEl);
-        });
-    } else if (actionType.includes("template")) {
-      // Template input with suggestions (same as regular template button)
-      const fileSuggestEl = createEl("input", { type: "text" });
-      new TemplateSuggest(this.app, fileSuggestEl);
-      fileSuggestEl.placeholder = "My Template";
-      fileSuggestEl.addEventListener("change", (e: Event) => {
-        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
-      });
-      fileSuggestEl.addEventListener("blur", (e: Event) => {
-        this.outputObject.actions[actionIndex].action = (<HTMLInputElement>e.target).value;
-      });
-      new Setting(container)
-        .setName("Template")
-        .setDesc("Select a template")
-        .addText((textEl) => {
-          textEl.inputEl.replaceWith(fileSuggestEl);
-        });
-    } else if (actionType === "link") {
-      // Link input
-      new Setting(container)
-        .setName("Link")
-        .setDesc("Enter a link to open")
-        .addText((textEl) => {
-          textEl.setPlaceholder("https://obsidian.md");
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].action = value;
-          });
-        });
-    } else if (actionType === "calculate") {
-      // Calculate input
-      new Setting(container)
-        .setName("Calculate")
-        .setDesc("Enter a calculation, you can reference a line number with $LineNumber")
-        .addText((textEl) => {
-          textEl.setPlaceholder("2+$10");
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].action = value;
-          });
-        });
-    } else if (actionType === "copy") {
-      // Copy input
-      new Setting(container)
-        .setName("Text")
-        .setDesc("Text to copy for clipboard")
-        .addTextArea((textEl) => {
-          textEl.setPlaceholder("Text to copy\nSupports multiple lines");
-          textEl.inputEl.rows = 3;
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].action = value;
-          });
-        });
-    } else {
-      // Default text input for append/prepend text
-      new Setting(container)
-        .setName("Text")
-        .setDesc("Text to insert")
-        .addTextArea((textEl) => {
-          textEl.setPlaceholder("My Text to Insert\nSupports multiple lines");
-          textEl.inputEl.rows = 3;
-          textEl.onChange((value) => {
-            this.outputObject.actions[actionIndex].action = value;
-          });
-        });
+  private renderChainActions(container: HTMLElement): void {
+    if (!Array.isArray(this.outputObject.actions)) {
+      this.outputObject.actions = [];
     }
+
+    const actionsHeader = container.createEl("div", { cls: "actions-header" });
+    actionsHeader.createEl("h4", { text: "Chain Actions" });
+    actionsHeader.createEl("p", { text: "Add actions to be executed in sequence" });
+
+    const actionsList = container.createEl("div", { cls: "actions-list" });
+    
+    const renderActions = () => {
+      actionsList.empty();
+      
+      this.outputObject.actions.forEach((act, idx) => {
+        const actionCard = actionsList.createEl("div", { cls: "action-card" });
+        
+        const actionHeader = actionCard.createEl("div", { cls: "action-header" });
+        actionHeader.createEl("span", { cls: "action-number", text: `Action ${idx + 1}` });
+        
+        const removeBtn = actionHeader.createEl("button", { 
+          type: "button", 
+          cls: "btn-remove",
+          text: "×"
+        });
+        removeBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.outputObject.actions.splice(idx, 1);
+          renderActions();
+        });
+
+        const typeSelect = actionCard.createEl("select", { cls: "dropdown" });
+        const typeOptions = [
+          { value: "command", text: "Command" },
+          { value: "append text", text: "Append Text" },
+          { value: "prepend text", text: "Prepend Text" },
+          { value: "line text", text: "Line Text" },
+          { value: "note text", text: "Note Text" },
+          { value: "append template", text: "Append Template" },
+          { value: "prepend template", text: "Prepend Template" },
+          { value: "line template", text: "Line Template" },
+          { value: "note template", text: "Note Template" },
+          { value: "link", text: "Link" },
+          { value: "calculate", text: "Calculate" },
+          { value: "copy", text: "Copy" }
+        ];
+        
+        typeOptions.forEach(opt => {
+          const option = typeSelect.createEl("option");
+          option.value = opt.value;
+          option.textContent = opt.text;
+          if (act.type === opt.value) option.selected = true;
+        });
+
+        const actionInputContainer = actionCard.createEl("div", { cls: "action-input-container" });
+        this.renderActionInput(actionInputContainer, idx, act.type);
+
+        typeSelect.addEventListener("change", () => {
+          this.outputObject.actions[idx].type = typeSelect.value;
+          actionInputContainer.empty();
+          this.renderActionInput(actionInputContainer, idx, typeSelect.value);
+        });
+      });
+    };
+
+    const addActionBtn = container.createEl("button", { 
+      type: "button", 
+      cls: "btn btn-add-action",
+      text: "+ Add Action"
+    });
+    addActionBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.outputObject.actions.push({ type: "command", action: "" });
+      renderActions();
+    });
+
+    renderActions();
+  }
+
+  private renderLinkAction(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Link" });
+    field.createEl("div", { cls: "field-description", text: "Enter a link to open" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "https://obsidian.md" }
+    });
+    input.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLInputElement).value;
+    });
+  }
+
+  private renderCommandAction(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Command" });
+    field.createEl("div", { cls: "field-description", text: "Select a command to run" });
+    
+    const commandTypeSelect = field.createEl("select", { cls: "dropdown" });
+    const defaultOption = commandTypeSelect.createEl("option", { value: "command", text: "Default" });
+    defaultOption.selected = true;
+    commandTypeSelect.createEl("option", { value: "prepend command", text: "Prepend" });
+    commandTypeSelect.createEl("option", { value: "append command", text: "Append" });
+    
+    const commandInput = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input"
+    });
+    commandInput.replaceWith(this.commandSuggestEl);
+    
+    commandTypeSelect.addEventListener("change", (e) => {
+      this.outputObject.type = (e.target as HTMLSelectElement).value;
+    });
+  }
+
+  private renderTemplateAction(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Template" });
+    field.createEl("div", { cls: "field-description", text: "Select a template note and what should happen" });
+    
+    const templateTypeSelect = field.createEl("select", { cls: "dropdown" });
+    const templateDefaultOption = templateTypeSelect.createEl("option", { value: "template", text: "Do this..." });
+    templateDefaultOption.selected = true;
+    templateTypeSelect.createEl("option", { value: "prepend template", text: "Prepend" });
+    templateTypeSelect.createEl("option", { value: "append template", text: "Append" });
+    templateTypeSelect.createEl("option", { value: "line template", text: "Line" });
+    templateTypeSelect.createEl("option", { value: "note template", text: "Note" });
+    
+    const templateInput = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input"
+    });
+    templateInput.replaceWith(this.fileSuggestEl);
+    
+    templateTypeSelect.addEventListener("change", (e) => {
+      const value = (e.target as HTMLSelectElement).value;
+      // Only update the type if a valid option is selected (not the placeholder)
+      if (value && value !== "template") {
+        this.outputObject.type = value;
+      }
+      
+      if (value === "line template") {
+        this.renderLineNumberField(container);
+      } else if (value === "note template") {
+        this.renderNoteTemplateFields(container);
+      }
+    });
+  }
+
+  private renderTextAction(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Text" });
+    field.createEl("div", { cls: "field-description", text: "Enter the text content" });
+    
+    const textTypeSelect = field.createEl("select", { cls: "dropdown" });
+    const textDefaultOption = textTypeSelect.createEl("option", { value: "text", text: "Do this..." });
+    textDefaultOption.selected = true;
+    textTypeSelect.createEl("option", { value: "append text", text: "Append" });
+    textTypeSelect.createEl("option", { value: "prepend text", text: "Prepend" });
+    textTypeSelect.createEl("option", { value: "line text", text: "Line" });
+    textTypeSelect.createEl("option", { value: "note text", text: "Note" });
+    
+    const textArea = field.createEl("textarea", { 
+      cls: "field-textarea",
+      attr: { placeholder: "Enter your text content here..." }
+    });
+    textArea.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLTextAreaElement).value;
+    });
+    
+    textTypeSelect.addEventListener("change", (e) => {
+      const value = (e.target as HTMLSelectElement).value;
+      // Only update the type if a valid option is selected (not the placeholder)
+      if (value && value !== "text") {
+        this.outputObject.type = value;
+      }
+      
+      if (value === "line text") {
+        this.renderLineNumberField(container);
+      } else if (value === "note text") {
+        this.renderNoteTextFields(container);
+      }
+    });
+  }
+
+  private renderCalculateAction(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Calculate" });
+    field.createEl("div", { cls: "field-description", text: "Enter a calculation, you can reference a line number with $LineNumber" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "2+$10" }
+    });
+    input.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLInputElement).value;
+    });
+  }
+
+  private renderSwapAction(container: HTMLElement): void {
+    this.outputObject.type = "";
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Swap" });
+    field.createEl("div", { cls: "field-description", text: "Choose buttons to be included in the Inline Swap Button" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input"
+    });
+    input.replaceWith(this.swapSuggestEl);
+  }
+
+  private renderCopyAction(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Text" });
+    field.createEl("div", { cls: "field-description", text: "Text to copy for clipboard" });
+    const textarea = field.createEl("textarea", { 
+      cls: "field-textarea",
+      attr: { 
+        placeholder: "Text to copy\nSupports multiple lines",
+        rows: "5"
+      }
+    });
+    textarea.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLTextAreaElement).value;
+    });
+  }
+
+  private renderRemoveSettings(container: HTMLElement): void {
+    const removeSettings = container.createEl("div", { cls: "remove-settings" });
+    const field = removeSettings.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Select Remove" });
+    field.createEl("div", { cls: "field-description", text: "Use true to remove this button, or supply an [array] of button block-ids" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input"
+    });
+    input.replaceWith(this.removeSuggestEl);
+  }
+
+  private renderReplaceSettings(container: HTMLElement): void {
+    const replaceSettings = container.createEl("div", { cls: "replace-settings" });
+    const field = replaceSettings.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Select Lines" });
+    field.createEl("div", { cls: "field-description", text: "Supply an array of [startingLine, endingLine] to be replaced" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { value: "[]" }
+    });
+    input.addEventListener("input", (e) => {
+      this.outputObject.replace = (e.target as HTMLInputElement).value;
+    });
+  }
+
+  private renderInheritSettings(container: HTMLElement): void {
+    const inheritSettings = container.createEl("div", { cls: "inherit-settings" });
+    const field = inheritSettings.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Button ID" });
+    field.createEl("div", { cls: "field-description", text: "Inherit from other buttons by adding their button block-id" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input"
+    });
+    input.replaceWith(this.idSuggestEl);
+  }
+
+  private renderCustomColorSettings(container: HTMLElement): void {
+    this.outputObject.color = "";
+    
+    const customColorContainer = container.createEl("div", { cls: "custom-color-container" });
+    
+    const bgField = customColorContainer.createEl("div", { cls: "form-field" });
+    bgField.createEl("label", { cls: "field-label", text: "Background Color" });
+    const bgInput = bgField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "#FFFFFF" }
+    });
+    bgInput.addEventListener("input", (e) => {
+      const value = (e.target as HTMLInputElement).value;
+      this.buttonPreviewEl.style.background = value;
+      this.outputObject.customColor = value;
+    });
+    
+    const textField = customColorContainer.createEl("div", { cls: "form-field" });
+    textField.createEl("label", { cls: "field-label", text: "Text Color" });
+    const textInput = textField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "#000000" }
+    });
+    textInput.addEventListener("input", (e) => {
+      const value = (e.target as HTMLInputElement).value;
+      this.buttonPreviewEl.style.color = value;
+      this.outputObject.customTextColor = value;
+    });
+  }
+
+  private updateButtonPreview(): void {
+    if (this.outputObject.color && this.outputObject.color !== "default") {
+      this.buttonPreviewEl.setAttribute("class", `button-default ${this.outputObject.color}`);
+      this.buttonPreviewEl.removeAttribute("style");
+    } else {
+      this.buttonPreviewEl.setAttribute("class", "button-default");
+      this.buttonPreviewEl.removeAttribute("style");
+    }
+  }
+
+  private renderActionInput(container: HTMLElement, actionIndex: number, actionType: string): void {
+    if (actionType === "command") {
+      // Create a new command suggest element for this action
+      const commandInput = createEl("input", { type: "text" });
+      new CommandSuggest(this.app, commandInput);
+      commandInput.setAttribute("class", "action-input");
+      commandInput.setAttribute("placeholder", "Select a command...");
+      
+      // Set the value from the stored action data
+      const currentValue = this.outputObject.actions[actionIndex]?.action || "";
+      commandInput.value = currentValue;
+      
+      container.appendChild(commandInput);
+      
+      commandInput.addEventListener("change", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+      commandInput.addEventListener("blur", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+    } else if (actionType.includes("template")) {
+      // Create a new template suggest element for this action
+      const templateInput = createEl("input", { type: "text" });
+      new TemplateSuggest(this.app, templateInput);
+      templateInput.setAttribute("class", "action-input");
+      templateInput.setAttribute("placeholder", "Select a template...");
+      
+      // Set the value from the stored action data
+      const currentValue = this.outputObject.actions[actionIndex]?.action || "";
+      templateInput.value = currentValue;
+      
+      container.appendChild(templateInput);
+      
+      templateInput.addEventListener("change", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+      templateInput.addEventListener("blur", (e: Event) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+    } else {
+      const input = container.createEl("input", { 
+        type: "text", 
+        cls: "action-input",
+        attr: { placeholder: "Enter action..." }
+      });
+      
+      // Set the value from the stored action data
+      const currentValue = this.outputObject.actions[actionIndex]?.action || "";
+      input.value = currentValue;
+      
+      input.addEventListener("input", (e) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+      input.addEventListener("blur", (e) => {
+        this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
+      });
+    }
+  }
+
+  private renderLineNumberField(container: HTMLElement): void {
+    const field = container.createEl("div", { cls: "form-field" });
+    field.createEl("label", { cls: "field-label", text: "Line Number" });
+    field.createEl("div", { cls: "field-description", text: "At which line should the content be inserted?" });
+    const input = field.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "69" }
+    });
+    input.addEventListener("input", (e) => {
+      const value = (e.target as HTMLInputElement).value;
+      // Check if we're in template or text mode based on current type
+      if (this.outputObject.type.includes("template")) {
+        this.outputObject.type = `line(${value}) template`;
+      } else if (this.outputObject.type.includes("text")) {
+        this.outputObject.type = `line(${value}) text`;
+      }
+    });
+  }
+
+  private renderNoteTemplateFields(container: HTMLElement): void {
+    const promptField = container.createEl("div", { cls: "form-field" });
+    promptField.createEl("label", { cls: "field-label", text: "Prompt" });
+    promptField.createEl("div", { cls: "field-description", text: "Should you be prompted to enter a name for the file on creation?" });
+    const promptToggle = promptField.createEl("input", { type: "checkbox", cls: "toggle-input" });
+    promptToggle.addEventListener("change", (e) => {
+      this.outputObject.prompt = (e.target as HTMLInputElement).checked;
+    });
+
+    const nameField = container.createEl("div", { cls: "form-field" });
+    nameField.createEl("label", { cls: "field-label", text: "Note Name" });
+    nameField.createEl("div", { cls: "field-description", text: "What should the new note be named? Note: if prompt is on, this will be the default name" });
+    const nameInput = nameField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "My New Note" }
+    });
+    nameInput.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLInputElement).value;
+    });
+
+    const folderField = container.createEl("div", { cls: "form-field" });
+    folderField.createEl("label", { cls: "field-label", text: "Default Folder" });
+    folderField.createEl("div", { cls: "field-description", text: "Enter a folder path to place the note in. Defaults to root" });
+    const folderInput = folderField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "My Folder" }
+    });
+    folderInput.addEventListener("input", (e) => {
+      this.outputObject.folder = (e.target as HTMLInputElement).value;
+    });
+  }
+
+  private renderNoteTextFields(container: HTMLElement): void {
+    const promptField = container.createEl("div", { cls: "form-field" });
+    promptField.createEl("label", { cls: "field-label", text: "Prompt" });
+    promptField.createEl("div", { cls: "field-description", text: "Should you be prompted to enter a name for the file on creation?" });
+    const promptToggle = promptField.createEl("input", { type: "checkbox", cls: "toggle-input" });
+    promptToggle.addEventListener("change", (e) => {
+      this.outputObject.prompt = (e.target as HTMLInputElement).checked;
+    });
+
+    const nameField = container.createEl("div", { cls: "form-field" });
+    nameField.createEl("label", { cls: "field-label", text: "Note Name" });
+    nameField.createEl("div", { cls: "field-description", text: "What should the new note be named? Note: if prompt is on, this will be the default name" });
+    const nameInput = nameField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "My New Note" }
+    });
+    nameInput.addEventListener("input", (e) => {
+      this.outputObject.action = (e.target as HTMLInputElement).value;
+    });
+
+    const folderField = container.createEl("div", { cls: "form-field" });
+    folderField.createEl("label", { cls: "field-label", text: "Default Folder" });
+    folderField.createEl("div", { cls: "field-description", text: "Enter a folder path to place the note in. Defaults to root" });
+    const folderInput = folderField.createEl("input", { 
+      type: "text", 
+      cls: "field-input",
+      attr: { placeholder: "My Folder" }
+    });
+    folderInput.addEventListener("input", (e) => {
+      this.outputObject.folder = (e.target as HTMLInputElement).value;
+    });
   }
 
   onClose() {
