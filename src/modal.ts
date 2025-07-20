@@ -678,6 +678,10 @@ export class ButtonModal extends Modal {
       commandInput.setAttribute("class", "action-input");
       commandInput.setAttribute("placeholder", "Select a command...");
       
+      // Set the value from the stored action data
+      const currentValue = this.outputObject.actions[actionIndex]?.action || "";
+      commandInput.value = currentValue;
+      
       container.appendChild(commandInput);
       
       commandInput.addEventListener("change", (e: Event) => {
@@ -693,6 +697,10 @@ export class ButtonModal extends Modal {
       templateInput.setAttribute("class", "action-input");
       templateInput.setAttribute("placeholder", "Select a template...");
       
+      // Set the value from the stored action data
+      const currentValue = this.outputObject.actions[actionIndex]?.action || "";
+      templateInput.value = currentValue;
+      
       container.appendChild(templateInput);
       
       templateInput.addEventListener("change", (e: Event) => {
@@ -707,6 +715,11 @@ export class ButtonModal extends Modal {
         cls: "action-input",
         attr: { placeholder: "Enter action..." }
       });
+      
+      // Set the value from the stored action data
+      const currentValue = this.outputObject.actions[actionIndex]?.action || "";
+      input.value = currentValue;
+      
       input.addEventListener("input", (e) => {
         this.outputObject.actions[actionIndex].action = (e.target as HTMLInputElement).value;
       });
