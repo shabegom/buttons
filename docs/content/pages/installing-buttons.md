@@ -31,11 +31,11 @@ The easiest way to get started is with the [Button Maker](/maker):
 3. Fill out the form with your button details
 4. Click "Insert Button"
 
-### Option 2: Insert Button Command
+### Option 2: Insert Inline Button Command
 For quick button creation:
 1. Open Command Palette (`Ctrl/Cmd + P`) 
 2. Type "Insert Button" and press Enter
-3. Follow the guided setup
+
 
 ### Option 3: Write Button Code
 For advanced users who prefer writing code directly:
