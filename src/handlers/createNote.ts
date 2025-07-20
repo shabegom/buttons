@@ -60,9 +60,16 @@ export const createNote = async (
           // For regular templates, create empty file first
           file = await app.vault.create(fullPath, "");
           
-          // Then insert template content
+          // Open the file in a temporary leaf to make it active
+          const tempLeaf = app.workspace.getLeaf("tab");
+          await tempLeaf.openFile(file);
+          
+          // Then insert template content into the active file
           await app.internalPlugins?.plugins["templates"].instance
             .insertTemplate(filePath);
+          
+          // Close the temporary leaf
+          tempLeaf.detach();
         }
       }
 
