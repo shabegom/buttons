@@ -5,6 +5,11 @@ Run commands and open links by clicking on ✨ Buttons ✨
 
 **last updated:** July 17, 2025
 
+0.8.0
+- Updated the button maker UI for improved user experience
+- Feature: Multi-line text buttons for more complex text insertion
+- Added comprehensive documentation at https://buttonslovesyou.com
+
 0.7.0
 - Append text no longer creates a newline
 - Styling improvements to align with default themes
@@ -355,6 +360,11 @@ Then insert that button inline:
 Note: swap count is reset if you close the note.
 
 ## Releases
+
+### 0.8.0
+- Updated the button maker UI for improved user experience
+- Feature: Multi-line text buttons for more complex text insertion
+- Added comprehensive documentation at https://buttonslovesyou.com
 
 ### 0.7.0
 - Append text no longer creates a newline
