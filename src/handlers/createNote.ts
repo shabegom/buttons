@@ -66,14 +66,16 @@ export const createNote = async (
           
           // Open the file in a temporary leaf to make it active
           const tempLeaf = app.workspace.getLeaf("tab");
-          await tempLeaf.openFile(file);
-          
-          // Then insert template content into the active file
-          await app.internalPlugins?.plugins["templates"].instance
-            .insertTemplate(filePath);
-          
-          // Close the temporary leaf
-          tempLeaf.detach();
+          try {
+            await tempLeaf.openFile(file);
+            
+            // Then insert template content into the active file
+            await app.internalPlugins?.plugins["templates"].instance
+              .insertTemplate(filePath);
+          } finally {
+            // Close the temporary leaf - ensure this always happens
+            tempLeaf.detach();
+          }
         }
       }
 
