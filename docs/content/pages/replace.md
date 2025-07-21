@@ -12,8 +12,10 @@ eleventyNavigation:
 
 ## Basic Replace Functionality
 
-### Replace Specific Lines
-Use `replace [startLine, endLine]` to remove lines when the button is clicked:
+Replace mutations support both **absolute** and **relative** line positioning, giving you flexibility in how you target content for removal.
+
+### Absolute Line Positioning
+Use `replace [startLine, endLine]` to remove specific line numbers:
 
 <pre>
 Status: Unknown
@@ -32,9 +34,51 @@ This will:
 1. Remove lines 1-2 ("Status: Unknown" and "Progress: 0%")
 2. Insert "Status: Complete" at line 1
 
+### Relative Line Positioning
+Use `replace [+N, +M]` or `replace [-N, -M]` to remove lines relative to the button's position:
+
+<pre>
+Current Status: Unknown
+Progress: 0%  
+Notes: Pending
+
+```button
+name Update Status (Relative)
+type line(+1) text
+action Current Status: Complete
+Progress: 100%
+Notes: Finished
+replace [+1, +3]
+```
+^button-relative-replace
+</pre>
+
+This will:
+1. Remove 3 lines starting 1 line **after** the button (the content above)
+2. Insert the new status information at that position
+
+**Relative positioning benefits:**
+- Buttons work regardless of their position in the file
+- Templates remain portable when moved around
+- Perfect for maintaining content relative to button placement
+
+### Mixed Positioning
+You can even mix absolute and relative positioning:
+
+<pre>
+```button
+name Update Section
+type line(10) text  
+action New content at line 10
+replace [+1, 15]
+```
+</pre>
+
+This removes from 1 line after the button to absolute line 15.
+
 ## Replace with Template Buttons
 
-### Update Weather Section
+### Update Weather Section (Absolute)
 <pre>
 ## Weather
 Current: Unknown
@@ -42,15 +86,33 @@ Forecast: Unknown
 Last Updated: Never
 
 ```button
-name Update Weather
+name Update Weather (Absolute)
 type prepend template
 action Weather Template
 replace [2,4]
 ```
-^button-weather
+^button-weather-absolute
 </pre>
 
 This replaces the weather data (lines 2-4) with fresh content from the Weather Template.
+
+### Update Weather Section (Relative)
+<pre>
+## Weather
+Current: Unknown
+Forecast: Unknown
+Last Updated: Never
+
+```button
+name Update Weather (Relative)
+type line(+1) template
+action Weather Template
+replace [+1,+3]
+```
+^button-weather-relative
+</pre>
+
+This replaces the 3 lines after the button with fresh weather content. This approach works regardless of where the weather section appears in your document.
 
 ## Replace with Text Buttons
 
@@ -142,7 +204,7 @@ Last Update: Never
 Notes: None
 
 ```button
-name Refresh Dashboard
+name Refresh Dashboard (Absolute)
 type chain
 actions [
   {"type": "line(2) text", "action": "Status: Updated ✅"},
@@ -152,16 +214,35 @@ actions [
 replace [2,4]
 templater true
 ```
-^button-refresh
+^button-refresh-absolute
+
+```button
+name Refresh Dashboard (Relative)
+type chain
+actions [
+  {"type": "line(+1) text", "action": "Status: Updated ✅"},
+  {"type": "line(+2) text", "action": "Last Update: <% tp.date.now('HH:mm') %>"},
+  {"type": "line(+3) text", "action": "Notes: Dashboard refreshed"}
+]
+replace [+1,+3]
+templater true
+```
+^button-refresh-relative
 </pre>
 
 ## Replace Line Counting
 
-### How Line Numbers Work
+### Absolute Line Numbers
 - Lines are counted from the top of the note starting with 1
 - Empty lines count as lines
 - The line containing the button codeblock and its ID count as lines
 - Headers, bullet points, and all text count as individual lines
+
+### Relative Line Numbers
+- `+N` counts N lines **after** the button's closing ```
+- `-N` counts N lines **before** the button's opening ```
+- Relative positioning is calculated from the button's position, not from the file top
+- Perfect for portable templates that work anywhere in the document
 
 ### Example with Line Numbers
 <pre>
@@ -185,15 +266,29 @@ templater true
 
 ## Replace Best Practices
 
+### Choosing Between Absolute and Relative Positioning
+
+**Use Absolute Positioning (`replace [5,10]`) when:**
+- You need to target specific, fixed locations in your document
+- The content structure is stable and won't change
+- You're working with a template where line positions are consistent
+
+**Use Relative Positioning (`replace [+1,+3]`) when:**
+- Creating portable templates that work in multiple locations
+- The button might be moved around in the document
+- You want content replacement to stay relative to the button
+
 ### Planning Your Replace Strategy
 - **Identify stable sections**: Replace content that changes regularly
 - **Preserve structure**: Keep headers and structure intact
 - **Use templates**: Combine replace with templates for consistent updates
-- **Test line numbers**: Count carefully to avoid replacing wrong content
+- **Choose positioning wisely**: Use relative for portable templates, absolute for fixed locations
+- **Test positioning**: Verify your replace ranges target the correct content
 
 ### Content Organization
 - **Dedicated sections**: Create sections specifically for replaced content
 - **Clear boundaries**: Use headers or separators to mark replaceable areas
 - **Consistent formatting**: Maintain consistent line structure for reliable replacement
+- **Relative-friendly structure**: When using relative positioning, maintain consistent spacing around buttons
 
 Replace mutations provide precise control over content updates, enabling sophisticated workflows where specific sections of your notes can be dynamically refreshed while preserving the surrounding context and structure.
