@@ -80,7 +80,7 @@ async function templater(file?: TFile): Promise<RunTemplater | undefined> {
 export async function processTemplate(file: TFile): Promise<string | undefined> {
   try {
     const content = await app.vault.read(file);
-    const runTemplater = await templater(file);
+    const runTemplater = await templater(); // No arguments - use active file as context
     
     if (runTemplater) {
       const processed = await runTemplater(content);
