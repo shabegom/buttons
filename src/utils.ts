@@ -28,6 +28,8 @@ interface OutputObject {
   blockId: string;
   folder: string;
   prompt: boolean;
+  openMethod: string; // Add field for note opening method (split, tab, etc.)
+  noteTitle: string; // Add field for note title (separate from template name in action)
   actions?: { type: string; action: string }[]; // Add actions field for chain buttons
 }
 
@@ -35,8 +37,18 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   const buttonArr = [];
   buttonArr.push("```button");
   outputObject.name && buttonArr.push(`name ${outputObject.name}`);
-  outputObject.type && buttonArr.push(`type ${outputObject.type}`);
-  outputObject.action && buttonArr.push(`action ${outputObject.action}`);
+  
+  // Handle type generation for note buttons with opening methods
+  if (outputObject.type && outputObject.type.includes("note") && outputObject.noteTitle && outputObject.openMethod) {
+    const noteType = `note(${outputObject.noteTitle}, ${outputObject.openMethod}) ${outputObject.type.replace("note ", "")}`;
+    buttonArr.push(`type ${noteType}`);
+    // Add action field for note buttons as it's needed by the template system
+    outputObject.action && buttonArr.push(`action ${outputObject.action}`);
+  } else {
+    outputObject.type && buttonArr.push(`type ${outputObject.type}`);
+    outputObject.action && buttonArr.push(`action ${outputObject.action}`);
+  }
+  
   outputObject.id && buttonArr.push(`id ${outputObject.id}`);
   outputObject.swap && buttonArr.push(`swap ${outputObject.swap}`);
   outputObject.remove && buttonArr.push(`remove ${outputObject.remove}`);
@@ -48,7 +60,7 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   outputObject.customTextColor && buttonArr.push(`customTextColor ${outputObject.customTextColor}`);
   outputObject.class && buttonArr.push(`class ${outputObject.class}`);
   outputObject.folder && buttonArr.push(`folder ${outputObject.folder}`);
-  outputObject.folder && buttonArr.push(`prompt ${outputObject.prompt}`);
+  outputObject.prompt && buttonArr.push(`prompt ${outputObject.prompt}`);
   // Handle actions array for chain buttons
   if (outputObject.actions && Array.isArray(outputObject.actions) && outputObject.actions.length > 0) {
     buttonArr.push(`actions ${JSON.stringify(outputObject.actions)}`);

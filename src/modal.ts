@@ -85,6 +85,8 @@ export class ButtonModal extends Modal {
     blockId: "",
     folder: "",
     prompt: false,
+    openMethod: "",
+    noteTitle: "My New Note",
     actions: [] as { type: string; action: string }[], // Add type annotation
   };
 
@@ -767,7 +769,34 @@ export class ButtonModal extends Modal {
       attr: { placeholder: "My New Note" }
     });
     nameInput.addEventListener("input", (e) => {
-      this.outputObject.action = (e.target as HTMLInputElement).value;
+      this.outputObject.noteTitle = (e.target as HTMLInputElement).value;
+    });
+
+    const openMethodField = container.createEl("div", { cls: "form-field" });
+    openMethodField.createEl("label", { cls: "field-label", text: "Opening Method" });
+    openMethodField.createEl("div", { cls: "field-description", text: "How should the new note be opened?" });
+    const openMethodSelect = openMethodField.createEl("select", { cls: "dropdown" });
+    
+    const openMethods = [
+      { value: "tab", text: "New Tab" },
+      { value: "vsplit", text: "Vertical Split" },
+      { value: "hsplit", text: "Horizontal Split" },
+      { value: "same", text: "Same Window" },
+      { value: "false", text: "Don't Open" }
+    ];
+    
+    openMethods.forEach((method, index) => {
+      const option = openMethodSelect.createEl("option");
+      option.value = method.value;
+      option.textContent = method.text;
+      if (index === 0) {
+        option.selected = true;
+        this.outputObject.openMethod = method.value;
+      }
+    });
+    
+    openMethodSelect.addEventListener("change", (e) => {
+      this.outputObject.openMethod = (e.target as HTMLSelectElement).value;
     });
 
     const folderField = container.createEl("div", { cls: "form-field" });
@@ -801,7 +830,35 @@ export class ButtonModal extends Modal {
       attr: { placeholder: "My New Note" }
     });
     nameInput.addEventListener("input", (e) => {
-      this.outputObject.action = (e.target as HTMLInputElement).value;
+      this.outputObject.noteTitle = (e.target as HTMLInputElement).value;
+    });
+
+
+    const openMethodField = container.createEl("div", { cls: "form-field" });
+    openMethodField.createEl("label", { cls: "field-label", text: "Opening Method" });
+    openMethodField.createEl("div", { cls: "field-description", text: "How should the new note be opened?" });
+    const openMethodSelect = openMethodField.createEl("select", { cls: "dropdown" });
+    
+    const openMethods = [
+      { value: "tab", text: "New Tab" },
+      { value: "vsplit", text: "Vertical Split" },
+      { value: "hsplit", text: "Horizontal Split" },
+      { value: "same", text: "Same Window" },
+      { value: "false", text: "Don't Open" }
+    ];
+    
+    openMethods.forEach((method, index) => {
+      const option = openMethodSelect.createEl("option");
+      option.value = method.value;
+      option.textContent = method.text;
+      if (index === 0) {
+        option.selected = true;
+        this.outputObject.openMethod = method.value;
+      }
+    });
+    
+    openMethodSelect.addEventListener("change", (e) => {
+      this.outputObject.openMethod = (e.target as HTMLSelectElement).value;
     });
 
     const folderField = container.createEl("div", { cls: "form-field" });
