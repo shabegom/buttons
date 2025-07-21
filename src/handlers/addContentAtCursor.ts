@@ -57,9 +57,30 @@ export const addContentAtCursor = async (
           return;
         }
       } else {
-        // For core Templates plugin, use insertTemplate at cursor position
-        await app.internalPlugins?.plugins["templates"].instance
-          .insertTemplate(insert);
+        // For core Templates plugin, read template and insert at cursor position
+        try {
+          const templateContent = await app.vault.read(insert);
+          
+          // Insert template content at cursor
+          editor.replaceRange(templateContent, cursor);
+          
+          // Move cursor to end of inserted content
+          const lines = templateContent.split("\n");
+          if (lines.length === 1) {
+            editor.setCursor({
+              line: cursor.line,
+              ch: cursor.ch + templateContent.length
+            });
+          } else {
+            editor.setCursor({
+              line: cursor.line + lines.length - 1,
+              ch: lines[lines.length - 1].length
+            });
+          }
+        } catch (error) {
+          new Notice("Failed to read template file", 2000);
+          return;
+        }
       }
     }
   } else {
