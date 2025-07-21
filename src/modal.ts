@@ -86,7 +86,7 @@ export class ButtonModal extends Modal {
     folder: "",
     prompt: false,
     openMethod: "",
-    noteTitle: "",
+    noteTitle: "My New Note",
     actions: [] as { type: string; action: string }[], // Add type annotation
   };
 
