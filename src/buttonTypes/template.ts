@@ -6,6 +6,7 @@ import {
   createNote,
   prependContent,
   addContentAtLine,
+  addContentAtCursor,
 } from "../handlers";
 
 interface TemplateSearchResult {
@@ -165,6 +166,9 @@ export const template = async (
     }
     if (args.type.includes("line")) {
       await addContentAtLine(app, file, args.type, isTemplater, position);
+    }
+    if (args.type.includes("cursor")) {
+      await addContentAtCursor(app, file, isTemplater);
     }
   } catch (error) {
     console.error('Error executing template action:', error);

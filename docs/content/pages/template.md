@@ -78,6 +78,32 @@ action Current Time
 ```
 </pre>
 
+## Cursor
+
+`type cursor template` will insert the template content at your current cursor position. This is perfect for inline editing and inserting content exactly where you're working:
+
+<pre>
+```button
+name Insert Meeting Notes  
+type cursor template
+action Meeting Template
+```
+</pre>
+
+<pre>
+```button
+name Add Task Block
+type cursor template
+action Task Template
+```
+</pre>
+
+**Benefits of cursor insertion:**
+- Template content appears exactly where you're working
+- No need to scroll or navigate after insertion
+- Perfect for inline editing workflows
+- Works seamlessly with both Templater and core Templates
+
 ## Line
 
 `type line(number)` will insert a template note at the specified line of the active note. You can use either **absolute** or **relative** line positioning:

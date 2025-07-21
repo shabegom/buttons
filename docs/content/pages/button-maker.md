@@ -89,14 +89,15 @@ Enable Templater command processing within the button. Check this box if your ac
 2. Choose the template operation:
    - Append Template
    - Prepend Template  
-   - New Note From Template
+   - Cursor Template (insert at cursor position)
    - Line Template
+   - New Note From Template
 3. Select your template file from the dropdown
 4. For new note templates, specify the note name and opening method
 
 ### Text Button
 1. Select "Text" as button type
-2. Choose the text operation (append, prepend, new note, or line)
+2. Choose the text operation (append, prepend, cursor, line, or new note)
 3. Enter your text content in the action field
 4. For new note text, specify the note name and opening method
 
