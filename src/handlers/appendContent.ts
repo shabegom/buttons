@@ -9,6 +9,7 @@ export const appendContent = async (
 ): Promise<void> => {
   const activeView = app.workspace.getActiveViewOfType(MarkdownView);
   if (activeView) {
+    console.log("isTemplater", isTemplater);
     const file = activeView.file;
     let content = await app.vault.read(file);
     const contentArray = content.split("\n");

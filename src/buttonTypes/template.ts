@@ -35,7 +35,7 @@ export const template = async (
       file = isFound[0]
   }
 
-  if (!file && templaterPluginEnabled) {
+  if (templaterPluginEnabled) {
     const folder: string = 
       templaterPluginEnabled &&
         app.plugins?.plugins[
