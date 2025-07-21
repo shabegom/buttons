@@ -85,6 +85,7 @@ export class ButtonModal extends Modal {
     blockId: "",
     folder: "",
     prompt: false,
+    openMethod: "",
     actions: [] as { type: string; action: string }[], // Add type annotation
   };
 
@@ -770,6 +771,34 @@ export class ButtonModal extends Modal {
       this.outputObject.action = (e.target as HTMLInputElement).value;
     });
 
+    const openMethodField = container.createEl("div", { cls: "form-field" });
+    openMethodField.createEl("label", { cls: "field-label", text: "Opening Method" });
+    openMethodField.createEl("div", { cls: "field-description", text: "How should the new note be opened?" });
+    const openMethodSelect = openMethodField.createEl("select", { cls: "dropdown" });
+    
+    const openMethods = [
+      { value: "split", text: "Split (vertical)" },
+      { value: "vsplit", text: "Vertical Split" },
+      { value: "hsplit", text: "Horizontal Split" },
+      { value: "tab", text: "New Tab" },
+      { value: "same", text: "Same Window" },
+      { value: "false", text: "Don't Open" }
+    ];
+    
+    openMethods.forEach((method, index) => {
+      const option = openMethodSelect.createEl("option");
+      option.value = method.value;
+      option.textContent = method.text;
+      if (index === 0) {
+        option.selected = true;
+        this.outputObject.openMethod = method.value;
+      }
+    });
+    
+    openMethodSelect.addEventListener("change", (e) => {
+      this.outputObject.openMethod = (e.target as HTMLSelectElement).value;
+    });
+
     const folderField = container.createEl("div", { cls: "form-field" });
     folderField.createEl("label", { cls: "field-label", text: "Default Folder" });
     folderField.createEl("div", { cls: "field-description", text: "Enter a folder path to place the note in. Defaults to root" });
@@ -802,6 +831,34 @@ export class ButtonModal extends Modal {
     });
     nameInput.addEventListener("input", (e) => {
       this.outputObject.action = (e.target as HTMLInputElement).value;
+    });
+
+    const openMethodField = container.createEl("div", { cls: "form-field" });
+    openMethodField.createEl("label", { cls: "field-label", text: "Opening Method" });
+    openMethodField.createEl("div", { cls: "field-description", text: "How should the new note be opened?" });
+    const openMethodSelect = openMethodField.createEl("select", { cls: "dropdown" });
+    
+    const openMethods = [
+      { value: "split", text: "Split (vertical)" },
+      { value: "vsplit", text: "Vertical Split" },
+      { value: "hsplit", text: "Horizontal Split" },
+      { value: "tab", text: "New Tab" },
+      { value: "same", text: "Same Window" },
+      { value: "false", text: "Don't Open" }
+    ];
+    
+    openMethods.forEach((method, index) => {
+      const option = openMethodSelect.createEl("option");
+      option.value = method.value;
+      option.textContent = method.text;
+      if (index === 0) {
+        option.selected = true;
+        this.outputObject.openMethod = method.value;
+      }
+    });
+    
+    openMethodSelect.addEventListener("change", (e) => {
+      this.outputObject.openMethod = (e.target as HTMLSelectElement).value;
     });
 
     const folderField = container.createEl("div", { cls: "form-field" });
