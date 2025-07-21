@@ -1,4 +1,4 @@
-import { App, MarkdownView } from "obsidian";
+import { App } from "obsidian";
 import { createContentArray } from "../utils";
 import { Position } from "../types";
 
@@ -6,6 +6,7 @@ export const removeSection = async (
   app: App,
   section: string,
   buttonPosition?: Position,
+  preCapturedCursorLine?: number,
 ): Promise<void> => {
   const { contentArray, file } = await createContentArray(app);
   if (section.includes("[") && section.includes("]")) {
@@ -13,15 +14,10 @@ export const removeSection = async (
     if (args && args[1]) {
       // Handle special [cursor] syntax
       if (args[1].trim().toLowerCase() === "cursor") {
-        const activeView = app.workspace.getActiveViewOfType(MarkdownView);
-        if (activeView) {
-          const editor = activeView.editor;
-          const cursor = editor.getCursor();
-          const cursorLine = cursor.line; // 0-based line number from editor
-          
-          // Remove the line at cursor position
-          if (cursorLine >= 0 && cursorLine < contentArray.length) {
-            contentArray.splice(cursorLine, 1);
+        if (preCapturedCursorLine !== undefined) {
+          // Use the pre-captured cursor position
+          if (preCapturedCursorLine >= 0 && preCapturedCursorLine < contentArray.length) {
+            contentArray.splice(preCapturedCursorLine, 1);
             const content = contentArray.join("\n");
             await app.vault.modify(file, content);
           }
