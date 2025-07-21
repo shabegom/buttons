@@ -11,7 +11,7 @@ type RunTemplater = (command: string) => Promise<string>;
  */
 async function templater(
   app: App,
-  templateFile: TFile,
+  _templateFile: TFile,
   targetFile: TFile,
 ): Promise<RunTemplater | undefined> {
   // Check if Templater plugin is installed and enabled
@@ -22,12 +22,9 @@ async function templater(
     return;
   }
 
-  // Check if the plugin is loaded and has the expected API
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const templaterAPI = (templaterPlugin as any).templater;
-  
-  if (!templaterAPI) {
-    new Notice("Templater plugin is not properly loaded.");
+  // Check if the plugin is loaded and enabled
+  if (!templaterPlugin._loaded) {
+    new Notice("Templater plugin is not loaded.");
     return;
   }
 
@@ -35,80 +32,33 @@ async function templater(
     // Return a function that processes templater commands
     return async (content: string): Promise<string> => {
       try {
-        // Method 1: Try using parse_template if available
-        if (typeof templaterAPI.parse_template === 'function') {
-          const result = await templaterAPI.parse_template(
-            {
-              template_file: templateFile,
-              target_file: targetFile,
-              active_file: targetFile,
-            },
-            content
-          );
-          return result || content;
-        }
+        // Save current content of target file
+        const originalContent = await app.vault.read(targetFile);
         
-        // Method 2: Try using the parser directly if available
-        if (templaterAPI.parser && typeof templaterAPI.parser.parse_commands === 'function') {
-          // Check if we can get or create functions object
-          let functionsObject = templaterAPI.current_functions_object;
-          
-          if (!functionsObject && templaterAPI.functions_generator) {
-            // Try to generate functions
-            const config = {
-              template_file: templateFile,
-              target_file: targetFile,
-              active_file: targetFile,
-            };
-            
-            try {
-              if (templaterAPI.functions_generator.internal_functions) {
-                await templaterAPI.functions_generator.internal_functions.generate_object(config);
-              }
-              if (templaterAPI.functions_generator.user_functions) {
-                await templaterAPI.functions_generator.user_functions.generate_user_script_functions(config);
-              }
-              functionsObject = templaterAPI.current_functions_object;
-            } catch (genError) {
-              console.warn("Could not generate templater functions:", genError);
-            }
-          }
-          
-          if (functionsObject) {
-            const result = await templaterAPI.parser.parse_commands(content, functionsObject);
-            return result || content;
-          }
-        }
+        // Write the template content to the file
+        await app.vault.modify(targetFile, content);
         
-        // Method 3: Fallback to command execution
-        throw new Error("No suitable templater API method found, falling back to command execution");
+        // Wait a bit for the file to be updated
+        await new Promise(resolve => setTimeout(resolve, 50));
         
-      } catch (parseError) {
-        console.error("Error parsing Templater commands:", parseError);
+        // Execute the templater command to process the content
+        await app.commands.executeCommandById("templater-obsidian:replace-in-file-templater");
         
-        // Fallback: try using the command execution approach
-        try {
-          // Save current content temporarily
-          const originalContent = await app.vault.read(targetFile);
-          
-          // Write the template content to the file
-          await app.vault.modify(targetFile, content);
-          
-          // Execute the templater command
-          await app.commands.executeCommandById("templater-obsidian:replace-in-file-templater");
-          
-          // Read the processed content
-          const processedContent = await app.vault.read(targetFile);
-          
-          // Restore original content
-          await app.vault.modify(targetFile, originalContent);
-          
-          return processedContent;
-        } catch (fallbackError) {
-          console.error("Fallback templater processing failed:", fallbackError);
-          new Notice("Error processing template. Check console for details.");
-          return content; // Return original content if all fails
-        }
+        // Wait a bit for processing to complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Read the processed content
+        const processedContent = await app.vault.read(targetFile);
+        
+        // Restore original content
+        await app.vault.modify(targetFile, originalContent);
+        
+        return processedContent;
+        
+      } catch (error) {
+        console.error("Error processing Templater commands:", error);
+        new Notice("Error processing template. Check console for details.");
+        return content; // Return original content if processing fails
       }
     };
     
