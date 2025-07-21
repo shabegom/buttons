@@ -38,7 +38,7 @@ action https://help.obsidian.md
 </pre>
 
 ### [Template](/usage/types/template)
-Insert content from template files or create new notes from templates. Works with both Obsidian Templates and Templater.
+Insert content from template files or create new notes from templates. Works with both Obsidian Templates and Templater. Supports cursor insertion for precise placement.
 
 <pre>
 ```button
@@ -52,7 +52,7 @@ action Meeting Template
 ## Content Button Types
 
 ### [Text](/usage/types/text)
-Insert, append, prepend, or create notes with specified text content. No template files required.
+Insert, append, prepend, or create notes with specified text content. No template files required. Also supports cursor insertion for inline editing.
 
 <pre>
 ```button

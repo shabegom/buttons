@@ -37,6 +37,33 @@ action 🔥 HIGH PRIORITY
 ^button-prepend-priority
 </pre>
 
+### Insert Text at Cursor Position
+Insert text at your current cursor position:
+
+<pre>
+```button
+name Add Status Update
+type cursor text
+action **Status:** In Progress 📋
+```
+^button-cursor-status
+</pre>
+
+<pre>
+```button
+name Insert Timestamp
+type cursor text
+action Updated: 2024-01-15 14:30
+```
+^button-cursor-timestamp
+</pre>
+
+**Benefits of cursor insertion:**
+- Text appears exactly where you're working
+- No need to scroll or navigate after insertion
+- Perfect for inline editing and quick additions
+- Works naturally with your editing workflow
+
 ### Insert Text at Specific or Relative Line
 Insert text at a specific line number, or relative to the button's position:
 
