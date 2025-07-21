@@ -834,6 +834,7 @@ export class ButtonModal extends Modal {
       this.outputObject.noteTitle = (e.target as HTMLInputElement).value;
     });
 
+
     const openMethodField = container.createEl("div", { cls: "form-field" });
     openMethodField.createEl("label", { cls: "field-label", text: "Opening Method" });
     openMethodField.createEl("div", { cls: "field-description", text: "How should the new note be opened?" });
