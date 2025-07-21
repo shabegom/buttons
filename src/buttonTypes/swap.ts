@@ -39,13 +39,6 @@ export const swap = async (
           new Notice("templater args don't work with inline buttons yet", 2000);
         }
       }
-      if (args.replace) {
-        content = await app.vault.read(file);
-        position = inline
-          ? await getInlineButtonPosition(app, id)
-          : getButtonPosition(content, args);
-        await replace(app, args, position);
-      }
       if (args.type === "command") {
         command(app, args, buttonStart);
       }
