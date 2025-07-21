@@ -20,6 +20,42 @@ action Current Time
 
 the `template` type works a little differently from `command` and `link`. It has additional syntax to specify how you would like the template applied:
 
+## Template Plugin Support
+
+Template Buttons support both **Core Templates** (Obsidian's built-in plugin) and **Templater** (community plugin) simultaneously. You can use templates from both plugins in the same vault without conflicts.
+
+### How It Works
+
+- **Single Plugin**: If only one template plugin is enabled, buttons work exactly as before
+- **Both Plugins**: When both are enabled, the system searches both template folders
+- **Priority System**: If templates with the same name exist in both folders, Templater takes priority
+- **Clear Feedback**: You'll see which plugin's template is being used
+
+### Example Setup
+
+If you have:
+- Core Templates folder: `Templates/`
+- Templater folder: `Templater/`
+
+And both folders contain `meeting.md`, the button will use the Templater version and show a notice:
+
+<pre>
+```button
+name Add Meeting Notes
+type append template
+action meeting
+```
+</pre>
+
+**Notice shown**: "Found template 'meeting' in both Core Templates and Templater folders. Using Templater version."
+
+### Benefits
+
+- **Flexibility**: Use the best features of both plugins
+- **Migration**: Gradually move templates between plugins
+- **Organization**: Keep different types of templates in different systems
+- **Compatibility**: All existing buttons continue to work
+
 ## Append/Prepend
 
 `type append template` will add the template note specified in the `action` directly below the button (below the Button ID with a space). This is also a great type to use if your template performs an action, but doesn't actually add any content to the note.
