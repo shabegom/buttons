@@ -222,40 +222,49 @@ export class CommandSuggest extends TextInputSuggest<Command> {
 
 export class TemplateSuggest extends TextInputSuggest<TFile> {
   private templatesEnabled = this.app.internalPlugins.plugins.templates.enabled;
-  private templaterPlugin = this.app.plugins.plugins["templater-obsidian"];
-  // only run if templates plugin is enabled
-  private folder = (): string[] => {
-    const folders = [];
+  private templaterPluginEnabled = !!this.app.plugins.plugins["templater-obsidian"];
+  
+  private getTemplateFolders = (): string[] => {
+    const folders: string[] = [];
+    
+    // Add core Templates folder
     if (this.templatesEnabled) {
-      const folder = this.app.internalPlugins.plugins.templates.instance.options
-        .folder;
-      if (folder) {
-        folders.push(folder.toLowerCase());
-      }
-      if (this.templaterPlugin) {
-        const folder = this.templaterPlugin.settings.templates_folder;
-        if (folder) {
-          folders.push(folder.toLowerCase());
-        }
+      const coreFolder = this.app.internalPlugins.plugins.templates.instance.options.folder;
+      if (coreFolder) {
+        folders.push(coreFolder.toLowerCase());
       }
     }
-    return folders[0] ? folders : undefined;
+    
+    // Add Templater folder  
+    if (this.templaterPluginEnabled) {
+      const templaterPlugin = this.app.plugins.plugins["templater-obsidian"];
+      const templaterFolder = templaterPlugin?.settings?.templates_folder;
+      if (templaterFolder) {
+        folders.push(templaterFolder.toLowerCase());
+      }
+    }
+    
+    return folders;
   };
 
   getSuggestions(inputStr: string): TFile[] {
     const abstractFiles = this.app.vault.getAllLoadedFiles();
     const files: TFile[] = [];
     const lowerCaseInputStr = inputStr.toLowerCase();
-    const folders = this.folder();
+    const folders = this.getTemplateFolders();
+
+    if (folders.length === 0) {
+      return files; // No template folders configured
+    }
 
     abstractFiles.forEach((file: TAbstractFile) => {
       let exists = false;
-      folders &&
-        folders.forEach((folder) => {
-          if (file.path.toLowerCase().contains(`${folder}/`)) {
-            exists = true;
-          }
-        });
+      folders.forEach((folder) => {
+        if (file.path.toLowerCase().contains(`${folder}/`)) {
+          exists = true;
+        }
+      });
+      
       if (
         file instanceof TFile &&
         file.extension === "md" &&
@@ -270,7 +279,34 @@ export class TemplateSuggest extends TextInputSuggest<TFile> {
   }
 
   renderSuggestion(file: TFile, el: HTMLElement): void {
-    el.setText(file.name.split(".")[0]);
+    // Show which folder/plugin the template comes from for clarity
+    const fileName = file.name.split(".")[0];
+    const folders = this.getTemplateFolders();
+    let source = "";
+    
+    for (const folder of folders) {
+      if (file.path.toLowerCase().contains(`${folder}/`)) {
+        // Determine if this is from core Templates or Templater
+        if (this.templatesEnabled) {
+          const coreFolder = this.app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase();
+          if (coreFolder === folder) {
+            source = " (Core)";
+            break;
+          }
+        }
+        
+        if (this.templaterPluginEnabled) {
+          const templaterPlugin = this.app.plugins.plugins["templater-obsidian"];
+          const templaterFolder = templaterPlugin?.settings?.templates_folder?.toLowerCase();
+          if (templaterFolder === folder) {
+            source = " (Templater)";
+            break;
+          }
+        }
+      }
+    }
+    
+    el.setText(fileName + source);
   }
 
   selectSuggestion(file: TFile): void {
