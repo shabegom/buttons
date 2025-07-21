@@ -25,6 +25,6 @@ export const text = async (
     createNote(app, args.type, args.folder, args.prompt, args.action, false);
   }
   if (args.type.includes("line")) {
-    await addContentAtLine(app, args.action, args.type, false);
+    await addContentAtLine(app, args.action, args.type, false, position);
   }
 }; 

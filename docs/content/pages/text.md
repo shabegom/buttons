@@ -37,17 +37,44 @@ action 🔥 HIGH PRIORITY
 ^button-prepend-priority
 </pre>
 
-### Insert Text at Specific Line
-Insert text at a specific line number:
+### Insert Text at Specific or Relative Line
+Insert text at a specific line number, or relative to the button's position:
 
+#### Absolute Line Positioning
 <pre>
 ```button
-name Add Status at Top
+name Add Status at Line 1
 type line(1) text
 action Status: In Progress
 ```
 ^button-line-status
 </pre>
+
+#### Relative Line Positioning
+Insert text relative to the button's position using `+N` (after) or `-N` (before):
+
+<pre>
+```button
+name Add Status After Button
+type line(+1) text
+action Status: In Progress
+```
+^button-relative-after
+</pre>
+
+<pre>
+```button
+name Add Priority Before Button
+type line(-2) text
+action 🔥 HIGH PRIORITY: Review needed
+```
+^button-relative-before
+</pre>
+
+**Benefits of relative positioning:**
+- Buttons work regardless of their position in the file
+- Templates remain portable when moved around
+- Perfect for maintaining relative content structure
 
 ### Create New Note with Text
 Create a new note containing your specified text:
@@ -115,21 +142,41 @@ When creating new notes with `type note(title, open)`, you can specify how to op
 - `false`: don't open the newly created note
 
 ### Replace Content in Lines
-Use text buttons with the `replace` argument to replace existing content:
+Use text buttons with the `replace` argument to replace existing content using absolute or relative line numbers:
+
+#### Absolute Line Replacement
+<pre>
+Status: Unknown
+Progress: 0%
+
+```button
+name Update Status (Absolute)
+type line(1) text
+action Status: In Progress
+Progress: 25%
+replace [1,2]
+```
+^button-update-status-absolute
+</pre>
+
+#### Relative Line Replacement
+Use `[+N,+M]` or `[-N,-M]` to replace lines relative to the button:
 
 <pre>
 Status: Unknown
 Progress: 0%
 
 ```button
-name Update Status
-type line(1) text
+name Update Status (Relative)
+type line(+1) text
 action Status: In Progress
 Progress: 25%
-replace [1,2]
+replace [+1,+2]
 ```
-^button-update-status
+^button-update-status-relative
 </pre>
+
+This approach is perfect for portable templates that need to work regardless of where they're placed in a document.
 
 ### Dynamic Note Creation with Templater
 Create notes with dynamic titles using Templater:
@@ -276,7 +323,9 @@ templater true
 
 1. **Line breaks**: Use actual line breaks in your action for multi-line text
 2. **Templater integration**: Add `templater true` for dynamic content
-3. **Positioning**: Use `line(number)` for precise placement
-4. **Content replacement**: Use `replace [start,end]` to update existing content
+3. **Absolute positioning**: Use `line(number)` for precise placement at specific lines
+4. **Relative positioning**: Use `line(+N)` or `line(-N)` for portable templates that work regardless of button position
+5. **Content replacement**: Use `replace [start,end]` for absolute line replacement or `replace [+start,+end]` for relative replacement
+6. **Combining relative features**: Mix relative line insertion with relative replacement for fully portable button templates
 
 Text Buttons are perfect for quickly inserting frequently used text patterns, creating structured notes, and building reusable content snippets. They're especially powerful when combined with Templater for dynamic, context-aware text insertion.

@@ -187,7 +187,7 @@ class ButtonWidget extends WidgetType {
     let position = await getInlineButtonPosition(this.app, this.id);
     
     if (args.replace) {
-      await replace(this.app, args);
+      await replace(this.app, args, position);
     }
 
     if (args.type && args.type.includes("command")) {
