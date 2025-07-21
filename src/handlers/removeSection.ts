@@ -6,11 +6,25 @@ export const removeSection = async (
   app: App,
   section: string,
   buttonPosition?: Position,
+  preCapturedCursorLine?: number,
 ): Promise<void> => {
   const { contentArray, file } = await createContentArray(app);
   if (section.includes("[") && section.includes("]")) {
     const args = section.match(/\[(.*)\]/);
     if (args && args[1]) {
+      // Handle special [cursor] syntax
+      if (args[1].trim().toLowerCase() === "cursor") {
+        if (preCapturedCursorLine !== undefined) {
+          // Use the pre-captured cursor position
+          if (preCapturedCursorLine >= 0 && preCapturedCursorLine < contentArray.length) {
+            contentArray.splice(preCapturedCursorLine, 1);
+            const content = contentArray.join("\n");
+            await app.vault.modify(file, content);
+          }
+        }
+        return;
+      }
+      
       const argArray = args[1].split(/,\s?/);
       if (argArray[0]) {
         let startLine: number; // This will be 1-based line number

@@ -76,6 +76,35 @@ replace [+1, 15]
 
 This removes from 1 line after the button to absolute line 15.
 
+### Cursor-Based Positioning
+Use `replace [cursor]` to remove the line at the current cursor position:
+
+<pre>
+Line 1: Keep this line
+Line 2: This line will be removed when cursor is here
+Line 3: Keep this line
+
+```button
+name Remove Line at Cursor
+type append text
+action Content updated!
+replace [cursor]
+```
+^button-cursor-remove
+</pre>
+
+**How cursor positioning works:**
+- Place your cursor anywhere on the line you want to remove
+- When the button is clicked, it will remove the line where your cursor is positioned
+- Perfect for interactive editing where you want to target specific lines dynamically
+- Works regardless of where the button is located in the document
+
+**Cursor positioning benefits:**
+- Interactive content removal based on cursor position
+- No need to count line numbers manually
+- Ideal for ad-hoc editing workflows
+- Perfect for removing specific lines without knowing their exact position
+
 ## Replace with Template Buttons
 
 ### Update Weather Section (Absolute)
@@ -277,6 +306,12 @@ templater true
 - Creating portable templates that work in multiple locations
 - The button might be moved around in the document
 - You want content replacement to stay relative to the button
+
+**Use Cursor Positioning (`replace [cursor]`) when:**
+- You want interactive, dynamic line removal based on where your cursor is
+- Working with ad-hoc editing workflows where line numbers aren't predictable
+- Creating utilities for content cleanup where users select lines by cursor position
+- Building editing tools that respond to user cursor placement
 
 ### Planning Your Replace Strategy
 - **Identify stable sections**: Replace content that changes regularly
