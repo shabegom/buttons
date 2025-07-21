@@ -57,9 +57,12 @@ export const createNote = async (
           
           // Then process with templater
           const runTemplater = await templater(app, filePath, file);
-          const content = await app.vault.read(filePath);
-          const processed = await runTemplater(content);
-          await app.vault.modify(file, processed);
+          if (runTemplater) {
+            const processed = await runTemplater(templateContent);
+            await app.vault.modify(file, processed);
+          } else {
+            new Notice("Failed to initialize Templater processor", 2000);
+          }
         } else {
           // For regular templates, create empty file first
           file = await app.vault.create(fullPath, "");

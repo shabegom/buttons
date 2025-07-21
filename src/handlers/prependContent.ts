@@ -19,11 +19,22 @@ export const prependContent = async (
     } else {
       if (isTemplater) {
         const runTemplater = await templater(app, insert, file);
-        const templateContent = await app.vault.read(insert);
-        const processed = await runTemplater(templateContent);
-        // Handle multi-line templated content
-        const lines = processed.split("\n");
-        contentArray.splice(lineStart, 0, ...lines);
+        if (runTemplater) {
+          try {
+            const templateContent = await app.vault.read(insert);
+            const processed = await runTemplater(templateContent);
+            // Handle multi-line templated content
+            const lines = processed.split("\n");
+            contentArray.splice(lineStart, 0, ...lines);
+          } catch (error) {
+            console.error("Templater processing error:", error);
+            new Notice("Failed to process Templater template. Check console for details.", 2000);
+            return;
+          }
+        } else {
+          new Notice("Failed to initialize Templater processor", 2000);
+          return;
+        }
       } else {
         // For core Templates plugin, just use insertTemplate directly
         // Set cursor to the insertion point and let insertTemplate handle everything
