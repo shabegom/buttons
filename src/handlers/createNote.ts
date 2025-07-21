@@ -1,6 +1,6 @@
 import { App, Notice, TFile, MarkdownView } from "obsidian";
 import { nameModal } from "../nameModal";
-import templater from "../templater";
+import { processTemplate } from "../templater";
 
 export const createNote = async (
   app: App,
@@ -51,17 +51,13 @@ export const createNote = async (
       // Case 2: filePath is a TFile (template file)
       else {
         if (isTemplater) {
-          // For templater, create file with template content first
-          const templateContent = await app.vault.read(filePath);
-          file = await app.vault.create(fullPath, templateContent);
-          
-          // Then process with templater
-          const runTemplater = await templater(app, filePath, file);
-          if (runTemplater) {
-            const processed = await runTemplater(templateContent);
-            await app.vault.modify(file, processed);
+          // For templater, process the template and create file with processed content
+          const processed = await processTemplate(filePath);
+          if (processed) {
+            file = await app.vault.create(fullPath, processed);
           } else {
-            new Notice("Failed to initialize Templater processor", 2000);
+            new Notice("Failed to process template with Templater", 2000);
+            file = await app.vault.create(fullPath, await app.vault.read(filePath));
           }
         } else {
           // For regular templates, create empty file first
