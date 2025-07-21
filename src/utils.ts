@@ -29,6 +29,7 @@ interface OutputObject {
   folder: string;
   prompt: boolean;
   openMethod: string; // Add field for note opening method (split, tab, etc.)
+  noteTitle: string; // Add field for note title (separate from template name in action)
   actions?: { type: string; action: string }[]; // Add actions field for chain buttons
 }
 
@@ -38,11 +39,11 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   outputObject.name && buttonArr.push(`name ${outputObject.name}`);
   
   // Handle type generation for note buttons with opening methods
-  if (outputObject.type && outputObject.type.includes("note") && outputObject.action && outputObject.openMethod) {
-    const noteType = `note(${outputObject.action}, ${outputObject.openMethod}) ${outputObject.type.replace("note ", "")}`;
+  if (outputObject.type && outputObject.type.includes("note") && outputObject.noteTitle && outputObject.openMethod) {
+    const noteType = `note(${outputObject.noteTitle}, ${outputObject.openMethod}) ${outputObject.type.replace("note ", "")}`;
     buttonArr.push(`type ${noteType}`);
-    // Still add action field for note buttons as it's needed by the template system
-    buttonArr.push(`action ${outputObject.action}`);
+    // Add action field for note buttons as it's needed by the template system
+    outputObject.action && buttonArr.push(`action ${outputObject.action}`);
   } else {
     outputObject.type && buttonArr.push(`type ${outputObject.type}`);
     outputObject.action && buttonArr.push(`action ${outputObject.action}`);

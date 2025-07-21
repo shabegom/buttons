@@ -86,6 +86,7 @@ export class ButtonModal extends Modal {
     folder: "",
     prompt: false,
     openMethod: "",
+    noteTitle: "",
     actions: [] as { type: string; action: string }[], // Add type annotation
   };
 
@@ -768,7 +769,7 @@ export class ButtonModal extends Modal {
       attr: { placeholder: "My New Note" }
     });
     nameInput.addEventListener("input", (e) => {
-      this.outputObject.action = (e.target as HTMLInputElement).value;
+      this.outputObject.noteTitle = (e.target as HTMLInputElement).value;
     });
 
     const openMethodField = container.createEl("div", { cls: "form-field" });
@@ -830,7 +831,7 @@ export class ButtonModal extends Modal {
       attr: { placeholder: "My New Note" }
     });
     nameInput.addEventListener("input", (e) => {
-      this.outputObject.action = (e.target as HTMLInputElement).value;
+      this.outputObject.noteTitle = (e.target as HTMLInputElement).value;
     });
 
     const openMethodField = container.createEl("div", { cls: "form-field" });
