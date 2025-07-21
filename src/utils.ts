@@ -41,7 +41,8 @@ export const insertButton = (app: App, outputObject: OutputObject): void => {
   if (outputObject.type && outputObject.type.includes("note") && outputObject.action && outputObject.openMethod) {
     const noteType = `note(${outputObject.action}, ${outputObject.openMethod}) ${outputObject.type.replace("note ", "")}`;
     buttonArr.push(`type ${noteType}`);
-    // Don't add action separately for note buttons as it's included in the type
+    // Still add action field for note buttons as it's needed by the template system
+    buttonArr.push(`action ${outputObject.action}`);
   } else {
     outputObject.type && buttonArr.push(`type ${outputObject.type}`);
     outputObject.action && buttonArr.push(`action ${outputObject.action}`);
