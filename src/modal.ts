@@ -490,6 +490,7 @@ export class ButtonModal extends Modal {
     templateTypeSelect.createEl("option", { value: "prepend template", text: "Prepend" });
     templateTypeSelect.createEl("option", { value: "append template", text: "Append" });
     templateTypeSelect.createEl("option", { value: "line template", text: "Line" });
+    templateTypeSelect.createEl("option", { value: "cursor template", text: "Cursor" });
     templateTypeSelect.createEl("option", { value: "note template", text: "Note" });
     
     const templateInput = field.createEl("input", { 
@@ -524,6 +525,7 @@ export class ButtonModal extends Modal {
     textTypeSelect.createEl("option", { value: "append text", text: "Append" });
     textTypeSelect.createEl("option", { value: "prepend text", text: "Prepend" });
     textTypeSelect.createEl("option", { value: "line text", text: "Line" });
+    textTypeSelect.createEl("option", { value: "cursor text", text: "Cursor" });
     textTypeSelect.createEl("option", { value: "note text", text: "Note" });
     
     const textArea = field.createEl("textarea", { 

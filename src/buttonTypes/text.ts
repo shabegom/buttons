@@ -6,6 +6,7 @@ import {
   createNote,
   prependContent,
   addContentAtLine,
+  addContentAtCursor,
 } from "../handlers";
 
 export const text = async (
@@ -26,5 +27,8 @@ export const text = async (
   }
   if (args.type.includes("line")) {
     await addContentAtLine(app, args.action, args.type, false, position);
+  }
+  if (args.type.includes("cursor")) {
+    await addContentAtCursor(app, args.action, false);
   }
 }; 
