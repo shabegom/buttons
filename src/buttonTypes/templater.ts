@@ -12,7 +12,7 @@ export const templater = async (
   if (activeView) {
     await activeView.save();
     const file = activeView.file;
-    const content = await processTemplate(file);
+    const content = await processTemplate(app, file);
     const { args } = await getNewArgs(app, position);
     const cachedData: string[] = [];
     const cacheChange = app.vault.on("modify", (file) => {

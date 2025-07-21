@@ -173,7 +173,7 @@ class ButtonWidget extends WidgetType {
     if (args.templater && args.action && args.action.includes("<%")) {
       try {
         // Both template and target are activeFile since we're processing templater commands within the same file
-        const runTemplater = await templater(activeFile);
+        const runTemplater = await templater(this.app, activeFile, activeFile);
         if (runTemplater) {
           args.action = await runTemplater(args.action);
         }

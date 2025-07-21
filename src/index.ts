@@ -81,7 +81,7 @@ export default class ButtonsPlugin extends Plugin {
         
         if (source.includes("<%") && file) {
           try {
-            const runTemplater = await templater(file);
+            const runTemplater = await templater(this.app, file, file);
             if (runTemplater) {
               source = await runTemplater(source);
             }

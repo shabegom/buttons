@@ -1,5 +1,5 @@
 import { App, MarkdownView, Notice, TFile } from "obsidian";
-import { processTemplate } from "../templater";
+import templater from "../templater";
 
 export const prependContent = async (
   app: App,
@@ -18,19 +18,21 @@ export const prependContent = async (
       contentArray.splice(lineStart, 0, ...lines);
     } else {
       if (isTemplater) {
-        try {
-          const processed = await processTemplate(insert);
-          if (processed) {
+        const runTemplater = await templater(app, insert, file);
+        if (runTemplater) {
+          try {
+            const templateContent = await app.vault.read(insert);
+            const processed = await runTemplater(templateContent);
             // Handle multi-line templated content
             const lines = processed.split("\n");
             contentArray.splice(lineStart, 0, ...lines);
-          } else {
-            new Notice("Failed to process template with Templater", 2000);
+          } catch (error) {
+            console.error("Templater processing error:", error);
+            new Notice("Failed to process Templater template. Check console for details.", 2000);
             return;
           }
-        } catch (error) {
-          console.error("Templater processing error:", error);
-          new Notice("Failed to process Templater template. Check console for details.", 2000);
+        } else {
+          new Notice("Failed to initialize Templater processor", 2000);
           return;
         }
       } else {

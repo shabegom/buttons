@@ -1,6 +1,6 @@
 import { App, Notice, TFile, MarkdownView } from "obsidian";
 import { nameModal } from "../nameModal";
-import { processTemplate } from "../templater";
+import templater, { processTemplate } from "../templater";
 
 export const createNote = async (
   app: App,
@@ -52,7 +52,7 @@ export const createNote = async (
       else {
         if (isTemplater) {
           // For templater, process the template and create file with processed content
-          const processed = await processTemplate(filePath);
+          const processed = await processTemplate(app, filePath);
           if (processed) {
             file = await app.vault.create(fullPath, processed);
           } else {
