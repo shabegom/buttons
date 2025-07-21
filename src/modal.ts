@@ -778,10 +778,9 @@ export class ButtonModal extends Modal {
     const openMethodSelect = openMethodField.createEl("select", { cls: "dropdown" });
     
     const openMethods = [
-      { value: "split", text: "Split (vertical)" },
+      { value: "tab", text: "New Tab" },
       { value: "vsplit", text: "Vertical Split" },
       { value: "hsplit", text: "Horizontal Split" },
-      { value: "tab", text: "New Tab" },
       { value: "same", text: "Same Window" },
       { value: "false", text: "Don't Open" }
     ];
@@ -841,10 +840,9 @@ export class ButtonModal extends Modal {
     const openMethodSelect = openMethodField.createEl("select", { cls: "dropdown" });
     
     const openMethods = [
-      { value: "split", text: "Split (vertical)" },
+      { value: "tab", text: "New Tab" },
       { value: "vsplit", text: "Vertical Split" },
       { value: "hsplit", text: "Horizontal Split" },
-      { value: "tab", text: "New Tab" },
       { value: "same", text: "Same Window" },
       { value: "false", text: "Don't Open" }
     ];
