@@ -28,38 +28,42 @@ const findTemplate = (
 
   // Search in core Templates folder
   if (templatesEnabled) {
-    const folder: string = 
-      app.internalPlugins.plugins.templates.instance.options.folder?.toLowerCase() || '';
+    const folder = app.internalPlugins.plugins.templates.instance.options.folder;
     
-    const coreTemplateFile = allFiles.find((file) => 
-      file.path.toLowerCase() === `${folder}/${templateFile}.md`
-    );
-    
-    if (coreTemplateFile) {
-      results.push({ 
-        file: coreTemplateFile, 
-        source: 'core', 
-        isTemplater: false 
-      });
+    if (folder) {
+      const folderLower = folder.toLowerCase();
+      const coreTemplateFile = allFiles.find((file) => 
+        file.path.toLowerCase() === `${folderLower}/${templateFile}.md`
+      );
+      
+      if (coreTemplateFile) {
+        results.push({ 
+          file: coreTemplateFile, 
+          source: 'core', 
+          isTemplater: false 
+        });
+      }
     }
   }
 
   // Search in Templater plugin folder
   if (templaterPluginEnabled) {
     const templaterPlugin = app.plugins?.plugins["templater-obsidian"];
-    const folder: string = 
-      templaterPlugin?.settings?.templates_folder?.toLowerCase() || '';
+    const folder = templaterPlugin?.settings?.templates_folder;
     
-    const templaterFile = allFiles.find((file) => 
-      file.path.toLowerCase() === `${folder}/${templateFile}.md`
-    );
-    
-    if (templaterFile) {
-      results.push({ 
-        file: templaterFile, 
-        source: 'templater', 
-        isTemplater: true 
-      });
+    if (folder) {
+      const folderLower = folder.toLowerCase();
+      const templaterFile = allFiles.find((file) => 
+        file.path.toLowerCase() === `${folderLower}/${templateFile}.md`
+      );
+      
+      if (templaterFile) {
+        results.push({ 
+          file: templaterFile, 
+          source: 'templater', 
+          isTemplater: true 
+        });
+      }
     }
   }
 
