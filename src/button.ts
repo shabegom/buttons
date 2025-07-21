@@ -97,7 +97,7 @@ const clickHandler = async (
   }
   
   if (args.replace) {
-    replace(app, args);
+    replace(app, args, position);
   }
 
   if (args.type && args.type.includes("command")) {

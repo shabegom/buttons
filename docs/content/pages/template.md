@@ -44,13 +44,57 @@ action Current Time
 
 ## Line
 
-`type line(start, end)` will insert a template note at the specified start/end lines of the active note. 
+`type line(number)` will insert a template note at the specified line of the active note. You can use either **absolute** or **relative** line positioning:
+
+### Absolute Line Positioning
+Use `line(N)` to insert at a specific line number:
 
 <pre>
 ```button
 name Time on Line 1
 type line(1) template
 action Current Time
+```
+</pre>
+
+### Relative Line Positioning
+Use `line(+N)` to insert N lines **after** the button, or `line(-N)` to insert N lines **before** the button:
+
+<pre>
+```button
+name Insert After Button
+type line(+1) template
+action Current Time
+```
+</pre>
+
+<pre>
+```button
+name Insert Before Button  
+type line(-2) template
+action Current Time
+```
+</pre>
+
+**Relative positioning benefits:**
+- Buttons work regardless of their position in the file
+- Templates remain portable when moved around
+- Perfect for dynamic content that needs to stay relative to the button
+
+### DataView Refresh Example
+A common use case is refreshing DataView queries. This button will always refresh the query that appears after it:
+
+<pre>
+```button
+name Refresh DataView
+type line(+1) template
+action dataview-refresh
+replace [+1,+1]
+```
+
+```dataviewjs
+// Your DataView query here
+dv.list(dv.pages().file.name)
 ```
 </pre>
 
@@ -88,14 +132,28 @@ templater true
 
 ## Template Buttons + Mutations
 
-Template Buttons can become even more powerful if combined with the [Replace Mutation](/usage/mutations/replace). With this combo you can remove a section from a note and then use a `type line(start, end)` to add content at that same location.
+Template Buttons can become even more powerful if combined with the [Replace Mutation](/usage/mutations/replace). You can remove a section from a note and then use a `type line()` to add content at that location.
 
-
+### Absolute Positioning with Replace
 <pre>
 ```button
-name Current Weather
-type line(10, 15) template
+name Current Weather (Absolute)
+type line(10) template
 action Current Weather
 replace [10,15]
 ```
 </pre>
+
+### Relative Positioning with Replace
+Use relative positioning to make buttons work anywhere in your document:
+
+<pre>
+```button
+name Current Weather (Relative)
+type line(+1) template
+action Current Weather
+replace [+1,+3]
+```
+</pre>
+
+This approach is especially useful for templates that need to be moved around, as the button will always operate relative to its current position rather than fixed line numbers.

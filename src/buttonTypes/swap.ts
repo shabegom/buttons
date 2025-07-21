@@ -40,7 +40,11 @@ export const swap = async (
         }
       }
       if (args.replace) {
-        await replace(app, args);
+        content = await app.vault.read(file);
+        position = inline
+          ? await getInlineButtonPosition(app, id)
+          : getButtonPosition(content, args);
+        await replace(app, args, position);
       }
       if (args.type === "command") {
         command(app, args, buttonStart);
@@ -76,7 +80,11 @@ export const swap = async (
         await remove(app, args, position);
       }
       if (args.replace) {
-        await replace(app, args);
+        content = await app.vault.read(file);
+        position = inline
+          ? await getInlineButtonPosition(app, id)
+          : getButtonPosition(content, args);
+        await replace(app, args, position);
       }
     }
   });

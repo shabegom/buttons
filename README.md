@@ -5,7 +5,13 @@ Read the [Documentation](https://buttonslovesyou.com) for more information
 
 ---
 
-**last updated:** July 17, 2025
+**last updated:** July 21, 2025
+
+0.8.4
+- Feature: Relative line number positioning with `line(+N)` and `line(-N)` syntax for text and template buttons
+- Feature: Relative line number positioning for `replace [+N,+M]` functionality
+- Enhancement: Buttons now work portably regardless of their position in the file
+- Addresses GitHub issue #165 with improved DataView refresh button capabilities
 
 0.8.0
 - Updated the button maker UI for improved user experience
@@ -122,7 +128,8 @@ actions [
 **Notes:**
 - If any action fails, the rest will still attempt to run.
 - The `actions` field must be valid JSON. If you edit by hand, use a JSON validator if you run into issues.
-- For text actions, the `type` must be one of the supported text button types: `append text`, `prepend text`, `line(1) text`, or `note text`.
+- For text actions, the `type` must be one of the supported text button types: `append text`, `prepend text`, `line(1) text`, `line(+1) text`, `line(-1) text`, or `note text`.
+- Line-based actions support both absolute (`line(5)`) and relative (`line(+2)`, `line(-1)`) positioning.
 
 ### Inherit Button Args
 If you are using the same (or similar) Buttons across many notes, you can create one parent Button and have other Buttons inherit from the parent.
@@ -179,7 +186,13 @@ If you have a Button that only needs to run once and then can be removed from a 
 If you have multiple Buttons in a note and want to remove them all when a Button is clicked, you can supply an array of button-block-ids to the `remove` argument, e.g. `remove [id1, id2, id3]`.
 
 ### Replace content in section
-When using an Append or Prepend Template Button, you may want to remove lines from the existing note which will be replaced by the Template. To do this, write a `replace` argument and supply the first line and last line in an array; e.g. `replace [1, 5]` will remove lines 1 through 5.
+When using Template or Text Buttons, you can remove lines from the existing note which will be replaced by new content. Use the `replace` argument with absolute or relative line numbers:
+
+- **Absolute positioning**: `replace [1, 5]` removes lines 1 through 5
+- **Relative positioning**: `replace [+1, +3]` removes 3 lines starting 1 line after the button
+- **Mixed positioning**: You can also mix absolute and relative: `replace [10, +5]`
+
+Relative positioning is perfect for portable templates that work regardless of where they're placed in your document.
 
 ## Examples
 ### Command Button
@@ -275,15 +288,27 @@ Even better, set up those buttons and then add them all on one line as Inline Bu
     `button-mon` `button-tues` `button-wed`
 
 ### Add Template at Line
-Say you want the weather to appear at a specific place in your note that isn't directly beside the button:
+Insert templates at specific lines using absolute or relative positioning:
 
+#### Absolute Line Positioning
     ```button
-    name Current Weather
+    name Current Weather (Absolute)
     type line(1) template
     action Weather Template Note
     replace [1,5]
     ```
-    ^button-weatherLine
+    ^button-weatherLine-absolute
+
+#### Relative Line Positioning
+Perfect for portable templates that work anywhere in your document:
+
+    ```button
+    name Current Weather (Relative)
+    type line(+1) template
+    action Weather Template Note
+    replace [+1,+3]
+    ```
+    ^button-weatherLine-relative
 
 #### New Note From Template
 Create a new note in a new split pane for an upcoming meeting based on a Meeting Note Template:
