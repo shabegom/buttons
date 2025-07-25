@@ -35,30 +35,70 @@ export const createButton = ({
   id,
   clickOverride,
 }: Button): HTMLElement => {
-  //create the button element
-  const button = el.createEl("button", {
-    cls: [
-      args.class
-        ? `${args.class} ${args.color}`
-        : `button-default ${args.color ? args.color : ""}`,
-      inline ? "button-inline" : "",
-    ],
-  });
+  let buttonElement: HTMLElement;
+
+  if (args.type === "link" && args.action) {
+    // Create an <a> tag for link buttons to ensure PDF compatibility
+    const linkElement = el.createEl("a", {
+      cls: [
+        args.class
+          ? `${args.class} ${args.color}`
+          : `button-default ${args.color ? args.color : ""}`,
+        inline ? "button-inline" : "",
+      ],
+      href: args.action.trim(),
+      text: args.name,
+    });
+    linkElement.setAttr("target", "_blank"); // Open link in a new tab
+
+    // Apply all button styles directly to the <a> tag
+    linkElement.style.backgroundColor = "var(--interactive-normal, #f5f6f8)";
+    linkElement.style.borderRadius = "5px";
+    linkElement.style.border = "1px solid var(--interactive-accent, #ccc)";
+    linkElement.style.color = "var(--text-accent, #333)";
+    linkElement.style.padding = "10px 30px";
+    linkElement.style.textDecoration = "none";
+    linkElement.style.fontSize = "var(--button-size, 1em)";
+    linkElement.style.margin = "0";
+    linkElement.style.boxShadow = "none";
+    linkElement.style.transform = "none";
+    linkElement.style.display = "inline-block";
+
+    if (inline) {
+      linkElement.style.width = "unset";
+      linkElement.style.height = "unset";
+      linkElement.style.padding = "0 8px";
+    }
+
+    buttonElement = linkElement;
+  } else {
+    // Create a <button> element for other button types
+    const button = el.createEl("button", {
+      cls: [
+        args.class
+          ? `${args.class} ${args.color}`
+          : `button-default ${args.color ? args.color : ""}`,
+        inline ? "button-inline" : "",
+      ],
+    });
+    button.innerHTML = args.name;
+    button.on("click", "button", () => {
+      clickOverride
+        ? clickOverride.click(...clickOverride.params)
+        : clickHandler(app, args, inline, id);
+    });
+    buttonElement = button;
+  }
 
   if (args.customcolor) {
-    button.style.backgroundColor = args.customcolor;
+    buttonElement.style.backgroundColor = args.customcolor;
   }
   if (args.customtextcolor) {
-    button.style.color = args.customtextcolor;
+    buttonElement.style.color = args.customtextcolor;
   }
-  button.innerHTML = args.name;
-  args.id ? button.setAttribute("id", args.id) : "";
-  button.on("click", "button", () => {
-    clickOverride
-      ? clickOverride.click(...clickOverride.params)
-      : clickHandler(app, args, inline, id);
-  });
-  return button;
+  args.id ? buttonElement.setAttribute("id", args.id) : "";
+
+  return buttonElement;
 };
 
 const clickHandler = async (
