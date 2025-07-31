@@ -7,8 +7,9 @@ async function templater(
   template: TFile,
   _target: TFile,
 ): Promise<RunTemplater | undefined> {
-  // For inline templater processing in buttons, use the same file for all config properties
+  // Use the actual target file for templater processing
   const activeFile = template || app.workspace.getActiveFile();
+  const targetFile = _target || activeFile;
   
   if (!activeFile) {
     new Notice("No active file found for templater processing.");
@@ -16,9 +17,9 @@ async function templater(
   }
   
   const config = {
-    template_file: activeFile,
+    template_file: template,
     active_file: activeFile,
-    target_file: activeFile,
+    target_file: targetFile,
     run_mode: "DynamicProcessor",
   };
   
@@ -60,7 +61,7 @@ async function templater(
   }
 }
 
-export async function processTemplate(app: App, file: TFile) {
+export async function processTemplate(app: App, file: TFile): Promise<string | undefined> {
   try {
     const content = await app.vault.read(file);
     const runTemplater = await templater(app, file, file);
