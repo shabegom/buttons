@@ -34,9 +34,14 @@ If you're using Live Preview, when the cursor moves out of a button codeblock it
 ## Button Arguments
 
 You specify what a button does by supplying arguments inside a codeblock. There are 3 required arguments:
-- `name`: The text that will be displayed on the button when it is rendered.
+- `name`: The text that will be displayed on the button when it is rendered. Supports multi-line content with markdown formatting.
 - `type`: What the type of button it is (command, link, template, swap).
 - `action`: Depending on the type chosen the action is what the button will actually do.
+
+Additional formatting arguments let you control button appearance:
+- `width`: Control button width (in em units)
+- `height`: Control button height (in em units)
+- `align`: Control text alignment (left/center/right + top/middle/bottom)
 
 <pre>
 ```button
@@ -58,6 +63,7 @@ If you use the [Button Maker](/maker) an ID will be generated for you. Besides b
 
 To learn more about different usages of Buttons check these pages out:
 - [Button Types](/usage/types)
+- [Button Formatting](/usage/formatting) - Multi-line names, dimensions, and alignment
 - [Button Mutations](/usage/mutations)
 - [Templater inside Buttons](/usage/templater)
 - [Inline Buttons](/usage/inline)
