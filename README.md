@@ -463,7 +463,6 @@ Note: swap count is reset if you close the note.
 - Update Readme: new note from template ([antulik])
 
 
-[Luca-Harrison]: https://github.com/Luca-Harrison
 [Lx]: https://github.com/Lx
 [unxok]: https://github.com/unxok
 [rafa-carmo]: https://github.com/rafa-carmo
