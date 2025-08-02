@@ -14,26 +14,6 @@ Read the [Documentation](https://buttonslovesyou.com) for more information
 - Enhancement: Improved button layout and formatting capabilities ([Luca-Harrison])
 - Enhancement: Better markdown rendering within button names ([Luca-Harrison])
 
-0.8.4
-- Feature: Relative line number positioning with `line(+N)` and `line(-N)` syntax for text and template buttons
-- Feature: Relative line number positioning for `replace [+N,+M]` functionality
-- Enhancement: Buttons now work portably regardless of their position in the file
-- Addresses GitHub issue #165 with improved DataView refresh button capabilities
-
-0.8.0
-- Updated the button maker UI for improved user experience
-- Feature: Multi-line text buttons for more complex text insertion
-- Added comprehensive documentation at https://buttonslovesyou.com
-
-0.7.0
-- Append text no longer creates a newline
-- Styling improvements to align with default themes
-- Chain buttons: run multiple actions with a single button press
-
-0.6.0
-- Enhancement: Inline Buttons now work in Live Preview!
-- Various bugfixes
-
 ---
 
 ## Install
@@ -430,6 +410,12 @@ Note: swap count is reset if you close the note.
 
 ## Releases
 
+### 0.8.4
+- Feature: Relative line number positioning with `line(+N)` and `line(-N)` syntax for text and template buttons
+- Feature: Relative line number positioning for `replace [+N,+M]` functionality
+- Enhancement: Buttons now work portably regardless of their position in the file
+- Addresses GitHub issue #165 with improved DataView refresh button capabilities
+
 ### 0.8.0
 - Updated the button maker UI for improved user experience
 - Feature: Multi-line text buttons for more complex text insertion
@@ -462,7 +448,7 @@ Note: swap count is reset if you close the note.
 - Feature: Open new tab when creating new file ([0snug0])
 - Update Readme: new note from template ([antulik])
 
-
+[Luca-Harrison]: https://github.com/Luca-Harrison
 [Lx]: https://github.com/Lx
 [unxok]: https://github.com/unxok
 [rafa-carmo]: https://github.com/rafa-carmo
