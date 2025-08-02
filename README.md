@@ -5,14 +5,14 @@ Read the [Documentation](https://buttonslovesyou.com) for more information
 
 ---
 
-**last updated:** July 31, 2025
+**last updated:** August 2, 2025
 
 0.9.4
-- Feature: Multi-line button names with markdown support using `{}` or `[]` delimiters
-- Feature: Button width and height controls with `width` and `height` arguments (in em units)
-- Feature: Button text alignment controls with `align` argument (left/center/right + top/middle/bottom)
-- Enhancement: Improved button layout and formatting capabilities
-- Enhancement: Better markdown rendering within button names
+- Feature: Multi-line button names with markdown support using `{}` or `[]` delimiters ([Luca-Harrison])
+- Feature: Button width and height controls with `width` and `height` arguments (in em units) ([Luca-Harrison])
+- Feature: Button text alignment controls with `align` argument (left/center/right + top/middle/bottom) ([Luca-Harrison])
+- Enhancement: Improved button layout and formatting capabilities ([Luca-Harrison])
+- Enhancement: Better markdown rendering within button names ([Luca-Harrison])
 
 0.8.4
 - Feature: Relative line number positioning with `line(+N)` and `line(-N)` syntax for text and template buttons
@@ -463,6 +463,7 @@ Note: swap count is reset if you close the note.
 - Update Readme: new note from template ([antulik])
 
 
+[Luca-Harrison]: https://github.com/Luca-Harrison
 [Lx]: https://github.com/Lx
 [unxok]: https://github.com/unxok
 [rafa-carmo]: https://github.com/rafa-carmo
