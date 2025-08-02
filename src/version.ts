@@ -1,4 +1,6 @@
-export const checkVersion = () => {
+import { App, TFile, CachedMetadata, Events } from "obsidian";
+
+export const checkVersion = (app: App) => {
   const savedVersion = localStorage.getItem("buttonsVersion");
   const installedVersion = (app.plugins.plugins as any).buttons.manifest.version;
   if (
@@ -10,7 +12,7 @@ export const checkVersion = () => {
   return false;
 };
 
-export const saveVersion = () => {
+export const saveVersion = (app: App) => {
   localStorage.setItem(
     "buttonsVersion",
     (app.plugins.plugins as any).buttons.manifest.version
@@ -50,7 +52,7 @@ shabegom
 (this note will be deleted when you close the tab and won't appear again)
 `;
 
-const deleteIfExists = async () => {
+const deleteIfExists = async (app: App) => {
   const file = await app.vault.getAbstractFileByPath(
     "/Buttons 1.0 is Coming.md"
   );
@@ -59,10 +61,10 @@ const deleteIfExists = async () => {
   }
 };
 
-export const updateWarning = async () => {
-  const showReleaseNotes = checkVersion();
+export const updateWarning = async (app: App) => {
+  const showReleaseNotes = checkVersion(app);
   if (showReleaseNotes) {
-    deleteIfExists();
+    deleteIfExists(app);
     const releaseNotes = await app.vault.create(
       "Buttons 1.0 is Coming.md",
       releaseNote
@@ -70,7 +72,7 @@ export const updateWarning = async () => {
     app.workspace
       .getLeaf(true)
       .openFile(releaseNotes, { state: { mode: "preview" } });
-    saveVersion();
+    saveVersion(app);
     setTimeout(async () => {
       const clearReleaseNotes = app.workspace.on("layout-change", async () => {
         await app.vault.delete(releaseNotes);

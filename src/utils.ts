@@ -89,7 +89,7 @@ export const createArgumentObject = (source: string): Arguments => {
   const knownArguments = new Set([
     "name", "type", "action", "id", "swap", "remove", "replace", 
     "templater", "color", "customcolor", "customtextcolor", "class", 
-    "folder", "prompt", "actions"
+    "folder", "prompt", "actions", "width", "height", "align"
   ]);
   
   for (let i = 0; i < lines.length; i++) {
@@ -98,77 +98,32 @@ export const createArgumentObject = (source: string): Arguments => {
     const key: string = split[0]?.toLowerCase();
     if (!key) continue;
     
-    if (key === "actions") {
+    if (key === "name") {
+      // Collect all lines for the name (written using markdown)
+      const parseLines = [line.replace(/^name\s*/, "")];
+
+      let destructor = parseMultiLine(lines, i, parseLines);
+      if (destructor.parseValue[0] == "{") {
+        acc[key] = destructor.parseValue.slice(1, -1).trim();
+      } else {
+        acc[key] = destructor.parseValue.trim();
+      }
+      i = destructor.i;
+      
+    } else if (key === "actions") {
       // Collect all lines for the JSON array
       const jsonLines = [line.replace(/^actions\s*/, "")];
-      
-      // Robust JSON parsing that handles all bracket types and string literals
-      let bracketCount = 0;
-      let braceCount = 0;
-      let inString = false;
-      let escaped = false;
-      
-      // Count brackets in the first line
-      for (const char of jsonLines[0]) {
-        if (escaped) {
-          escaped = false;
-          continue;
-        }
-        if (char === '\\') {
-          escaped = true;
-          continue;
-        }
-        if (char === '"' && !escaped) {
-          inString = !inString;
-          continue;
-        }
-        if (!inString) {
-          if (char === '[') bracketCount++;
-          else if (char === ']') bracketCount--;
-          else if (char === '{') braceCount++;
-          else if (char === '}') braceCount--;
-        }
-      }
-      
-      // Continue reading lines until all brackets and braces are balanced
-      while ((bracketCount > 0 || braceCount > 0) && i + 1 < lines.length) {
-        i++;
-        const nextLine = lines[i];
-        jsonLines.push(nextLine);
-        
-        // Count brackets in the new line
-        for (const char of nextLine) {
-          if (escaped) {
-            escaped = false;
-            continue;
-          }
-          if (char === '\\') {
-            escaped = true;
-            continue;
-          }
-          if (char === '"' && !escaped) {
-            inString = !inString;
-            continue;
-          }
-          if (!inString) {
-            if (char === '[') bracketCount++;
-            else if (char === ']') bracketCount--;
-            else if (char === '{') braceCount++;
-            else if (char === '}') braceCount--;
-          }
-        }
-      }
-      
-      const jsonString = jsonLines.join("\n").trim();
+
+      let destructor = parseMultiLine(lines, i, jsonLines);
       try {
-        acc[key] = JSON.parse(jsonString);
+        new Notice(`Actions: ${destructor.parseValue}`, 0);
+        acc[key] =  JSON.parse(destructor.parseValue);
       } catch (e) {
-        new Notice(
-          "Error: Malformed JSON in actions field. Please check your chain button syntax.",
-          4000
-        );
         acc[key] = [];
+        new Notice(`Error: Malformed JSON in actions field. Please check your chain button syntax.`, 4000);
       }
+      i = destructor.i;
+
     } else if (key === "action") {
       // Handle multi-line actions
       const actionLines = [line.replace(/^action\s*/, "")];
@@ -277,3 +232,74 @@ export const runTemplater = (
       "templater-obsidian:replace-in-file-templater"
     );
   });
+
+
+// Refactoring of the code to reduce duplication and improve readability
+export const parseMultiLine = (lines: string[], iStart: number, parseLinesStart: string[]): any => {
+  
+  // Robust JSON parsing that handles all bracket types and string literals
+  let i = iStart;
+  let parseLines = parseLinesStart;
+  let bracketCount = 0;
+  let braceCount = 0;
+  let inString = false;
+  let escaped = false;
+  let parseValue;
+  
+  // Count brackets in the first line
+  for (const char of parseLines[0]) {
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (char === '\\') {
+      escaped = true;
+      continue;
+    }
+    if (char === '"' && !escaped) {
+      inString = !inString;
+      continue;
+    }
+    if (!inString) {
+      if (char === '[') bracketCount++;
+      else if (char === ']') bracketCount--;
+      else if (char === '{') braceCount++;
+      else if (char === '}') braceCount--;
+    }
+  }
+  
+  // Continue reading lines until all brackets and braces are balanced
+  while ((bracketCount > 0 || braceCount > 0) && i + 1 < lines.length) {
+    i++;
+    const nextLine = lines[i];
+    parseLines.push(nextLine);
+    
+    // Count brackets in the new line
+    for (const char of nextLine) {
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char === '\\') {
+        escaped = true;
+        continue;
+      }
+      if (char === '"' && !escaped) {
+        inString = !inString;
+        continue;
+      }
+      if (!inString) {
+        if (char === '[') bracketCount++;
+        else if (char === ']') bracketCount--;
+        else if (char === '{') braceCount++;
+        else if (char === '}') braceCount--;
+      }
+    }
+  }
+  
+  const parseString = parseLines.join("\n").trim();
+  parseValue = parseString;
+
+  return { parseValue, i };
+
+}
