@@ -5,7 +5,14 @@ Read the [Documentation](https://buttonslovesyou.com) for more information
 
 ---
 
-**last updated:** July 21, 2025
+**last updated:** August 2, 2025
+
+0.9.4
+- Feature: Multi-line button names with markdown support using `{}` or `[]` delimiters ([Luca-Harrison])
+- Feature: Button width and height controls with `width` and `height` arguments (in em units) ([Luca-Harrison])
+- Feature: Button text alignment controls with `align` argument (left/center/right + top/middle/bottom) ([Luca-Harrison])
+- Enhancement: Improved button layout and formatting capabilities ([Luca-Harrison])
+- Enhancement: Better markdown rendering within button names ([Luca-Harrison])
 
 0.8.4
 - Feature: Relative line number positioning with `line(+N)` and `line(-N)` syntax for text and template buttons
@@ -65,6 +72,10 @@ The quickest way to get started with Buttons is to use the Button Maker. You can
 - **Templater:** If the templater arg is `true` you can include a Templater command inside your button. The command will be converted to its value when the button is clicked and converted back to the command after. This cannot be used with Inline Buttons.
 - **Custom Class:** Supply a custom CSS class to style your Button.
 - **Color:** Choose a Button color.
+- **Multi-line Names:** Create multi-line button names using `{}` or `[]` delimiters with full markdown support for formatting.
+- **Width:** Control button width using the `width` argument (in em units), e.g., `width 15`.
+- **Height:** Control button height using the `height` argument (in em units), e.g., `height 3`.
+- **Align:** Control text alignment within buttons using `align` with horizontal (left/center/right) and vertical (top/middle/bottom) options, e.g., `align center middle`.
 
 ### Button Block ID
 The button-block-id is a block-id placed direcly below a Button codeblock and starts with `button`, e.g. `^button-id`. Button-block-ids can be used to:
@@ -365,7 +376,38 @@ Natural Language Math:
     ```
     ^button-breakup
 
-The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so it should support any symbol supported by that library.  
+The calculate button uses [math-expression-evaluator](https://github.com/bugwheels94/math-expression-evaluator), so it should support any symbol supported by that library.
+
+### Button Formatting Examples
+
+#### Multi-line Button with Markdown
+
+    ```button
+    name {
+    🚀 **Launch Process**
+    *Execute with style*
+    → Click to proceed
+    }
+    type command
+    action Toggle Pin
+    width 18
+    height 4
+    align center middle
+    ```
+    ^button-formatted
+
+#### Sized and Aligned Button
+
+    ```button
+    name Action Button
+    type command
+    action Toggle Pin
+    width 12
+    height 2
+    align right top
+    color blue
+    ```
+    ^button-sized  
 
 ### Swap Buttons
 Let's create a Swap Button using the button-block-id of previous Buttons:

@@ -9,7 +9,7 @@ eleventyNavigation:
   title: "Styling"
 ---
 
-**Button styling** lets you customize the appearance of your buttons using built-in colors, custom CSS classes, and the Style Settings plugin. You can create buttons that match your theme or stand out for specific purposes.
+**Button styling** lets you customize the appearance of your buttons using built-in colors, layout controls, custom CSS classes, and the Style Settings plugin. You can create buttons that match your theme or stand out for specific purposes.
 
 ## Built-in Color Options
 
@@ -74,6 +74,75 @@ color purple
 ```
 ^button-purple
 </pre>
+
+## Built-in Layout Controls
+
+Control button dimensions and text alignment using built-in arguments:
+
+### Width and Height
+
+Set precise button dimensions using `width` and `height` arguments (in em units):
+
+<pre>
+```button
+name Compact Button
+type command
+action Toggle Pin
+width 12
+height 2
+```
+^button-compact
+</pre>
+
+<pre>
+```button
+name {
+Large Button
+With Multiple Lines
+And Custom Size
+}
+type command
+action Toggle Pin
+width 20
+height 5
+```
+^button-large
+</pre>
+
+### Text Alignment
+
+Control how text is positioned within buttons using the `align` argument:
+
+<pre>
+```button
+name Left Aligned Text
+type command
+action Toggle Pin
+width 18
+align left
+```
+^button-align-left
+</pre>
+
+<pre>
+```button
+name {
+Top Right
+Corner Text
+}
+type command
+action Toggle Pin
+width 15
+height 4
+align right top
+```
+^button-align-corner
+</pre>
+
+**Alignment Options:**
+- **Horizontal**: `left`, `center` (default), `right`
+- **Vertical**: `top`, `middle` (default), `bottom`
+- **Combined**: Use both, e.g., `align center top` or `align right bottom`
 
 ## Style Settings Plugin Integration
 
@@ -186,6 +255,28 @@ class success-button
 ^button-success
 </pre>
 
+## Combining Layout Controls with Styling
+
+You can combine layout controls with colors and custom classes:
+
+<pre>
+```button
+name {
+🎨 **Styled Button**
+*With custom layout*
+and alignment
+}
+type command
+action Toggle Pin
+width 16
+height 4
+align center middle
+color blue
+class my-custom-button
+```
+^button-layout-styled
+</pre>
+
 ## Combining Colors and Classes
 
 You can combine built-in colors with custom classes:
@@ -252,5 +343,7 @@ Use Obsidian's CSS variables for theme consistency:
 3. **Keep it readable**: Don't sacrifice legibility for style
 4. **Be consistent**: Use similar styling for similar button types
 5. **Performance**: Avoid complex animations on frequently-used buttons
+6. **Layout harmony**: Use consistent dimensions and alignment for related buttons
+7. **Content-aware sizing**: Match button size to content importance and frequency of use
 
-Button styling gives you complete control over the visual presentation of your buttons, allowing you to create interfaces that perfectly match your workflow and aesthetic preferences.
+Button styling gives you complete control over the visual presentation of your buttons, allowing you to create interfaces that perfectly match your workflow and aesthetic preferences. With the addition of layout controls, you can create precisely positioned, beautifully formatted buttons that enhance both functionality and visual appeal.

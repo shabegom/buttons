@@ -6,3 +6,4 @@ main.js
 .vscode/
 *.code-workspace
 CLAUDE.md
+.claude
