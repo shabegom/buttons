@@ -1,4 +1,4 @@
-import { App, MarkdownView, Notice } from "obsidian";
+import { App, MarkdownView, Notice, MarkdownRenderer } from "obsidian";
 import {
   Decoration,
   DecorationSet,
@@ -131,8 +131,55 @@ class ButtonWidget extends WidgetType {
         const className = args.class;
         const color = args.color;
         
-        // Update the button element content (not structure)
-        this.el.innerText = name || "";
+        this.el.innerHTML = ""; // Clear existing content
+          
+        MarkdownRenderer.render(
+          this.app,
+          args.name,
+          this.el,
+          this.app.workspace.getActiveFile()?.path || "",
+          null
+        );
+      
+        // Changing the button's innerHTML to be wrapped in a div rather than a p so that it is not on a new line
+        // Style tags so the user can set the width, height, and alignment of the button
+      
+        let numberOfLines = args.name.split('\n').length;
+        let paddingTop = 'auto';
+        let paddingBottom = 'auto';
+      
+        let alignment = args.align?.split(' ') || ['center', 'middle'];
+      
+        if (args.height) {
+      
+          if (alignment.includes("top")) {
+            alignment = alignment.filter((a: string) => a !== "top");
+            paddingBottom = (parseFloat(args.height) - 1.2 * numberOfLines) + "em";
+          } else if (alignment.includes("bottom")) {
+            alignment = alignment.filter((a: string) => a !== "bottom");
+            paddingTop = (parseFloat(args.height) - 1.2 * numberOfLines) + "em";
+          } else {
+            alignment = alignment.filter((a: string) => a !== "middle");
+            paddingTop = (parseFloat(args.height) - 1.2 * numberOfLines) / 2 + "em";
+            paddingBottom = (parseFloat(args.height) - 1.2 * numberOfLines) / 2 + "em";
+          }
+      
+        }
+      
+        if (args.width) {
+          args.width += "em";
+        } else {
+          args.width = "auto";
+        }
+      
+        this.el.innerHTML = "<div style='" + 
+          `width: ${args.width};` + 
+          `padding-top: ${paddingTop};` + 
+          `padding-bottom: ${paddingBottom};` + 
+          `text-align: ${alignment[0] || 'center'};` + 
+          'line-height: 1.2em;' +
+          `'>${this.el.innerHTML.slice(14, -4)}</div>`;
+        
         
         // Update classes - keep button-default and add custom classes
         if (className) {

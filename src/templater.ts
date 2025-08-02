@@ -30,7 +30,7 @@ async function templater(
     return;
   }
   
-    try {
+  try {
     // eslint-disable-next-line
     // @ts-ignore
     const { templater } = plugins["templater-obsidian"];

@@ -59,12 +59,13 @@ button.button-default {
   border-radius: 5px;
   border: 1px solid var(--interactive-accent, #ccc);
   color: var(--text-accent, #333);
-  padding: 10px 30px;
+  padding: 8px 8px;
   text-decoration: none;
   font-size: var(--button-size, 1em);
   margin: 0;
   box-shadow: none;
   transform: none;
+  height: auto;
 }
 
 button.button-default:hover {
@@ -92,7 +93,7 @@ button.button-default:hover {
 button.button-inline {
   width: unset;
   height: unset;
-  padding: 0 8px;
+  padding: 8px 8px;
 }
 
 button.button-default.blue {
