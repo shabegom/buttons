@@ -130,50 +130,54 @@ const clickHandler = async (
     : getButtonPosition(content, args);
   
   // Process templater commands for all buttons with templater true
+  let processedAction = args.action;
   if (args.templater && args.action && args.action.includes("<%")) {
     try {
       // Both template and target are activeFile since we're processing templater commands within the same file
       const runTemplater = await templater(app, activeFile, activeFile);
       if (runTemplater) {
-        args.action = await runTemplater(args.action);
+        processedAction = await runTemplater(args.action);
       }
     } catch (error) {
       console.error('Error processing templater in button:', error);
       new Notice("Error processing templater in button. Check console for details.", 2000);
     }
   }
+
+  // Create a copy of args with the processed action to avoid mutating the original
+  const processedArgs = { ...args, action: processedAction };
   
   if (args.replace) {
-    replace(app, args, position);
+    replace(app, processedArgs, position);
   }
 
-  if (args.type && args.type.includes("command")) {
-    command(app, args, buttonStart);
+  if (processedArgs.type && processedArgs.type.includes("command")) {
+    command(app, processedArgs, buttonStart);
   }
-  if (args.type === "copy") {
-    copy(args);
+  if (processedArgs.type === "copy") {
+    copy(processedArgs);
   }
   // handle link buttons
-  if (args.type === "link") {
-    link(args);
+  if (processedArgs.type === "link") {
+    link(processedArgs);
   }
   // handle template buttons
-  if (args.type && args.type.includes("template")) {
+  if (processedArgs.type && processedArgs.type.includes("template")) {
     content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);
-    await template(app, args, position);
+    await template(app, processedArgs, position);
   }
-  if (args.type === "calculate") {
-    await calculate(app, args, position);
+  if (processedArgs.type === "calculate") {
+    await calculate(app, processedArgs, position);
   }
-  if (args.type && args.type.includes("text")) {
+  if (processedArgs.type && processedArgs.type.includes("text")) {
     content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);
-    await text(app, args, position);
+    await text(app, processedArgs, position);
   }
   if (args.swap) {
     if (!inline) {
@@ -188,10 +192,10 @@ const clickHandler = async (
     position = inline
       ? await getInlineButtonPosition(app, id)
       : getButtonPosition(content, args);
-    await remove(app, args, position);
+    await remove(app, processedArgs, position);
   }
-  if (args.type === "chain") {
-    await chain(app, args, position, inline, id, activeFile);
+  if (processedArgs.type === "chain") {
+    await chain(app, processedArgs, position, inline, id, activeFile);
     return;
   }
 };

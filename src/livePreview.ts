@@ -217,47 +217,51 @@ class ButtonWidget extends WidgetType {
     }
     
     // Process templater commands for all buttons with templater true
+    let processedAction = args.action;
     if (args.templater && args.action && args.action.includes("<%")) {
       try {
         // Both template and target are activeFile since we're processing templater commands within the same file
         const runTemplater = await templater(this.app, activeFile, activeFile);
         if (runTemplater) {
-          args.action = await runTemplater(args.action);
+          processedAction = await runTemplater(args.action);
         }
       } catch (error) {
         console.error('Error processing templater in button:', error);
         new Notice("Error processing templater in button. Check console for details.", 2000);
       }
     }
+
+    // Create a copy of args with the processed action to avoid mutating the original
+    const processedArgs = { ...args, action: processedAction };
     
     const buttonStart = await getInlineButtonPosition(this.app, this.id);
     let position = await getInlineButtonPosition(this.app, this.id);
     
     if (args.replace) {
-      await replace(this.app, args, position);
+      await replace(this.app, processedArgs, position);
     }
 
-    if (args.type && args.type.includes("command")) {
-      command(this.app, args, buttonStart);
+    if (processedArgs.type && processedArgs.type.includes("command")) {
+      command(this.app, processedArgs, buttonStart);
     }
-    if (args.type === "copy") {
-      copy(args);
+    if (processedArgs.type === "copy") {
+      copy(processedArgs);
     }
     // handle link buttons
-    if (args.type === "link") {
-      link(args);
+    if (processedArgs.type === "link") {
+      link(processedArgs);
     }
     // handle template buttons
-    if (args.type && args.type.includes("template")) {
+    if (processedArgs.type && processedArgs.type.includes("template")) {
       position = await getInlineButtonPosition(this.app, this.id);
-      await template(this.app, args, position);
+      await template(this.app, processedArgs, position);
     }
-    if (args.type === "calculate") {
-      await calculate(this.app, args, position);
+    if (processedArgs.type === "calculate") {
+      await calculate(this.app, processedArgs, position);
     }
-    if (args.type && args.type.includes("text")) {
+    if (processedArgs.type && processedArgs.type.includes("text")) {
       position = await getInlineButtonPosition(this.app, this.id);
-      await text(this.app, args, position);
+      await text(this.app, processedArgs, position);
     }
     if (args.swap) {
       await swap(this.app, args.swap, this.id, true, activeFile, buttonStart);
@@ -265,10 +269,10 @@ class ButtonWidget extends WidgetType {
     // handle removing the button
     if (args.remove) {
       position = await getInlineButtonPosition(this.app, this.id);
-      await remove(this.app, args, position);
+      await remove(this.app, processedArgs, position);
     }
-    if (args.type === "chain") {
-      await chain(this.app, args, position, true, this.id, activeFile);
+    if (processedArgs.type === "chain") {
+      await chain(this.app, processedArgs, position, true, this.id, activeFile);
       return;
     }
   }
