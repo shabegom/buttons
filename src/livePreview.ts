@@ -1,4 +1,4 @@
-import { App, MarkdownView, Notice, MarkdownRenderer } from "obsidian";
+import { App, MarkdownView, Notice, MarkdownRenderer, Component } from "obsidian";
 import {
   Decoration,
   DecorationSet,
@@ -98,6 +98,8 @@ function buttonPlugin(app: App) {
 }
 
 class ButtonWidget extends WidgetType {
+  private component: Component;
+
   constructor(
     readonly el: HTMLElement,
     readonly id: string,
@@ -105,10 +107,16 @@ class ButtonWidget extends WidgetType {
     readonly line: number
   ) {
     super();
+    this.component = new Component();
   }
 
   eq(other: ButtonWidget): boolean {
     return other.id === this.id;
+  }
+
+  destroy() {
+    // Clean up the component to prevent memory leaks
+    this.component.unload();
   }
 
   toDOM(): HTMLElement {
@@ -138,7 +146,7 @@ class ButtonWidget extends WidgetType {
           args.name,
           this.el,
           this.app.workspace.getActiveFile()?.path || "",
-          null
+          this.component
         );
       
         // Changing the button's innerHTML to be wrapped in a div rather than a p so that it is not on a new line

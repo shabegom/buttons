@@ -359,6 +359,7 @@ export class ButtonModal extends Modal {
       app: this.app,
       el: previewContainer,
       args: { name: "My Awesome Button" },
+      component: null, // Preview button doesn't need component lifecycle management
     });
   }
 

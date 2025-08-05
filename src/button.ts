@@ -1,4 +1,4 @@
-import { App, MarkdownView, Notice, MarkdownRenderer } from "obsidian";
+import { App, MarkdownView, Notice, MarkdownRenderer, Component } from "obsidian";
 import { Arguments } from "./types";
 import {
   calculate,
@@ -21,6 +21,7 @@ export interface Button {
   args?: Arguments;
   inline?: boolean;
   id?: string;
+  component?: Component;
   clickOverride?: {
     params: unknown[];
     click: (...params: unknown[]) => void;
@@ -33,6 +34,7 @@ export const createButton = ({
   args,
   inline,
   id,
+  component,
   clickOverride,
 }: Button): HTMLElement => {
   //create the button element
@@ -57,7 +59,7 @@ export const createButton = ({
     args.name,
     button,
     app.workspace.getActiveFile()?.path || "",
-    null
+    component
   );
 
   // Changing the button's innerHTML to be wrapped in a div rather than a p so that it is not on a new line

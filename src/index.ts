@@ -4,6 +4,7 @@ import {
   Events,
   MarkdownRenderChild,
   Plugin,
+  Component,
 } from "obsidian";
 import { createArgumentObject } from "./utils";
 import {
@@ -96,8 +97,11 @@ export default class ButtonsPlugin extends Plugin {
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs.args : args;
         const id = storeArgs && storeArgs.id;
-        if (Boolean(args['hidden']) !== true)
-          createButton({ app: this.app, el, args, inline: false, id });
+        if (Boolean(args['hidden']) !== true) {
+          // Create a component for managing button lifecycle
+          const component = new Component();
+          createButton({ app: this.app, el, args, inline: false, id, component });
+        }
       }
     );
 
@@ -154,6 +158,7 @@ class InlineButton extends MarkdownRenderChild {
       args: this.args,
       inline: true,
       id: this.id,
+      component: this,
     });
     this.el.replaceWith(button);
   }
