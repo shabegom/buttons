@@ -18,7 +18,6 @@ import { ButtonModal, InlineButtonModal } from "./modal";
 import { Button, createButton } from "./button";
 import buttonPlugin from "./livePreview";
 // import { updateWarning } from "./version";
-import templater from "./templater"
 
 export default class ButtonsPlugin extends Plugin {
   private buttonEvents: EventRef;
@@ -79,18 +78,7 @@ export default class ButtonsPlugin extends Plugin {
           .getFiles()
           .find((f) => f.path === ctx.sourcePath);
         
-        if (source.includes("<%") && file) {
-          try {
-            const runTemplater = await templater(this.app, file, file);
-            if (runTemplater) {
-              source = await runTemplater(source);
-            }
-          } catch (error) {
-            console.error('Error processing templater in button:', error);
-            // Continue with original source if templater fails
-          }
-        }
-        
+
         addButtonToStore(this.app, file);
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
