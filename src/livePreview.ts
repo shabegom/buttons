@@ -216,7 +216,7 @@ class ButtonWidget extends WidgetType {
       return;
     }
     
-    // Process templater commands for inline buttons only
+    // Process templater commands for all buttons with templater true
     if (args.templater && args.action && args.action.includes("<%")) {
       try {
         // Both template and target are activeFile since we're processing templater commands within the same file
@@ -225,8 +225,8 @@ class ButtonWidget extends WidgetType {
           args.action = await runTemplater(args.action);
         }
       } catch (error) {
-        console.error('Error processing templater in inline button:', error);
-        new Notice("Error processing templater in inline button. Check console for details.", 2000);
+        console.error('Error processing templater in button:', error);
+        new Notice("Error processing templater in button. Check console for details.", 2000);
       }
     }
     
