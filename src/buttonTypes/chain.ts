@@ -8,6 +8,7 @@ import { link } from "./link";
 import { template } from "./template";
 import { calculate } from "./calculate";
 import { text } from "./text";
+import templater from "../templater";
 
 export const chain = async (
   app: App,
@@ -25,6 +26,27 @@ export const chain = async (
     try {
       // Prepare a minimal Arguments object for each action
       const actionArgs: Arguments = { ...args, ...actionObj };
+      
+      // Process templater commands for each action if templater is enabled on the chain button
+      let processedAction = actionArgs.action;
+      if (args.templater && actionArgs.action && actionArgs.action.includes("<%")) {
+        try {
+          const activeFile = file || app.workspace.getActiveFile();
+          if (activeFile) {
+            const runTemplater = await templater(app, activeFile, activeFile);
+            if (runTemplater) {
+              processedAction = await runTemplater(actionArgs.action);
+            }
+          }
+        } catch (error) {
+          console.error('Error processing templater in chain action:', error);
+          new Notice("Error processing templater in chain action. Check console for details.", 2000);
+        }
+      }
+      
+      // Update the action with the processed templater result
+      actionArgs.action = processedAction;
+      
       // Recalculate position for each action if needed
       let currentPosition = position;
       // For text/template actions, re-read file and recalculate position
