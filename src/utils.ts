@@ -116,7 +116,6 @@ export const createArgumentObject = (source: string): Arguments => {
 
       let destructor = parseMultiLine(lines, i, jsonLines);
       try {
-        new Notice(`Actions: ${destructor.parseValue}`, 0);
         acc[key] =  JSON.parse(destructor.parseValue);
       } catch (e) {
         acc[key] = [];
