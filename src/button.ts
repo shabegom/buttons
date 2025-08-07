@@ -134,6 +134,7 @@ const clickHandler = async (
   // Process templater commands for all buttons with templater true
   let processedAction = args.action;
   let processedType = args.type;
+  let processedFolder = args.folder;
   
   if (args.templater) {
     try {
@@ -149,6 +150,11 @@ const clickHandler = async (
         if (args.type && args.type.includes("<%")) {
           processedType = await runTemplater(args.type);
         }
+        
+        // Process folder field if it contains templater expressions
+        if (args.folder && args.folder.includes("<%")) {
+          processedFolder = await runTemplater(args.folder);
+        }
       }
     } catch (error) {
       console.error('Error processing templater in button:', error);
@@ -157,7 +163,7 @@ const clickHandler = async (
   }
 
   // Create a copy of args with the processed values to avoid mutating the original
-  const processedArgs = { ...args, action: processedAction, type: processedType };
+  const processedArgs = { ...args, action: processedAction, type: processedType, folder: processedFolder };
   
   if (args.replace) {
     replace(app, processedArgs, position);
