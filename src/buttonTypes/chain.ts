@@ -29,13 +29,23 @@ export const chain = async (
       
       // Process templater commands for each action if templater is enabled on the chain button
       let processedAction = actionArgs.action;
-      if (args.templater && actionArgs.action && actionArgs.action.includes("<%")) {
+      let processedType = actionArgs.type;
+      
+      if (args.templater) {
         try {
           const activeFile = file || app.workspace.getActiveFile();
           if (activeFile) {
             const runTemplater = await templater(app, activeFile, activeFile);
             if (runTemplater) {
-              processedAction = await runTemplater(actionArgs.action);
+              // Process action field if it contains templater expressions
+              if (actionArgs.action && actionArgs.action.includes("<%")) {
+                processedAction = await runTemplater(actionArgs.action);
+              }
+              
+              // Process type field if it contains templater expressions (for note titles)
+              if (actionArgs.type && actionArgs.type.includes("<%")) {
+                processedType = await runTemplater(actionArgs.type);
+              }
             }
           }
         } catch (error) {
@@ -44,8 +54,9 @@ export const chain = async (
         }
       }
       
-      // Update the action with the processed templater result
+      // Update the action and type with the processed templater results
       actionArgs.action = processedAction;
+      actionArgs.type = processedType;
       
       // Recalculate position for each action if needed
       let currentPosition = position;
