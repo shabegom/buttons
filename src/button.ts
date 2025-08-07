@@ -133,12 +133,22 @@ const clickHandler = async (
   
   // Process templater commands for all buttons with templater true
   let processedAction = args.action;
-  if (args.templater && args.action && args.action.includes("<%")) {
+  let processedType = args.type;
+  
+  if (args.templater) {
     try {
       // Both template and target are activeFile since we're processing templater commands within the same file
       const runTemplater = await templater(app, activeFile, activeFile);
       if (runTemplater) {
-        processedAction = await runTemplater(args.action);
+        // Process action field if it contains templater expressions
+        if (args.action && args.action.includes("<%")) {
+          processedAction = await runTemplater(args.action);
+        }
+        
+        // Process type field if it contains templater expressions (for note titles)
+        if (args.type && args.type.includes("<%")) {
+          processedType = await runTemplater(args.type);
+        }
       }
     } catch (error) {
       console.error('Error processing templater in button:', error);
@@ -146,8 +156,8 @@ const clickHandler = async (
     }
   }
 
-  // Create a copy of args with the processed action to avoid mutating the original
-  const processedArgs = { ...args, action: processedAction };
+  // Create a copy of args with the processed values to avoid mutating the original
+  const processedArgs = { ...args, action: processedAction, type: processedType };
   
   if (args.replace) {
     replace(app, processedArgs, position);
