@@ -30,6 +30,7 @@ export const chain = async (
       // Process templater commands for each action if templater is enabled on the chain button
       let processedAction = actionArgs.action;
       let processedType = actionArgs.type;
+      let processedFolder = actionArgs.folder;
       
       if (args.templater) {
         try {
@@ -46,6 +47,11 @@ export const chain = async (
               if (actionArgs.type && actionArgs.type.includes("<%")) {
                 processedType = await runTemplater(actionArgs.type);
               }
+              
+              // Process folder field if it contains templater expressions
+              if (actionArgs.folder && actionArgs.folder.includes("<%")) {
+                processedFolder = await runTemplater(actionArgs.folder);
+              }
             }
           }
         } catch (error) {
@@ -54,9 +60,10 @@ export const chain = async (
         }
       }
       
-      // Update the action and type with the processed templater results
+      // Update the action, type, and folder with the processed templater results
       actionArgs.action = processedAction;
       actionArgs.type = processedType;
+      actionArgs.folder = processedFolder;
       
       // Recalculate position for each action if needed
       let currentPosition = position;
