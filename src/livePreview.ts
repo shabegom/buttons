@@ -189,8 +189,9 @@ class ButtonWidget extends WidgetType {
           `'>${this.el.innerHTML.slice(14, -4)}</div>`;
         
         
-        // Update classes - keep button-default and add custom classes
+        // Update classes - remove button-default and add custom classes
         if (className) {
+          this.el.removeClass("button-default");
           this.el.addClass(className);
         }
         if (color) {
