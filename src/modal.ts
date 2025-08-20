@@ -1,4 +1,4 @@
-import { Modal, App, MarkdownView, Editor } from "obsidian";
+import { Modal, App, MarkdownView, Editor, Component } from "obsidian";
 import { createButton } from "./button";
 import { CommandSuggest, TemplateSuggest, ButtonSuggest } from "./suggest";
 import { insertButton, insertInlineButton } from "./utils";
@@ -9,6 +9,7 @@ export class ButtonModal extends Modal {
   activeCursor: CodeMirror.Position;
   // actionInterval: Timeout;
   buttonPreviewEl: HTMLElement = createEl("p");
+  private previewComponent: Component | null = null;
   commandSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
   fileSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
   removeSuggestEl: HTMLInputElement = createEl("input", { type: "text" });
@@ -355,11 +356,12 @@ export class ButtonModal extends Modal {
     const previewSection = mainContainer.createEl("div", { cls: "preview-section" });
     previewSection.createEl("h3", { cls: "section-title", text: "Button Preview" });
     const previewContainer = previewSection.createEl("div", { cls: "preview-container" });
+    this.previewComponent = new Component();
     this.buttonPreviewEl = createButton({
       app: this.app,
       el: previewContainer,
       args: { name: "My Awesome Button" },
-      component: null, // Preview button doesn't need component lifecycle management
+      component: this.previewComponent,
     });
   }
 
@@ -879,6 +881,10 @@ export class ButtonModal extends Modal {
 
   onClose() {
     const { contentEl } = this;
+    if (this.previewComponent) {
+      this.previewComponent.unload();
+      this.previewComponent = null;
+    }
     contentEl.empty();
   }
 }
