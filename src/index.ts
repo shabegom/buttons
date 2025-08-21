@@ -17,6 +17,7 @@ import { buttonEventListener, openFileListener } from "./events";
 import { Arguments } from "./types";
 import { ButtonModal, InlineButtonModal } from "./modal";
 import { Button, createButton } from "./button";
+import { getStore } from "./buttonStore";
 import buttonPlugin from "./livePreview";
 // import { updateWarning } from "./version";
 
@@ -71,6 +72,8 @@ export default class ButtonsPlugin extends Plugin {
       callback: () => new InlineButtonModal(this.app).open(),
     });
 
+    const assignedBlocks = new Set<string>();
+
     this.registerMarkdownCodeBlockProcessor(
       "button",
       async (source, el, ctx) => {
@@ -84,7 +87,33 @@ export default class ButtonsPlugin extends Plugin {
         let args = createArgumentObject(source);
         const storeArgs = await getButtonFromStore(this.app, args);
         args = storeArgs ? storeArgs.args : args;
-        const id = storeArgs && storeArgs.id;
+        let id = storeArgs && storeArgs.id;
+        // Derive block id from store by matching source content when args.id is not provided
+        if (!id && file) {
+          try {
+            const store = getStore(this.app.isMobile);
+            const content = await this.app.vault.cachedRead(file);
+            const contentArray = content.split("\n");
+            const candidates = (store || [])
+              .filter((item) => item.path === file.path && item.id?.startsWith("button-"));
+            for (const item of candidates) {
+              const blockInner = contentArray
+                .slice(item.position.start.line + 1, item.position.end.line)
+                .join("\n");
+              // Match by exact inner codeblock content
+              if (blockInner.trim() === source.trim()) {
+                const key = `${item.path}:${item.position.start.line}:${item.position.end.line}`;
+                if (!assignedBlocks.has(key)) {
+                  id = item.id.split("button-")[1];
+                  assignedBlocks.add(key);
+                  break;
+                }
+              }
+            }
+          } catch (_) {
+            // best-effort; fall back to name-based
+          }
+        }
         if (Boolean(args['hidden']) !== true) {
           // Create a component for managing button lifecycle
           const component = new Component();
