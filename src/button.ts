@@ -126,9 +126,7 @@ const clickHandler = async (
   }
   
   let content = await app.vault.read(activeFile);
-  console.log(`id: ${id}`);
   const idFirstPosition = !inline && id ? await getBlockButtonPositionById(app, id) : undefined;
-  console.log(`first position: ${idFirstPosition}`);
   const buttonStart = idFirstPosition ?? getButtonPosition(content, args);
   let position = inline
     ? await getInlineButtonPosition(app, id)
@@ -210,9 +208,6 @@ const clickHandler = async (
   // handle removing the button
   if (args.remove) {
     content = await app.vault.read(activeFile);
-    position = inline
-      ? await getInlineButtonPosition(app, id)
-      : getButtonPosition(content, args);
     await remove(app, processedArgs, position);
   }
   if (processedArgs.type === "chain") {
