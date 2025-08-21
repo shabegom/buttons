@@ -136,14 +136,14 @@ class ButtonWidget extends WidgetType {
       
       if (args) {
         const name = args.name;
-        const className = args.class;
+        const classNames = args.class.split(' ');
         const color = args.color;
         
         this.el.innerHTML = ""; // Clear existing content
           
         MarkdownRenderer.render(
           this.app,
-          args.name,
+          name,
           this.el,
           this.app.workspace.getActiveFile()?.path || "",
           this.component
@@ -190,9 +190,11 @@ class ButtonWidget extends WidgetType {
         
         
         // Update classes - remove button-default and add custom classes
-        if (className) {
+        if (classNames.length > 0) {
           this.el.removeClass("button-default");
-          this.el.addClass(className);
+          classNames.forEach((className) => {
+            this.el.addClass(className);
+          });
         }
         if (color) {
           this.el.addClass(color);
