@@ -1,5 +1,6 @@
 import { App } from "obsidian";
 import { Arguments, Position } from "./types";
+import { getStore } from "./buttonStore";
 import { createContentArray } from "./utils";
 
 export const getButtonPosition = (
@@ -54,6 +55,24 @@ export const getInlineButtonPosition = async (
       });
     });
   return position;
+};
+
+export const getBlockButtonPositionById = async (
+  app: App,
+  id: string
+): Promise<Position | undefined> => {
+  const store = getStore(app.isMobile);
+  if (!store || !id) return undefined;
+  const activeFile = app.workspace.getActiveFile();
+  if (!activeFile) return undefined;
+  const button = store.find(
+    (item) => item.id === `button-${id}` && item.path === activeFile.path
+  );
+  if (!button) return undefined;
+  return {
+    lineStart: button.position.start.line,
+    lineEnd: button.position.end.line,
+  };
 };
 
 export const findNumber = async (

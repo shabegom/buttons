@@ -12,7 +12,7 @@ import {
   text,
   chain, // <-- Add chain import
 } from "./buttonTypes";
-import { getButtonPosition, getInlineButtonPosition } from "./parser";
+import { getButtonPosition, getInlineButtonPosition, getBlockButtonPositionById } from "./parser";
 import templater from "./templater";
 
 export interface Button {
@@ -65,7 +65,7 @@ export const createButton = ({
   // Changing the button's innerHTML to be wrapped in a div rather than a p so that it is not on a new line
   // Style tags so the user can set the width, height, and alignment of the button
 
-  let numberOfLines = args.name.split('\n').length;
+  const numberOfLines = args.name.split('\n').length;
   let paddingTop = 'auto';
   let paddingBottom = 'auto';
 
@@ -126,10 +126,11 @@ const clickHandler = async (
   }
   
   let content = await app.vault.read(activeFile);
-  const buttonStart = getButtonPosition(content, args);
+  const idFirstPosition = !inline && id ? await getBlockButtonPositionById(app, id) : undefined;
+  const buttonStart = idFirstPosition ?? getButtonPosition(content, args);
   let position = inline
     ? await getInlineButtonPosition(app, id)
-    : getButtonPosition(content, args);
+    : idFirstPosition ?? getButtonPosition(content, args);
   
   // Process templater commands for all buttons with templater true
   let processedAction = args.action;
@@ -184,7 +185,7 @@ const clickHandler = async (
     content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
-      : getButtonPosition(content, args);
+      : (await getBlockButtonPositionById(app, id)) ?? getButtonPosition(content, args);
     await template(app, processedArgs, position);
   }
   if (processedArgs.type === "calculate") {
@@ -194,7 +195,7 @@ const clickHandler = async (
     content = await app.vault.read(activeFile);
     position = inline
       ? await getInlineButtonPosition(app, id)
-      : getButtonPosition(content, args);
+      : (await getBlockButtonPositionById(app, id)) ?? getButtonPosition(content, args);
     await text(app, processedArgs, position);
   }
   if (args.swap) {
