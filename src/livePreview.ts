@@ -136,7 +136,6 @@ class ButtonWidget extends WidgetType {
       
       if (args) {
         const name = args.name;
-        const classNames = args.class.split(' ');
         const color = args.color;
         
         this.el.innerHTML = ""; // Clear existing content
@@ -190,6 +189,7 @@ class ButtonWidget extends WidgetType {
         
         
         // Update classes - remove button-default and add custom classes
+        const classNames = args.class ? args.class.split(' ') : [];
         if (classNames.length > 0) {
           this.el.removeClass("button-default");
           classNames.forEach((className) => {
@@ -210,6 +210,7 @@ class ButtonWidget extends WidgetType {
         this.el.addClass("button-error");
       }
     } catch (error) {
+      console.log(error)
       // Handle any errors in loading button data
       this.el.innerText = "Error loading button";
       this.el.removeClass("button-default");
@@ -305,4 +306,4 @@ class ButtonWidget extends WidgetType {
   }
 }
 
-export default buttonPlugin; 
+export default buttonPlugin;
